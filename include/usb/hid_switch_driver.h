@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#define USBD_SWITCH_NAME "Switch Pro Controller Emulation"
+#define USBD_SWITCH_NAME "Switch Horipad Emulation"
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,7 +46,7 @@ typedef struct __attribute((packed, aligned(1))) {
 } hid_switch_output_report_t;
 
 extern const tusb_desc_device_t switch_divacon_desc_device;
-extern const tusb_desc_device_t switch_procon_desc_device;
+extern const tusb_desc_device_t switch_horipad_desc_device;
 extern const uint8_t switch_desc_cfg[];
 extern const uint8_t switch_desc_hid_report[];
 

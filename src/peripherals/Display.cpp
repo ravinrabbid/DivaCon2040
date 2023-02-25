@@ -161,8 +161,8 @@ static std::string modeToString(usb_mode_t mode) {
     switch (mode) {
     case USB_MODE_SWITCH_DIVACON:
         return "Switch Diva";
-    case USB_MODE_SWITCH_PROCON:
-        return "Switch Pro";
+    case USB_MODE_SWITCH_HORIPAD:
+        return "Switch Horipad";
     case USB_MODE_DUALSHOCK3:
         return "Dualshock 3";
     case USB_MODE_PS4_DIVACON:
@@ -235,9 +235,9 @@ void Display::drawMenuScreen() {
         auto selection_count = descriptor_it->second.items.size();
         for (uint8_t i = 0; i < selection_count; ++i) {
             if (i == m_menu_state.selection) {
-                ssd1306_draw_square(&m_display, ((127 - 6) - ((selection_count - i) * 6)) - 1, 2, 4, 4);
+                ssd1306_draw_square(&m_display, ((127) - ((selection_count - i) * 6)) - 1, 2, 4, 4);
             } else {
-                ssd1306_draw_square(&m_display, (127 - 6) - ((selection_count - i) * 6), 3, 2, 2);
+                ssd1306_draw_square(&m_display, (127) - ((selection_count - i) * 6), 3, 2, 2);
             }
         }
     }

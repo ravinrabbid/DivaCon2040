@@ -40,7 +40,7 @@ class Menu {
             GotoPageBootsel,
 
             ChangeUsbModeSwitchDivacon,
-            ChangeUsbModeSwitchPro,
+            ChangeUsbModeSwitchHoripad,
             ChangeUsbModeDS3,
             ChangeUsbModePS4Divacon,
             ChangeUsbModeDS4,

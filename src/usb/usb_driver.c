@@ -14,7 +14,7 @@ static const uint8_t *usbd_desc_hid_report = NULL;
 static const usbd_class_driver_t *usbd_app_driver = NULL;
 static bool (*usbd_send_report)(usb_report_t report) = NULL;
 
-static char usbd_serial_str[PICO_UNIQUE_BOARD_ID_SIZE_BYTES * 2 + 1];
+static char usbd_serial_str[PICO_UNIQUE_BOARD_ID_SIZE_BYTES * 2 + 1] = {};
 
 char *const usbd_desc_str[] = {
     [USBD_STR_MANUFACTURER] = USBD_MANUFACTURER,  //
@@ -39,8 +39,8 @@ void usb_driver_init(usb_mode_t mode) {
         usbd_app_driver = &hid_app_driver;
         usbd_send_report = send_hid_switch_report;
         break;
-    case USB_MODE_SWITCH_PROCON:
-        usbd_desc_device = &switch_procon_desc_device;
+    case USB_MODE_SWITCH_HORIPAD:
+        usbd_desc_device = &switch_horipad_desc_device;
         usbd_desc_cfg = switch_desc_cfg;
         usbd_desc_hid_report = switch_desc_hid_report;
         usbd_app_driver = &hid_app_driver;

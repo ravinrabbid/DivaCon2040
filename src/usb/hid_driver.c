@@ -5,27 +5,11 @@
 
 #include "tusb.h"
 
-// bool send_hid_report(usb_report_t report) {
-//     switch (usb_driver_get_mode()) {
-//     case USB_MODE_SWITCH_DIVACON:
-//     case USB_MODE_SWITCH_PROCON:
-//         return send_switch_hid_report(report);
-//     case USB_MODE_DUALSHOCK3:
-//         return send_hid_ps3_report(report);
-//     case USB_MODE_PS4_DIVACON:
-//     case USB_MODE_DUALSHOCK4:
-//         return send_hid_ps4_report(report);
-//     default:
-//     }
-
-//     return false;
-// }
-
 uint16_t tud_hid_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t *buffer,
                                uint16_t reqlen) {
     switch (usb_driver_get_mode()) {
     case USB_MODE_SWITCH_DIVACON:
-    case USB_MODE_SWITCH_PROCON:
+    case USB_MODE_SWITCH_HORIPAD:
         return hid_switch_get_report_cb(itf, report_id, report_type, buffer, reqlen);
     case USB_MODE_DUALSHOCK3:
         return hid_ps3_get_report_cb(itf, report_id, report_type, buffer, reqlen);
@@ -42,7 +26,7 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
                            uint16_t bufsize) {
     switch (usb_driver_get_mode()) {
     case USB_MODE_SWITCH_DIVACON:
-    case USB_MODE_SWITCH_PROCON:
+    case USB_MODE_SWITCH_HORIPAD:
         hid_switch_set_report_cb(itf, report_id, report_type, buffer, bufsize);
         break;
     case USB_MODE_DUALSHOCK3:

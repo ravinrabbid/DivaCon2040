@@ -8,22 +8,22 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
     {Menu::Page::Main,                                                  //
      {Menu::Descriptor::Type::Root,                                     //
       "Settings",                                                       //
-      {{"Device Mode", Menu::Descriptor::Action::GotoPageDeviceMode},   //
+      {{"Mode", Menu::Descriptor::Action::GotoPageDeviceMode},          //
        {"Brightness", Menu::Descriptor::Action::GotoPageLedBrightness}, //
        {"BOOTSEL", Menu::Descriptor::Action::GotoPageBootsel}},         //
       Menu::Page::None}},                                               //
 
-    {Menu::Page::DeviceMode,                                                  //
-     {Menu::Descriptor::Type::Selection,                                      //
-      "Device Mode",                                                          //
-      {{"Switch Diva", Menu::Descriptor::Action::ChangeUsbModeSwitchDivacon}, //
-       {"Switch Pro", Menu::Descriptor::Action::ChangeUsbModeSwitchPro},      //
-       {"Dualshock 3", Menu::Descriptor::Action::ChangeUsbModeDS3},           //
-       {"PS4 Diva", Menu::Descriptor::Action::ChangeUsbModePS4Divacon},       //
-       {"Dualshock 4", Menu::Descriptor::Action::ChangeUsbModeDS4},           //
-       {"Xbox 360", Menu::Descriptor::Action::ChangeUsbModeXbox360},          //
-       {"Debug", Menu::Descriptor::Action::ChangeUsbModeDebug}},              //
-      Menu::Page::Main}},                                                     //                                     //
+    {Menu::Page::DeviceMode,                                                 //
+     {Menu::Descriptor::Type::Selection,                                     //
+      "Mode",                                                                //
+      {{"Swtch Diva", Menu::Descriptor::Action::ChangeUsbModeSwitchDivacon}, //
+       {"Swtch Pro", Menu::Descriptor::Action::ChangeUsbModeSwitchHoripad},  //
+       {"Dualshock3", Menu::Descriptor::Action::ChangeUsbModeDS3},           //
+       {"PS4 Diva", Menu::Descriptor::Action::ChangeUsbModePS4Divacon},      //
+       {"Dualshock4", Menu::Descriptor::Action::ChangeUsbModeDS4},           //
+       {"Xbox 360", Menu::Descriptor::Action::ChangeUsbModeXbox360},         //
+       {"Debug", Menu::Descriptor::Action::ChangeUsbModeDebug}},             //
+      Menu::Page::Main}},                                                    //
 
     {Menu::Page::LedBrightness,                           //
      {Menu::Descriptor::Type::Value,                      //
@@ -157,8 +157,8 @@ void Menu::performSelectionAction(Menu::Descriptor::Action action) {
         m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::ARCADE);
         gotoPage(descriptor_it->second.parent);
         break;
-    case Descriptor::Action::ChangeUsbModeSwitchPro:
-        m_store->setUsbMode(USB_MODE_SWITCH_PROCON);
+    case Descriptor::Action::ChangeUsbModeSwitchHoripad:
+        m_store->setUsbMode(USB_MODE_SWITCH_HORIPAD);
         m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::STICK);
         gotoPage(descriptor_it->second.parent);
         break;

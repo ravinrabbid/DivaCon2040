@@ -16,7 +16,7 @@ InputState::InputState()
 usb_report_t InputState::getReport(usb_mode_t mode) {
     switch (mode) {
     case USB_MODE_SWITCH_DIVACON:
-    case USB_MODE_SWITCH_PROCON:
+    case USB_MODE_SWITCH_HORIPAD:
         return getSwitchReport();
         break;
     case USB_MODE_DUALSHOCK3:

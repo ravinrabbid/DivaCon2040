@@ -22,7 +22,7 @@ const tusb_desc_device_t switch_divacon_desc_device = {
     .bNumConfigurations = 1,
 };
 
-const tusb_desc_device_t switch_procon_desc_device = {
+const tusb_desc_device_t switch_horipad_desc_device = {
     .bLength = sizeof(tusb_desc_device_t),
     .bDescriptorType = TUSB_DESC_DEVICE,
     .bcdUSB = 0x0200,
@@ -30,8 +30,8 @@ const tusb_desc_device_t switch_procon_desc_device = {
     .bDeviceSubClass = 0x00,
     .bDeviceProtocol = 0x00,
     .bMaxPacketSize0 = CFG_TUD_ENDPOINT0_SIZE,
-    .idVendor = 0x057E,  // The big N
-    .idProduct = 0x2009, // Pro Controller
+    .idVendor = 0x0F0D,  // HORI
+    .idProduct = 0x00C1, // HORIPAD
     .bcdDevice = 0x0100,
     .iManufacturer = USBD_STR_MANUFACTURER,
     .iProduct = USBD_STR_PRODUCT,
@@ -116,7 +116,7 @@ uint16_t hid_switch_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_typ
     (void)reqlen;
 
     if (report_type == HID_REPORT_TYPE_INPUT) {
-        memcpy(&buffer, &last_report, sizeof(hid_switch_report_t));
+        memcpy(buffer, &last_report, sizeof(hid_switch_report_t));
         return sizeof(hid_switch_report_t);
     }
     return 0;
