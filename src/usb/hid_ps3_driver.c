@@ -126,10 +126,10 @@ bool send_hid_ps3_report(usb_report_t report) {
 }
 
 static uint8_t ps3_report_0xf2[] = {
-    0xff, 0xff, 0x00,                         // Unknown
-    0x00, 0x07, 0x04,                         // MAC address OUI (ALPS Co.)
-    0x39, 0x39, 0x39,                         // MAC manufacturer specific
-    0x00, 0x03, 0x50, 0x81, 0xd8, 0x01, 0x8a, // Unknown
+    0xff, 0xff, 0x00,                        // Unknown
+    0x00, 0x07, 0x04,                        // MAC address OUI (ALPS Co.)
+    0x39, 0x39, 0x39,                        // MAC manufacturer specific
+    0x00, 0x03, 0x50, 0x81, 0xd8, 0x01, 0x8a // Unknown
 };
 static const uint8_t ps3_report_0xf5[] = {0x00, 0xf0, 0xf0, 0x02, 0x5e, 0x16, 0x26}; // Unknown
 
@@ -163,11 +163,9 @@ uint16_t hid_ps3_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
 
             memcpy(buffer, ps3_report_0xf2, sizeof(ps3_report_0xf2));
             return sizeof(ps3_report_0xf2);
-            break;
         case 0xf5:
             memcpy(buffer, ps3_report_0xf5, sizeof(ps3_report_0xf5));
             return sizeof(ps3_report_0xf5);
-            break;
         default:
         }
     }

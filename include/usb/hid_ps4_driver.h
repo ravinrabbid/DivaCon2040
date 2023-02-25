@@ -33,15 +33,16 @@ typedef struct __attribute((packed, aligned(1))) {
     int16_t accelx;
     int16_t accely;
     int16_t accelz;
-    uint8_t unknown2[5];
+    uint8_t unknown1[5];
     uint8_t extension;
-    uint8_t unknown3[3];
-    uint8_t touch_count;
-    uint8_t touchpad1_touch;
+    uint8_t unknown2[2];
+    uint8_t touchpad_event_active;
+    uint8_t touchpad_counter;
+    uint8_t touchpad1_touches;
     uint8_t touchpad1_position[3];
-    uint8_t touchpad2_touch;
+    uint8_t touchpad2_touches;
     uint8_t touchpad2_position[3];
-    uint8_t unknown4[21];
+    uint8_t unknown3[21];
 } hid_ps4_report_t;
 
 extern const tusb_desc_device_t ps4_divacon_desc_device;
