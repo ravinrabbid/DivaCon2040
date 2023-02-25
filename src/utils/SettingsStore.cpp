@@ -2,6 +2,8 @@
 
 #include "GlobalConfiguration.h"
 
+#include "hardware/watchdog.h"
+#include "pico/bootrom.h"
 #include "pico/multicore.h"
 
 namespace Divacon::Utils {
@@ -14,7 +16,7 @@ SettingsStore::SettingsStore()
                      Config::Default::touch_slider_config.mode,
                      Config::Default::touch_slider_leds_config.brightness,
                      {}}),
-      m_dirty(true) {
+      m_dirty(true), m_scheduled_reboot(RebootType::None) {
 
     uint32_t current_page = m_flash_offset + m_flash_size - m_store_size;
     bool found_valid = false;
@@ -37,6 +39,8 @@ void SettingsStore::setUsbMode(usb_mode_t mode) {
     if (mode != m_store_cache.usb_mode) {
         m_store_cache.usb_mode = mode;
         m_dirty = true;
+
+        scheduleReboot();
     }
 }
 
@@ -85,6 +89,25 @@ void SettingsStore::store() {
 
         restore_interrupts(interrupts);
         multicore_lockout_end_timeout_us(0xfffffffffffffff); // TODO SDK Bug: change to blocking with next SDK relase
+    }
+
+    switch (m_scheduled_reboot) {
+    case RebootType::Normal:
+        watchdog_enable(1, 1);
+        while (1)
+            ;
+        break;
+    case RebootType::Bootsel:
+        reset_usb_boot(0, 0);
+        break;
+    case RebootType::None:
+        break;
+    }
+}
+
+void SettingsStore::scheduleReboot(bool bootsel) {
+    if (m_scheduled_reboot != RebootType::Bootsel) {
+        m_scheduled_reboot = (bootsel ? RebootType::Bootsel : RebootType::Normal);
     }
 }
 

@@ -283,10 +283,16 @@ void Display::drawMenuScreen() {
     }
 
     // Background
-    if (descriptor_it->second.type == Utils::Menu::Descriptor::Type::Root) {
+    switch (descriptor_it->second.type) {
+    case Utils::Menu::Descriptor::Type::Root:
         ssd1306_bmp_show_image(&m_display, menu_screen_top.data(), menu_screen_top.size());
-    } else {
+        break;
+    case Utils::Menu::Descriptor::Type::Selection:
+    case Utils::Menu::Descriptor::Type::Value:
         ssd1306_bmp_show_image(&m_display, menu_screen_sub.data(), menu_screen_sub.size());
+        break;
+    case Utils::Menu::Descriptor::Type::RebootInfo:
+        break;
     }
 
     // Heading
@@ -297,6 +303,7 @@ void Display::drawMenuScreen() {
     switch (descriptor_it->second.type) {
     case Utils::Menu::Descriptor::Type::Root:
     case Utils::Menu::Descriptor::Type::Selection:
+    case Utils::Menu::Descriptor::Type::RebootInfo:
         selection = descriptor_it->second.items.at(m_menu_state.selection).first;
         break;
     case Utils::Menu::Descriptor::Type::Value:
@@ -306,7 +313,9 @@ void Display::drawMenuScreen() {
     ssd1306_draw_string(&m_display, (127 - (selection.length() * 12)) / 2, 15, 2, selection.c_str());
 
     // Breadcrumbs
-    if (descriptor_it->second.type != Utils::Menu::Descriptor::Type::Value) {
+    switch (descriptor_it->second.type) {
+    case Utils::Menu::Descriptor::Type::Root:
+    case Utils::Menu::Descriptor::Type::Selection: {
         auto selection_count = descriptor_it->second.items.size();
         for (uint8_t i = 0; i < selection_count; ++i) {
             if (i == m_menu_state.selection) {
@@ -315,6 +324,11 @@ void Display::drawMenuScreen() {
                 ssd1306_draw_square(&m_display, (127) - ((selection_count - i) * 6), 3, 2, 2);
             }
         }
+    } break;
+    case Utils::Menu::Descriptor::Type::RebootInfo:
+        break;
+    case Utils::Menu::Descriptor::Type::Value:
+        break;
     }
 }
 

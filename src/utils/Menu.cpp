@@ -1,7 +1,5 @@
 #include "utils/Menu.h"
 
-#include "pico/bootrom.h"
-
 namespace Divacon::Utils {
 
 const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
@@ -36,6 +34,12 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
       "Reboot to BOOTSEL",                                        //
       {{"Reboot?", Menu::Descriptor::Action::DoRebootToBootsel}}, //
       Menu::Page::Main}},                                         //
+
+    {Menu::Page::BootselMsg,                         //
+     {Menu::Descriptor::Type::RebootInfo,            //
+      "Ready to Flash...",                           //
+      {{"BOOTSEL", Menu::Descriptor::Action::None}}, //
+      Menu::Page::Main}},                            //
 };
 
 Menu::Menu(std::shared_ptr<SettingsStore> settings_store)
@@ -123,6 +127,7 @@ uint8_t Menu::getCurrentSelection(Menu::Page page) {
         break;
     case Page::Main:
     case Page::Bootsel:
+    case Page::BootselMsg:
     case Page::None:
         break;
     }
@@ -191,8 +196,8 @@ void Menu::performSelectionAction(Menu::Descriptor::Action action) {
         gotoPage(descriptor_it->second.parent);
         break;
     case Descriptor::Action::DoRebootToBootsel:
-        // TODO show reboot message
-        reset_usb_boot(0, 0);
+        m_store->scheduleReboot(true);
+        gotoPage(Page::BootselMsg);
         break;
     default:
         break;
@@ -224,7 +229,9 @@ void Menu::update(const InputState &input_state) {
         return;
     }
 
-    if (pressed.north) {
+    if (descriptor_it->second.type == Descriptor::Type::RebootInfo) {
+        m_active = false;
+    } else if (pressed.north) {
         switch (descriptor_it->second.type) {
         case Descriptor::Type::Value:
             if (m_state.selection > 0) {
@@ -239,6 +246,8 @@ void Menu::update(const InputState &input_state) {
             } else {
                 m_state.selection--;
             }
+            break;
+        case Descriptor::Type::RebootInfo:
             break;
         }
     } else if (pressed.west) {
@@ -257,6 +266,8 @@ void Menu::update(const InputState &input_state) {
                 m_state.selection++;
             }
             break;
+        case Descriptor::Type::RebootInfo:
+            break;
         }
     } else if (pressed.south) {
         switch (descriptor_it->second.type) {
@@ -267,6 +278,8 @@ void Menu::update(const InputState &input_state) {
         case Descriptor::Type::Root:
             m_active = false;
             break;
+        case Descriptor::Type::RebootInfo:
+            break;
         }
     } else if (pressed.east) {
         switch (descriptor_it->second.type) {
@@ -276,6 +289,8 @@ void Menu::update(const InputState &input_state) {
         case Descriptor::Type::Selection:
         case Descriptor::Type::Root:
             performSelectionAction(descriptor_it->second.items.at(m_state.selection).second);
+            break;
+        case Descriptor::Type::RebootInfo:
             break;
         }
     }

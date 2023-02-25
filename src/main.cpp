@@ -9,7 +9,6 @@
 
 #include "GlobalConfiguration.h"
 
-#include "hardware/watchdog.h"
 #include "pico/multicore.h"
 #include "pico/stdlib.h"
 #include "pico/util/queue.h"
@@ -139,12 +138,6 @@ int main() {
                 queue_add_blocking(&menu_display_queue, &display_msg);
             } else {
                 settings_store->store();
-
-                if (settings_store->getUsbMode() != mode) {
-                    watchdog_enable(1, 1);
-                    while (1)
-                        ;
-                }
 
                 ControlMessage ctrl_message = {ControlCommand::ExitMenu, {}};
                 queue_add_blocking(&control_queue, &ctrl_message);

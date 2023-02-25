@@ -20,6 +20,7 @@ class Menu {
         DeviceMode,
         LedBrightness,
         Bootsel,
+        BootselMsg,
     };
 
     struct State {
@@ -32,9 +33,12 @@ class Menu {
             Root,
             Selection,
             Value,
+            RebootInfo,
         };
 
         enum class Action {
+            None,
+
             GotoPageDeviceMode,
             GotoPageLedBrightness,
             GotoPageBootsel,

@@ -27,8 +27,16 @@ class SettingsStore {
     };
     static_assert(sizeof(Storecache) == m_store_size);
 
+    enum class RebootType {
+        None,
+        Normal,
+        Bootsel,
+    };
+
     Storecache m_store_cache;
     bool m_dirty;
+
+    RebootType m_scheduled_reboot;
 
   private:
     Storecache read();
@@ -44,6 +52,8 @@ class SettingsStore {
 
     void setLedBrightness(uint8_t brightness);
     uint8_t getLedBrightness();
+
+    void scheduleReboot(bool bootsel = false);
 
     void store();
 };
