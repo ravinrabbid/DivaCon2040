@@ -205,7 +205,7 @@ bool send_hid_ps4_report(usb_report_t report) {
 uint16_t hid_ps4_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t *buffer,
                                uint16_t reqlen) {
     (void)itf;
-    // (void)report_id;
+    (void)report_id;
     (void)report_type;
     // (void)buffer;
     (void)reqlen;
@@ -222,13 +222,13 @@ uint16_t hid_ps4_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
         //     return sizeof(ps4_0xf3_report);
         // } else
         if (report_id == 0x81) {
-            memcpy(&buffer, &ps4_0x81_report, sizeof(ps4_0x81_report));
+            memcpy(buffer, ps4_0x81_report, sizeof(ps4_0x81_report));
             return sizeof(ps4_0x81_report);
         } else if (report_id == 0xa3) {
-            memcpy(&buffer, &ps4_0xa3_report, sizeof(ps4_0xa3_report));
+            memcpy(buffer, ps4_0xa3_report, sizeof(ps4_0xa3_report));
             return sizeof(ps4_0xa3_report);
         } else if (report_id == 0x02) {
-            memcpy(&buffer, &ps4_calibration_data, sizeof(ps4_calibration_data));
+            memcpy(buffer, &ps4_calibration_data, sizeof(ps4_calibration_data));
             return sizeof(ps4_calibration_data);
         }
     }

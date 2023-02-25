@@ -142,13 +142,52 @@ static uint8_t getHidHat(const InputState::DPad dpad) {
 }
 
 usb_report_t InputState::getPS3InputReport() {
-    m_ps3_report.buttons = getHidButtons(buttons);
-    m_ps3_report.hat = getHidHat(dpad);
+    memset(&m_ps4_report, 0, sizeof(m_ps4_report));
+
+    m_ps3_report.report_id = 0x01;
+
+    m_ps3_report.buttons1 = 0                                 //
+                            | (buttons.select ? (1 << 0) : 0) //
+                            | (buttons.l3 ? (1 << 1) : 0)     //
+                            | (buttons.r3 ? (1 << 2) : 0)     //
+                            | (buttons.start ? (1 << 3) : 0)  //
+                            | (dpad.up ? (1 << 4) : 0)        //
+                            | (dpad.right ? (1 << 5) : 0)     //
+                            | (dpad.down ? (1 << 6) : 0)      //
+                            | (dpad.left ? (1 << 7) : 0);
+    m_ps3_report.buttons2 = 0 | (buttons.l2 ? (1 << 0) : 0)  //
+                            | (buttons.r2 ? (1 << 1) : 0)    //
+                            | (buttons.l1 ? (1 << 2) : 0)    //
+                            | (buttons.r1 ? (1 << 3) : 0)    //
+                            | (buttons.north ? (1 << 4) : 0) //
+                            | (buttons.east ? (1 << 5) : 0)  //
+                            | (buttons.south ? (1 << 6) : 0) //
+                            | (buttons.west ? (1 << 7) : 0);
+    m_ps3_report.buttons3 = 0 | (buttons.home ? (1 << 0) : 0);
 
     m_ps3_report.lx = sticks.left.x;
     m_ps3_report.ly = sticks.left.y;
     m_ps3_report.rx = sticks.right.x;
     m_ps3_report.ry = sticks.right.y;
+
+    m_ps3_report.lt = (buttons.l2 ? 0xff : 0);
+    m_ps3_report.rt = (buttons.r2 ? 0xff : 0);
+
+    m_ps3_report.unknown_0x02_1 = 0x02;
+    m_ps3_report.battery = 0xef;
+    m_ps3_report.unknown_0x12 = 0x12;
+
+    m_ps3_report.unknown[0] = 0x12;
+    m_ps3_report.unknown[1] = 0xf8;
+    m_ps3_report.unknown[2] = 0x77;
+    m_ps3_report.unknown[3] = 0x00;
+    m_ps3_report.unknown[4] = 0x40;
+
+    m_ps3_report.acc_x = 511;
+    m_ps3_report.acc_y = 511;
+    m_ps3_report.acc_z = 511;
+
+    m_ps3_report.unknown_0x02_2 = 0x02;
 
     return {(uint8_t *)&m_ps3_report, sizeof(hid_ps3_report_t)};
 }
