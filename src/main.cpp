@@ -73,6 +73,7 @@ void core1_task() {
         if (queue_try_remove(&input_queue, &input_msg)) {
             sliderled.setTouched(input_msg.touches);
             display.setTouched(input_msg.touches);
+            display.setButtons(input_msg.buttons);
         }
         if (queue_try_remove(&menu_display_queue, &menu_display_msg)) {
             display.setMenuState(menu_display_msg);

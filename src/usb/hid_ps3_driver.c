@@ -131,7 +131,7 @@ static uint8_t ps3_report_0xf2[] = {
     0x39, 0x39, 0x39,                         // MAC manufacturer specific
     0x00, 0x03, 0x50, 0x81, 0xd8, 0x01, 0x8a, // Unknown
 };
-static const uint8_t ps3_report_0xf5[] = {0x00, 0xf0, 0xf0, 0x02, 0x5e, 0x16, 0x26};
+static const uint8_t ps3_report_0xf5[] = {0x00, 0xf0, 0xf0, 0x02, 0x5e, 0x16, 0x26}; // Unknown
 
 uint16_t hid_ps3_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t *buffer,
                                uint16_t reqlen) {
@@ -173,14 +173,6 @@ uint16_t hid_ps3_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
     }
     return 0;
 }
-
-// struct sixaxis_led {
-//     u8 time_enabled; /* the total time the led is active (0xff means forever) */
-//     u8 duty_length;  /* how long a cycle is in deciseconds (0 means "really fast") */
-//     u8 enabled;
-//     u8 duty_off; /* % of duty_length the led is off (0xff means 100%) */
-//     u8 duty_on;  /* % of duty_length the led is on (0xff mean 100%) */
-// } __packed;
 
 typedef struct __attribute((packed, aligned(1))) {
     uint8_t rumble[4];

@@ -2,6 +2,7 @@
 #define _PERIPHERALS_DISPLAY_H_
 
 #include "usb/usb_driver.h"
+#include "utils/InputState.h"
 #include "utils/Menu.h"
 
 #include <ssd1306/ssd1306.h>
@@ -33,6 +34,7 @@ class Display {
     State m_state;
 
     uint32_t m_touched;
+    Utils::InputState::Buttons m_buttons;
     usb_mode_t m_usb_mode;
     uint8_t m_player;
     Utils::Menu::State m_menu_state;
@@ -46,6 +48,7 @@ class Display {
     Display(const Config &config);
 
     void setTouched(uint32_t touched);
+    void setButtons(const Utils::InputState::Buttons &buttons);
     void setUsbMode(usb_mode_t mode);
     void setPlayerId(uint8_t player);
     void setMenuState(const Utils::Menu::State &menu_state);

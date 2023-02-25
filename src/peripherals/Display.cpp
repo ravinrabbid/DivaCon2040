@@ -1,8 +1,11 @@
 #include "peripherals/Display.h"
 
 #include "hardware/gpio.h"
+#include "pico/time.h"
 
 #include <array>
+#include <list>
+#include <numeric>
 #include <string>
 
 namespace Divacon::Peripherals {
@@ -134,7 +137,7 @@ static const std::array<uint8_t, 1154> menu_screen_top = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
 Display::Display(const Config &config)
-    : m_config(config), m_state(State::Idle), m_touched(0), m_usb_mode(USB_MODE_DEBUG), m_player(39),
+    : m_config(config), m_state(State::Idle), m_touched(0), m_buttons({}), m_usb_mode(USB_MODE_DEBUG), m_player(39),
       m_menu_state({Utils::Menu::Page::None, 0}) {
 
     i2c_init(m_config.i2c_block, m_config.i2c_speed_hz);
@@ -149,6 +152,7 @@ Display::Display(const Config &config)
 }
 
 void Display::setTouched(uint32_t touched) { m_touched = touched; }
+void Display::setButtons(const Utils::InputState::Buttons &buttons) { m_buttons = buttons; }
 void Display::setUsbMode(usb_mode_t mode) { m_usb_mode = mode; };
 void Display::setPlayerId(uint8_t player) { m_player = player; };
 
@@ -177,16 +181,80 @@ static std::string modeToString(usb_mode_t mode) {
     return "?";
 }
 
+static uint16_t calculateBpm(const Utils::InputState::Buttons &buttons) {
+    static const size_t window_size = 20;
+    static const uint32_t double_hit_window = 50;
+    static const uint32_t reset_after = 2000;
+
+    static Utils::InputState::Buttons prev_buttons = {};
+    static uint32_t prev_press = 0;
+    static uint16_t current_bpm = 0;
+
+    struct StatBuffer {
+      private:
+        std::list<uint16_t> m_buf;
+        size_t m_max_size;
+
+      public:
+        StatBuffer(size_t max_size) : m_max_size(max_size) {}
+
+        void clear() { m_buf.clear(); };
+
+        void insert(uint16_t val) {
+            if (m_buf.size() >= m_max_size) {
+                m_buf.pop_back();
+            }
+            m_buf.push_front(val);
+        };
+
+        uint16_t avg() {
+            if (m_buf.size() > 0) {
+                return std::accumulate(m_buf.begin(), m_buf.end(), 0) / m_buf.size();
+            }
+            return 0;
+        }
+    };
+    static StatBuffer stat_buffer(window_size);
+
+    uint32_t now = to_ms_since_boot(get_absolute_time());
+    uint32_t intervall = now - prev_press;
+
+    if (intervall > reset_after) {
+        stat_buffer.clear();
+        current_bpm = 0;
+        prev_press = 0;
+    }
+
+    if ((intervall > double_hit_window) &&
+        ((buttons.north && !prev_buttons.north) || (buttons.east && !prev_buttons.east) ||
+         (buttons.south && !prev_buttons.south) || (buttons.west && !prev_buttons.west))) {
+
+        if (prev_press != 0) {
+            stat_buffer.insert(intervall);
+            current_bpm = 60000 / stat_buffer.avg();
+        }
+
+        prev_press = now;
+    }
+
+    prev_buttons = buttons;
+
+    return current_bpm;
+}
+
 void Display::drawIdleScreen() {
     // Header
-    ssd1306_draw_string(&m_display, 0, 0, 1, "DivaCon2040 v0.3.9");
+    std::string mode_string = modeToString(m_usb_mode) + " mode";
+    ssd1306_draw_string(&m_display, 0, 0, 1, mode_string.c_str());
     ssd1306_draw_line(&m_display, 0, 10, 128, 10);
 
-    // Debug info
-    ssd1306_draw_string(&m_display, 0, 14, 1, modeToString(m_usb_mode).c_str());
+    // BPM
+    auto bpm_str = std::to_string(calculateBpm(m_buttons)) + " bpm";
+    ssd1306_draw_string(&m_display, (127 - (bpm_str.length() * 12)) / 2, 15, 2, bpm_str.c_str());
 
+    // Debug info
     std::string player_str = "Player: " + std::to_string(m_player);
-    ssd1306_draw_string(&m_display, 0, 24, 1, player_str.c_str());
+    ssd1306_draw_string(&m_display, 0, 38, 1, player_str.c_str());
 
     // Slider state
     ssd1306_draw_line(&m_display, 0, 46, 128, 46);
