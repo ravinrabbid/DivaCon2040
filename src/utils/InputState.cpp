@@ -196,7 +196,7 @@ usb_report_t InputState::getPS4InputReport() {
     m_ps4_report.unknown3[14] = 0x80;
     m_ps4_report.unknown3[19] = 0x80;
 
-    // This method actaully gets called more often than the report is sent,
+    // This method actually gets called more often than the report is sent,
     // so counters are not consecutive ... let's see if this turns out to
     // be a problem.
     last_timestamp += 188;

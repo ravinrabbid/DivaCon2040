@@ -9,6 +9,7 @@ namespace Divacon::Peripherals {
 TouchSliderLeds::TouchSliderLeds(const Config &config)
     : m_config(config), m_touched(0), m_background_brightness(config.brightness), m_touched_brightness({}) {
     m_frame = std::vector<uint32_t>(32 * config.leds_per_segment, ws2812_rgb_to_u32pixel(0, 0, 0));
+
     ws2812_init(config.led_pin, m_config.is_rgbw);
 }
 

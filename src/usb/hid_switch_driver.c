@@ -111,8 +111,6 @@ uint16_t hid_switch_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_typ
                                   uint16_t reqlen) {
     (void)itf;
     (void)report_id;
-    (void)report_type;
-    // (void)buffer;
     (void)reqlen;
 
     if (report_type == HID_REPORT_TYPE_INPUT) {

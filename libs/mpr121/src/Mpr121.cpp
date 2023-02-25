@@ -4,43 +4,46 @@
 
 Mpr121::Mpr121(uint8_t address, i2c_inst *i2c, uint8_t touch_threshold, uint8_t release_threshold, bool autoconfig)
     : m_i2c(i2c), m_address(address) {
-    // Soft reset
-    writeRegister(Register::SOFTRESET, 0x63);
+
+    writeRegister(Register::SOFTRESET, 0x63); // Magic byte 0x63 triggers soft reset
     sleep_ms(1);
 
-    writeRegister(Register::ECR, 0x00);
+    writeRegister(Register::ECR, 0x00); // Set stop mode
 
     setThresholds(touch_threshold, release_threshold);
 
-    writeRegister(Register::MHDR, 0x01);
-    writeRegister(Register::NHDR, 0x01);
-    writeRegister(Register::NCLR, 0x0E);
-    writeRegister(Register::FDLR, 0x00);
+    // Base Line Filtering Control Rising
+    writeRegister(Register::MHDR, 0x01); // Maximum Half Delta
+    writeRegister(Register::NHDR, 0x01); // Noise Half Delta
+    writeRegister(Register::NCLR, 0x0E); // Noise Count Limit
+    writeRegister(Register::FDLR, 0x00); // Filter Delay Count Limit
 
-    writeRegister(Register::MHDF, 0x01);
-    writeRegister(Register::NHDF, 0x05);
-    writeRegister(Register::NCLF, 0x01);
-    writeRegister(Register::FDLF, 0x40); // <-
+    // Base Line Filtering Control Falling
+    writeRegister(Register::MHDF, 0x01); // Maximum Half Delta
+    writeRegister(Register::NHDF, 0x05); // Noise Half Delta
+    writeRegister(Register::NCLF, 0x01); // Noise Count Limit
+    writeRegister(Register::FDLF, 0x40); // Filter Delay Count Limit
 
-    writeRegister(Register::NHDT, 0x00);
-    writeRegister(Register::NCLT, 0x00);
-    writeRegister(Register::FDLT, 0x00);
+    // Base Line Filtering Control Touched
+    writeRegister(Register::NHDT, 0x00); // Noise Half Delta
+    writeRegister(Register::NCLT, 0x00); // Noise Count Limit
+    writeRegister(Register::FDLT, 0x00); // Filter Delay Count Limit
 
-    writeRegister(Register::DEBOUNCE, 0);
-    writeRegister(Register::CONFIG1, 0x10); // default, 16uA charge current
-    writeRegister(Register::CONFIG2, 0x20); // 0.5uS encoding, 1ms period
+    writeRegister(Register::DEBOUNCE, 0);   // Debounce off
+    writeRegister(Register::CONFIG1, 0x10); // 6 samples to first level filter, 16uA electrode charge
+    writeRegister(Register::CONFIG2, 0x20); // 0.5uS charge time, 4 samples to second level filter, 1ms sample interval
 
     if (autoconfig) {
-        writeRegister(Register::AUTOCONFIG0, 0x0B);
+        writeRegister(Register::AUTOCONFIG0, 0x0B); // Enable Auto-(Re)Config, baseline value to 5MSBs
 
-        // correct values for Vdd = 3.3V
+        // Auto-config configuration for Vdd = 3.3V
         writeRegister(Register::UPLIMIT, 200);     // ((Vdd - 0.7)/Vdd) * 256
         writeRegister(Register::TARGETLIMIT, 180); // UPLIMIT * 0.9
         writeRegister(Register::LOWLIMIT, 130);    // UPLIMIT * 0.65
     }
 
-    // enable all electrodes and start MPR121
-    writeRegister(Register::ECR, 0b10001111);
+    // enable all electrodes and set run Mode
+    writeRegister(Register::ECR, 0x8F);
 }
 
 uint16_t Mpr121::getTouched() {

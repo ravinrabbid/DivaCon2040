@@ -182,6 +182,16 @@ static std::string modeToString(usb_mode_t mode) {
 }
 
 static uint16_t calculateBpm(const Utils::InputState::Buttons &buttons) {
+    // Somewhat ugly gimmick to calculate the how often the face buttons
+    // are pressed per minute.
+    //
+    // It records the average time between the last 'window_size' button
+    // presses for calculation. To avoid spikes caused by simultaneous
+    // button presses, all presses within 'double_hit_window' are counted
+    // as a single press.
+    //
+    // Counter resets after 'reset_after'.
+
     static const size_t window_size = 20;
     static const uint32_t double_hit_window = 50;
     static const uint32_t reset_after = 2000;
@@ -217,20 +227,20 @@ static uint16_t calculateBpm(const Utils::InputState::Buttons &buttons) {
     static StatBuffer stat_buffer(window_size);
 
     uint32_t now = to_ms_since_boot(get_absolute_time());
-    uint32_t intervall = now - prev_press;
+    uint32_t interval = now - prev_press;
 
-    if (intervall > reset_after) {
+    if (interval > reset_after) {
         stat_buffer.clear();
         current_bpm = 0;
         prev_press = 0;
     }
 
-    if ((intervall > double_hit_window) &&
+    if ((interval > double_hit_window) &&
         ((buttons.north && !prev_buttons.north) || (buttons.east && !prev_buttons.east) ||
          (buttons.south && !prev_buttons.south) || (buttons.west && !prev_buttons.west))) {
 
         if (prev_press != 0) {
-            stat_buffer.insert(intervall);
+            stat_buffer.insert(interval);
             current_bpm = 60000 / stat_buffer.avg();
         }
 

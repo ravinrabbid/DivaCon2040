@@ -22,6 +22,8 @@ TouchSlider::TouchSlider(const Config &config) : m_config(config), m_touched(0) 
 void TouchSlider::setMode(Config::Mode mode) { m_config.mode = mode; };
 
 void TouchSlider::updateInputStateArcade(Utils::InputState &input_state) {
+    // The 32bit state vector is mapped into the 4 8bit axes of the analog sticks, XORed
+    // with the stick center postion to ensure no stick movement when the slider is not touched.
     input_state.sticks.right.y = (uint8_t)((m_touched & 0xFF000000) >> 24) ^ Utils::InputState::AnalogStick::center;
     input_state.sticks.right.x = (uint8_t)((m_touched & 0x00FF0000) >> 16) ^ Utils::InputState::AnalogStick::center;
     input_state.sticks.left.y = (uint8_t)((m_touched & 0x0000FF00) >> 8) ^ Utils::InputState::AnalogStick::center;
@@ -43,12 +45,14 @@ void TouchSlider::updateInputStateStick(Utils::InputState &input_state) {
             uint8_t left_limit = 0;
             uint8_t right_limit = UINT8_MAX;
 
+            // Find leftmost touch
             for (uint8_t i = 0; i < 16; ++i) {
                 if ((0x0001 << (15 - i)) & touched) {
                     left_limit = (15 - i);
                     break;
                 }
             }
+            // Find rightmost touch
             for (uint8_t i = 0; i < 16; ++i) {
                 if ((0x0001 << i) & touched) {
                     right_limit = i;
@@ -56,22 +60,23 @@ void TouchSlider::updateInputStateStick(Utils::InputState &input_state) {
                 }
             }
 
+            // Either of the extreme positions moved left
             if (((left_limit > previous_state.left_limit) && (right_limit >= previous_state.right_limit)) ||
                 ((left_limit >= previous_state.left_limit) && (right_limit > previous_state.right_limit))) {
-                // left
                 target = 0;
+                // Either of the extreme positions moved right
             } else if (((left_limit < previous_state.left_limit) && (right_limit <= previous_state.right_limit)) ||
                        ((left_limit <= previous_state.left_limit) && (right_limit < previous_state.right_limit))) {
-                // right
                 target = UINT8_MAX;
+                // No movement, but still touched
             } else {
-                // no change
                 target = previous_state.x_axis;
             }
 
             previous_state.left_limit = left_limit;
             previous_state.right_limit = right_limit;
         } else {
+            // No touch, reset
             previous_state.left_limit = 0;
             previous_state.right_limit = UINT8_MAX;
             target = Utils::InputState::AnalogStick::center;
@@ -79,10 +84,10 @@ void TouchSlider::updateInputStateStick(Utils::InputState &input_state) {
         previous_state.x_axis = target;
     };
 
-    uint16_t left_touched = m_touched >> 16;
-    uint16_t right_touched = m_touched & 0x0000FFFF;
-    handleSide(left_touched, previous_left, input_state.sticks.left.x);
-    handleSide(right_touched, previous_right, input_state.sticks.right.x);
+    // Interpret slider as two distinctive zones, controlling left and right
+    // stick x-axis respectively
+    handleSide(m_touched >> 16, previous_left, input_state.sticks.left.x);
+    handleSide(m_touched & 0x0000FFFF, previous_right, input_state.sticks.right.x);
 
     input_state.sticks.left.y = Utils::InputState::AnalogStick::center;
     input_state.sticks.right.y = Utils::InputState::AnalogStick::center;
@@ -117,6 +122,15 @@ void TouchSlider::read() {
         }
         return result;
     };
+
+    // Electrodes are mapped according to below table.
+    // If you had more success hooking up your slider,
+    // change this accordingly.
+    //
+    //         | m_mpr121[0] | m_mpr121[1] | m_mpr121[2] |
+    // --------+-------------+-------------+-------------+
+    // Pin     |    0..11    |    2..9     |    0..11    |
+    // Touched |   31..20    |   19..12    |    11..0    |
 
     uint32_t now = to_ms_since_boot(get_absolute_time());
     if ((last_read + 1) <= now) {

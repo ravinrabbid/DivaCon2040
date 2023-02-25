@@ -12,6 +12,7 @@ void Buttons::Button::setState(bool state, uint8_t debounce_delay) {
         return;
     }
 
+    // Immediately change the input state, but only allow a change every debounce_delay milliseconds.
     uint32_t now = to_ms_since_boot(get_absolute_time());
     if (last_change + debounce_delay <= now) {
         active = state;
@@ -20,6 +21,8 @@ void Buttons::Button::setState(bool state, uint8_t debounce_delay) {
 }
 
 void Buttons::socdClean(Utils::InputState &input_state) {
+
+    // Last input has priority
     if (input_state.dpad.up && input_state.dpad.down) {
         if (m_socd_state.lastVertical == Id::DOWN) {
             input_state.dpad.down = false;

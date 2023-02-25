@@ -23,9 +23,9 @@ const Peripherals::Buttons::Config buttons_config = {
         {
             // Buttons
             0, // North
-            1, // East
-            3, // South
-            2, // West
+            3, // East
+            2, // South
+            1, // West
 
             6, // L1
             7, // L2
@@ -57,14 +57,14 @@ const Peripherals::TouchSlider::Config touch_slider_config = {
 };
 
 const Peripherals::TouchSliderLeds::Config touch_slider_leds_config = {
-    28,             // LED Pin
-    false,          // Is RGBW strip
-    true,           // Reverse LED order
-    2,              // LEDs per segment
-    128,            // Maximum brightness
-    128,            // Fade speed
-    {255, 60, 255}, // Background color
-    {60, 230, 255}, // Touched color
+    28,              // LED Pin
+    false,           // Is RGBW strip
+    true,            // Reverse LED order
+    2,               // LEDs per segment
+    128,             // Brightness
+    96,              // Fade speed
+    {235, 85, 120},  // Background color
+    {140, 255, 220}, // Touched color
 };
 
 const Peripherals::Display::Config display_config = {
