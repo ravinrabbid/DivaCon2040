@@ -22,6 +22,7 @@ class TouchSliderLeds {
         bool reverse;
         uint16_t leds_per_segment;
         uint8_t brightness;
+        uint8_t fade_speed;
         Color background_color;
         Color touched_color;
     };

@@ -61,7 +61,8 @@ const Peripherals::TouchSliderLeds::Config touch_slider_leds_config = {
     false,          // Is RGBW strip
     true,           // Reverse LED order
     2,              // LEDs per segment
-    150,            // Maximum brightness
+    128,            // Maximum brightness
+    128,            // Fade speed
     {255, 60, 255}, // Background color
     {60, 230, 255}, // Touched color
 };
@@ -74,4 +75,4 @@ const Peripherals::Display::Config display_config = {
     0x3C,    // I2C Address
 };
 
-} // namespace Divacon
+} // namespace Divacon::Config::Default
