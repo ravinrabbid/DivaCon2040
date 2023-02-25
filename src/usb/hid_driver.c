@@ -158,7 +158,7 @@ uint16_t tud_hid_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
     (void)buffer;
     (void)reqlen;
 
-    // TODO set initial state?
+    // TODO compliant devices should answer this
 
     return 0;
 }
@@ -171,11 +171,11 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
     (void)buffer;
     (void)bufsize;
 
-    // tud_hid_report(report_id, buffer, bufsize);
+    // TODO can we get player leds here?
 }
 
 bool hid_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request) {
-    // Magic byte sequence to enable PS button on PS3 //TODO
+    // Magic byte sequence to enable PS button on PS3
     static const uint8_t magic_init_bytes[8] = {0x21, 0x26, 0x01, 0x07, 0x00, 0x00, 0x00, 0x00};
 
     if (stage == CONTROL_STAGE_SETUP && request->bmRequestType == 0xA1 &&

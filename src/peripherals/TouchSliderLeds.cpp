@@ -22,9 +22,11 @@ static uint32_t get_dimmed_pixel(TouchSliderLeds::Config::Color color, uint8_t d
 }
 
 void TouchSliderLeds::update() {
+    // TODO fade times depend on brightness, this should be independant
+
     static uint32_t last_frame = 0;
 
-    const static uint32_t interval = 10; // TODO shorter?
+    const static uint32_t interval = 10;
     const static uint8_t brightness_step = 8;
 
     uint32_t now = to_ms_since_boot(get_absolute_time());

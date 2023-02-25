@@ -42,6 +42,9 @@ class TouchSlider {
 
     void read();
 
+    void updateInputStateArcade(Utils::InputState &input_state);
+    void updateInputStateStick(Utils::InputState &input_state);
+
   public:
     TouchSlider(const Config &config);
 
