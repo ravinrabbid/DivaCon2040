@@ -64,7 +64,7 @@ uint8_t SettingsStore::getLedBrightness() { return m_store_cache.led_brightness;
 
 void SettingsStore::store() {
     if (m_dirty) {
-        multicore_lockout_start_timeout_us(0xfffffffffffffff); // TODO SDK Bug: change to blocking with next SDK relase
+        multicore_lockout_start_blocking();
         uint32_t interrupts = save_and_disable_interrupts();
 
         uint32_t current_page = m_flash_offset;
@@ -88,7 +88,7 @@ void SettingsStore::store() {
         m_dirty = false;
 
         restore_interrupts(interrupts);
-        multicore_lockout_end_timeout_us(0xfffffffffffffff); // TODO SDK Bug: change to blocking with next SDK relase
+        multicore_lockout_end_blocking();
     }
 
     switch (m_scheduled_reboot) {
