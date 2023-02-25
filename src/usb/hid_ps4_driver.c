@@ -334,9 +334,6 @@ bool send_hid_ps4_report(usb_report_t report) {
 uint16_t hid_ps4_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t *buffer,
                                uint16_t reqlen) {
     (void)itf;
-    // (void)report_id;
-    // (void)report_type;
-    // (void)buffer;
     (void)reqlen;
 
     static bool do_init_mac = true;
@@ -374,11 +371,44 @@ uint16_t hid_ps4_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
     return 0;
 }
 
+typedef struct __attribute((packed, aligned(1))) {
+    uint8_t content_flags; // 0x01: Rumble, 0x02: Color, 0x04: Flash
+    uint8_t unknown1[2];
+    uint8_t rumble_weak;
+    uint8_t rumble_strong;
+    uint8_t led_red;
+    uint8_t led_green;
+    uint8_t led_blue;
+    uint8_t flash_bright_time;
+    uint8_t flash_dark_time;
+    uint8_t unknown2[21];
+} hid_ps4_ouput_report_t;
+
 void hid_ps4_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t const *buffer,
                            uint16_t bufsize) {
     (void)itf;
-    (void)report_id;
-    (void)report_type;
-    (void)bufsize;
-    (void)buffer;
+
+    if (report_type == HID_REPORT_TYPE_INVALID) {
+        if (bufsize > 0) {
+            report_id = buffer[0];
+            buffer = &buffer[1];
+            bufsize--;
+        }
+    }
+
+    switch (report_id) {
+    case 0x05:
+        if (bufsize == sizeof(hid_ps4_ouput_report_t)) {
+            hid_ps4_ouput_report_t *report = (hid_ps4_ouput_report_t *)buffer;
+            if (report->content_flags & 0x02) {
+                usb_player_led_t player_led = {.type = USB_PLAYER_LED_COLOR,
+                                               .red = report->led_red,
+                                               .green = report->led_green,
+                                               .blue = report->led_blue};
+                usb_driver_get_player_led_cb()(player_led);
+            }
+        }
+        break;
+    default:
+    }
 }

@@ -36,7 +36,7 @@ class Display {
     uint32_t m_touched;
     Utils::InputState::Buttons m_buttons;
     usb_mode_t m_usb_mode;
-    uint8_t m_player;
+    uint8_t m_player_id;
     Utils::Menu::State m_menu_state;
 
     ssd1306_t m_display;
@@ -50,7 +50,7 @@ class Display {
     void setTouched(uint32_t touched);
     void setButtons(const Utils::InputState::Buttons &buttons);
     void setUsbMode(usb_mode_t mode);
-    void setPlayerId(uint8_t player);
+    void setPlayerId(uint8_t player_id);
     void setMenuState(const Utils::Menu::State &menu_state);
 
     void showIdle();

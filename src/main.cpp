@@ -25,7 +25,7 @@ queue_t menu_display_queue;
 
 enum class ControlCommand {
     SetUsbMode,
-    SetPlayerId,
+    SetPlayerLed,
     SetLedBrightness,
     EnterMenu,
     ExitMenu,
@@ -35,7 +35,7 @@ struct ControlMessage {
     ControlCommand command;
     union {
         usb_mode_t usb_mode;
-        uint8_t player_id;
+        usb_player_led_t player_led;
         uint8_t brightness;
     } data;
 };
@@ -56,8 +56,13 @@ void core1_task() {
             case ControlCommand::SetUsbMode:
                 display.setUsbMode(control_msg.data.usb_mode);
                 break;
-            case ControlCommand::SetPlayerId:
-                display.setPlayerId(control_msg.data.player_id);
+            case ControlCommand::SetPlayerLed:
+                if (control_msg.data.player_led.type == USB_PLAYER_LED_ID) {
+                    display.setPlayerId(control_msg.data.player_led.id);
+                } else if (control_msg.data.player_led.type == USB_PLAYER_LED_COLOR) {
+                    sliderled.setPlayerColor({control_msg.data.player_led.red, control_msg.data.player_led.green,
+                                              control_msg.data.player_led.blue});
+                }
                 break;
             case ControlCommand::SetLedBrightness:
                 sliderled.setBrightness(control_msg.data.brightness);
@@ -102,8 +107,8 @@ int main() {
 
     auto mode = settings_store->getUsbMode();
     usb_driver_init(mode);
-    usb_driver_set_player_led_cb([](uint8_t player_id) {
-        auto ctrl_message = ControlMessage{ControlCommand::SetPlayerId, {.player_id = player_id}};
+    usb_driver_set_player_led_cb([](usb_player_led_t player_led) {
+        auto ctrl_message = ControlMessage{ControlCommand::SetPlayerLed, {.player_led = player_led}};
         queue_add_blocking(&control_queue, &ctrl_message);
     });
 
@@ -153,7 +158,7 @@ int main() {
             ControlMessage ctrl_message{ControlCommand::EnterMenu, {}};
             queue_add_blocking(&control_queue, &ctrl_message);
         } else {
-            usb_driver_send_report(input_state.getReport(mode));
+            usb_driver_send_and_receive_report(input_state.getReport(mode));
         }
 
         usb_driver_task();

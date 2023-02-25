@@ -42,16 +42,19 @@ const uint8_t xinput_desc_cfg[USBD_DESC_LEN] = {
     TUD_XINPUT_DESCRIPTOR(USBD_ITF_XINPUT, USBD_STR_XINPUT),
 };
 
-uint8_t endpoint_in = 0;
-uint8_t endpoint_out = 0;
-uint8_t xinput_out_buffer[XINPUT_OUT_SIZE] = {};
+static uint8_t endpoint_in = 0;
+static uint8_t endpoint_out = 0;
+static uint8_t xinput_out_buffer[XINPUT_OUT_SIZE] = {};
 
-void receive_xinput_report(void) {
+bool receive_xinput_report(void) {
+    bool success = false;
+
     if (tud_ready() && (endpoint_out != 0) && (!usbd_edpt_busy(0, endpoint_out))) {
-        usbd_edpt_claim(0, endpoint_out);                                    // Take control of OUT endpoint
-        usbd_edpt_xfer(0, endpoint_out, xinput_out_buffer, XINPUT_OUT_SIZE); // Retrieve report buffer
-        usbd_edpt_release(0, endpoint_out);                                  // Release control of OUT endpoint
+        usbd_edpt_claim(0, endpoint_out);                                              // Take control of OUT endpoint
+        success = usbd_edpt_xfer(0, endpoint_out, xinput_out_buffer, XINPUT_OUT_SIZE); // Retrieve report buffer
+        usbd_edpt_release(0, endpoint_out); // Release control of OUT endpoint
     }
+    return success;
 }
 
 bool send_xinput_report(usb_report_t report) {
@@ -108,12 +111,34 @@ static bool xinput_control_xfer_callback(uint8_t rhport, uint8_t stage, tusb_con
 
 static bool xinput_xfer_callback(uint8_t rhport, uint8_t ep_addr, xfer_result_t result, uint32_t xferred_bytes) {
     (void)rhport;
-    (void)result;
     (void)xferred_bytes;
 
-    if (ep_addr == endpoint_out)
-        usbd_edpt_xfer(0, endpoint_out, xinput_out_buffer, XINPUT_OUT_SIZE);
+    if (result == XFER_RESULT_SUCCESS && ep_addr == endpoint_out) {
+        if (xinput_out_buffer[0] == 0x01) { // 0x00 is rumble, 0x01 is led
+            usb_player_led_t player_led = {.type = USB_PLAYER_LED_ID, .id = 0};
 
+            switch (xinput_out_buffer[2]) {
+            case 0x02:
+            case 0x06:
+                player_led.id = 0x01;
+                break;
+            case 0x03:
+            case 0x07:
+                player_led.id = 0x02;
+                break;
+            case 0x04:
+            case 0x08:
+                player_led.id = 0x04;
+                break;
+            case 0x05:
+            case 0x09:
+                player_led.id = 0x08;
+                break;
+            default:
+            }
+            usb_driver_get_player_led_cb()(player_led);
+        }
+    }
     return true;
 }
 

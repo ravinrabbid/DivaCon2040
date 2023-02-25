@@ -16,6 +16,8 @@ void TouchSliderLeds::setBrightness(uint8_t brightness) { m_config.brightness = 
 
 void TouchSliderLeds::setTouched(uint32_t touched) { m_touched = touched; }
 
+void TouchSliderLeds::setPlayerColor(TouchSliderLeds::Config::Color color) { m_config.background_color = color; }
+
 static uint32_t get_dimmed_pixel(TouchSliderLeds::Config::Color color, uint8_t dim) {
     float dim_factor = dim / 255.;
     return ws2812_rgb_to_gamma_corrected_u32pixel(color.r * dim_factor, color.g * dim_factor, color.b * dim_factor);

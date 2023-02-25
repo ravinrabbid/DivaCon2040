@@ -137,7 +137,7 @@ static const std::array<uint8_t, 1154> menu_screen_top = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
 Display::Display(const Config &config)
-    : m_config(config), m_state(State::Idle), m_touched(0), m_buttons({}), m_usb_mode(USB_MODE_DEBUG), m_player(39),
+    : m_config(config), m_state(State::Idle), m_touched(0), m_buttons({}), m_usb_mode(USB_MODE_DEBUG), m_player_id(0),
       m_menu_state({Utils::Menu::Page::None, 0}) {
 
     i2c_init(m_config.i2c_block, m_config.i2c_speed_hz);
@@ -154,7 +154,7 @@ Display::Display(const Config &config)
 void Display::setTouched(uint32_t touched) { m_touched = touched; }
 void Display::setButtons(const Utils::InputState::Buttons &buttons) { m_buttons = buttons; }
 void Display::setUsbMode(usb_mode_t mode) { m_usb_mode = mode; };
-void Display::setPlayerId(uint8_t player) { m_player = player; };
+void Display::setPlayerId(uint8_t player_id) { m_player_id = player_id; };
 
 void Display::setMenuState(const Utils::Menu::State &menu_state) { m_menu_state = menu_state; }
 
@@ -250,11 +250,18 @@ void Display::drawIdleScreen() {
 
     // BPM
     auto bpm_str = std::to_string(calculateBpm(m_buttons)) + " bpm";
-    ssd1306_draw_string(&m_display, (127 - (bpm_str.length() * 12)) / 2, 15, 2, bpm_str.c_str());
+    ssd1306_draw_string(&m_display, (127 - (bpm_str.length() * 12)) / 2, 20, 2, bpm_str.c_str());
 
-    // Debug info
-    std::string player_str = "Player: " + std::to_string(m_player);
-    ssd1306_draw_string(&m_display, 0, 38, 1, player_str.c_str());
+    // Player "LEDs"
+    if (m_player_id != 0) {
+        for (uint8_t i = 0; i < 4; ++i) {
+            if (m_player_id & (1 << i)) {
+                ssd1306_draw_square(&m_display, ((127) - ((4 - i) * 6)) - 1, 2, 4, 4);
+            } else {
+                ssd1306_draw_square(&m_display, (127) - ((4 - i) * 6), 3, 2, 2);
+            }
+        }
+    }
 
     // Slider state
     ssd1306_draw_line(&m_display, 0, 46, 128, 46);

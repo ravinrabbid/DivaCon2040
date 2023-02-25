@@ -136,9 +136,6 @@ static const uint8_t ps3_report_0xf5[] = {0x00, 0xf0, 0xf0, 0x02, 0x5e, 0x16, 0x
 uint16_t hid_ps3_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t *buffer,
                                uint16_t reqlen) {
     (void)itf;
-    // (void)report_id;
-    // (void)report_type;
-    // (void)buffer;
     (void)reqlen;
 
     static bool do_init_mac = true;
@@ -182,15 +179,27 @@ typedef struct __attribute((packed, aligned(1))) {
 void hid_ps3_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t const *buffer,
                            uint16_t bufsize) {
     (void)itf;
-    // (void)report_id;
-    (void)report_type;
-    // (void)bufsize;
-    // (void)buffer;
+
+    if (report_type == HID_REPORT_TYPE_INVALID) {
+        if (bufsize > 0) {
+            report_id = buffer[0];
+            buffer = &buffer[1];
+            bufsize--;
+        }
+    }
 
     switch (report_id) {
     case 0x01:
         if (bufsize == sizeof(hid_ps3_ouput_report_t)) {
-            usb_driver_get_player_led_cb()(((hid_ps3_ouput_report_t *)buffer)->leds_bitmap);
+            hid_ps3_ouput_report_t *report = (hid_ps3_ouput_report_t *)buffer;
+
+            usb_player_led_t player_led = {.type = USB_PLAYER_LED_ID, .id = 0};
+            player_led.id = 0 | ((report->leds_bitmap & 0x02) ? (1 << 0) : 0) //
+                            | ((report->leds_bitmap & 0x04) ? (1 << 1) : 0)   //
+                            | ((report->leds_bitmap & 0x08) ? (1 << 2) : 0)   //
+                            | ((report->leds_bitmap & 0x10) ? (1 << 3) : 0);
+
+            usb_driver_get_player_led_cb()(player_led);
         }
         break;
     default:

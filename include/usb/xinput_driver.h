@@ -27,7 +27,7 @@ typedef struct __attribute((packed, aligned(1))) {
     uint8_t _reserved[6];
 } xinput_report_t;
 
-void receive_xinput_report(void);
+bool receive_xinput_report(void);
 bool send_xinput_report(usb_report_t report);
 
 extern const tusb_desc_device_t xinput_desc_device;

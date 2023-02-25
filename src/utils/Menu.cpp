@@ -179,7 +179,7 @@ void Menu::performSelectionAction(Menu::Descriptor::Action action) {
         break;
     case Descriptor::Action::ChangeUsbModeXbox360:
         m_store->setUsbMode(USB_MODE_XBOX360);
-        m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::ARCADE);
+        m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::STICK);
         gotoPage(descriptor_it->second.parent);
         break;
     case Descriptor::Action::ChangeUsbModeDebug:

@@ -39,6 +39,7 @@ class TouchSliderLeds {
 
     void setBrightness(uint8_t brightness);
     void setTouched(uint32_t touched);
+    void setPlayerColor(Config::Color color);
 
     void update();
 };

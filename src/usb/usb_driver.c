@@ -13,6 +13,7 @@ static const uint8_t *usbd_desc_cfg = NULL;
 static const uint8_t *usbd_desc_hid_report = NULL;
 static const usbd_class_driver_t *usbd_app_driver = NULL;
 static bool (*usbd_send_report)(usb_report_t report) = NULL;
+static bool (*usbd_receive_report)() = NULL;
 
 static char usbd_serial_str[PICO_UNIQUE_BOARD_ID_SIZE_BYTES * 2 + 1] = {};
 
@@ -38,6 +39,7 @@ void usb_driver_init(usb_mode_t mode) {
         usbd_desc_hid_report = switch_desc_hid_report;
         usbd_app_driver = &hid_app_driver;
         usbd_send_report = send_hid_switch_report;
+        usbd_receive_report = NULL;
         break;
     case USB_MODE_SWITCH_HORIPAD:
         usbd_desc_device = &switch_horipad_desc_device;
@@ -45,6 +47,7 @@ void usb_driver_init(usb_mode_t mode) {
         usbd_desc_hid_report = switch_desc_hid_report;
         usbd_app_driver = &hid_app_driver;
         usbd_send_report = send_hid_switch_report;
+        usbd_receive_report = NULL;
         break;
     case USB_MODE_DUALSHOCK3:
         usbd_desc_device = &ds3_desc_device;
@@ -52,6 +55,7 @@ void usb_driver_init(usb_mode_t mode) {
         usbd_desc_hid_report = ps3_desc_hid_report;
         usbd_app_driver = &hid_app_driver;
         usbd_send_report = send_hid_ps3_report;
+        usbd_receive_report = NULL;
         break;
     case USB_MODE_PS4_DIVACON:
         usbd_desc_device = &ps4_divacon_desc_device;
@@ -59,6 +63,7 @@ void usb_driver_init(usb_mode_t mode) {
         usbd_desc_hid_report = ps4_desc_hid_report;
         usbd_app_driver = &hid_app_driver;
         usbd_send_report = send_hid_ps4_report;
+        usbd_receive_report = NULL;
         break;
     case USB_MODE_DUALSHOCK4:
         usbd_desc_device = &ds4_desc_device;
@@ -66,18 +71,21 @@ void usb_driver_init(usb_mode_t mode) {
         usbd_desc_hid_report = ps4_desc_hid_report;
         usbd_app_driver = &hid_app_driver;
         usbd_send_report = send_hid_ps4_report;
+        usbd_receive_report = NULL;
         break;
     case USB_MODE_XBOX360:
         usbd_desc_device = &xinput_desc_device;
         usbd_desc_cfg = xinput_desc_cfg;
         usbd_app_driver = &xinput_app_driver;
         usbd_send_report = send_xinput_report;
+        usbd_receive_report = receive_xinput_report;
         break;
     case USB_MODE_DEBUG:
         usbd_desc_device = &debug_desc_device;
         usbd_desc_cfg = debug_desc_cfg;
         usbd_app_driver = &debug_app_driver;
         usbd_send_report = send_debug_report;
+        usbd_receive_report = NULL;
         break;
     }
 
@@ -88,7 +96,7 @@ void usb_driver_task() { tud_task(); }
 
 usb_mode_t usb_driver_get_mode() { return usbd_mode; }
 
-void usb_driver_send_report(usb_report_t report) {
+void usb_driver_send_and_receive_report(usb_report_t report) {
     static const uint32_t interval_ms = 1;
     static uint32_t start_ms = 0;
 
@@ -103,6 +111,10 @@ void usb_driver_send_report(usb_report_t report) {
 
     if (usbd_send_report) {
         usbd_send_report(report);
+    }
+
+    if (usbd_receive_report) {
+        usbd_receive_report();
     }
 }
 
