@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.13)
 
-include(/usr/share/pico-sdk/pico_sdk_init.cmake)
+include(libs/pico-sdk/pico_sdk_init.cmake)
 
 project(DivaCon2040 VERSION 0.39.0)
 
-# initialize the Raspberry Pi Pico SDK
 pico_sdk_init()
 
 set(CMAKE_C_STANDARD 11)
