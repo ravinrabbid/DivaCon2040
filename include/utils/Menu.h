@@ -17,8 +17,7 @@ class Menu {
     enum class Page {
         None,
         Main,
-        UsbMode,
-        SliderMode,
+        DeviceMode,
         LedBrightness,
         Bootsel,
     };
@@ -36,18 +35,17 @@ class Menu {
         };
 
         enum class Action {
-            GotoPageUsbMode,
-            GotoPageSliderMode,
+            GotoPageDeviceMode,
             GotoPageLedBrightness,
             GotoPageBootsel,
 
-            ChangeUsbModeDInput,
-            ChangeUsbModeSwitch,
-            ChangeUsbModeXInput,
+            ChangeUsbModeSwitchDivacon,
+            ChangeUsbModeSwitchPro,
+            ChangeUsbModeDS3,
+            ChangeUsbModePS4Divacon,
+            ChangeUsbModeDS4,
+            ChangeUsbModeXbox360,
             ChangeUsbModeDebug,
-
-            ChangeSliderModeArcade,
-            ChangeSliderModeStick,
 
             SetLedBrightness,
 

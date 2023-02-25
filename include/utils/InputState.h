@@ -44,14 +44,16 @@ struct InputState {
     uint32_t touches;
 
   private:
+    hid_switch_report_t m_switch_report;
+    hid_ps3_report_t m_ps3_report;
+    hid_ps4_report_t m_ps4_report;
     xinput_report_t m_xinput_report;
-    directinput_report_t m_directinput_report;
-    switch_report_t m_switch_report;
     std::string m_debug_report;
 
-    usb_report_t getXinputReport();
-    usb_report_t getDirectInputReport();
     usb_report_t getSwitchReport();
+    usb_report_t getPS3InputReport();
+    usb_report_t getPS4InputReport();
+    usb_report_t getXinputReport();
     usb_report_t getDebugReport();
 
   public:

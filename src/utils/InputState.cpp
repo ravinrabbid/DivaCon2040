@@ -10,21 +10,24 @@ InputState::InputState()
     : dpad({false, false, false, false}),                                                                   //
       buttons({false, false, false, false, false, false, false, false, false, false, false, false, false}), //
       sticks({{AnalogStick::center, AnalogStick::center}, {AnalogStick::center, AnalogStick::center}}),     //
-      touches(0),                                                                                           //
-      m_xinput_report({0x00, sizeof(xinput_report_t), 0, 0, 0, 0, 0, 0, 0, 0, {0, 0, 0, 0, 0, 0}}),         //
-      m_directinput_report({0, 0, 0, 0, 0, 0}),                                                             //
-      m_switch_report({0, 0, 0, 0, 0, 0, 0}) {}
+      touches(0), m_switch_report({}), m_ps3_report({}), m_ps4_report({}),
+      m_xinput_report({0x00, sizeof(xinput_report_t), 0, 0, 0, 0, 0, 0, 0, 0, {}}) {}
 
 usb_report_t InputState::getReport(usb_mode_t mode) {
     switch (mode) {
-    case USB_MODE_XINPUT:
-        return getXinputReport();
-        break;
-    case USB_MODE_DIRECTINPUT:
-        return getDirectInputReport();
-        break;
-    case USB_MODE_SWITCH:
+    case USB_MODE_SWITCH_DIVACON:
+    case USB_MODE_SWITCH_PROCON:
         return getSwitchReport();
+        break;
+    case USB_MODE_DUALSHOCK3:
+        return getPS3InputReport();
+        break;
+    case USB_MODE_PS4_DIVACON:
+    case USB_MODE_DUALSHOCK4:
+        return getPS4InputReport();
+        break;
+    case USB_MODE_XBOX360:
+        return getXinputReport();
         break;
     case USB_MODE_DEBUG:
     default:
@@ -90,7 +93,7 @@ usb_report_t InputState::getXinputReport() {
     m_xinput_report.lt = (buttons.l2 ? 0xFF : 0);
     m_xinput_report.rt = (buttons.r2 ? 0xFF : 0);
 
-    // TODO we'll never hit center this way
+    // TODO we'll never hit center this way in Arcade mode
     m_xinput_report.lx = static_cast<int16_t>(((sticks.left.x << 8) | sticks.left.x) + INT16_MIN);
     m_xinput_report.ly = static_cast<int16_t>(~((sticks.left.y << 8) | sticks.left.y) + INT16_MIN);
     m_xinput_report.rx = static_cast<int16_t>(((sticks.right.x << 8) | sticks.right.x) + INT16_MIN);
@@ -138,16 +141,74 @@ static uint8_t getHidHat(const InputState::DPad dpad) {
     return 0x08;
 }
 
-usb_report_t InputState::getDirectInputReport() {
-    m_directinput_report.buttons = getHidButtons(buttons);
-    m_directinput_report.hat = getHidHat(dpad);
+usb_report_t InputState::getPS3InputReport() {
+    m_ps3_report.buttons = getHidButtons(buttons);
+    m_ps3_report.hat = getHidHat(dpad);
 
-    m_directinput_report.lx = sticks.left.x;
-    m_directinput_report.ly = sticks.left.y;
-    m_directinput_report.rx = sticks.right.x;
-    m_directinput_report.ry = sticks.right.y;
+    m_ps3_report.lx = sticks.left.x;
+    m_ps3_report.ly = sticks.left.y;
+    m_ps3_report.rx = sticks.right.x;
+    m_ps3_report.ry = sticks.right.y;
 
-    return {(uint8_t *)&m_directinput_report, sizeof(directinput_report_t)};
+    return {(uint8_t *)&m_ps3_report, sizeof(hid_ps3_report_t)};
+}
+
+usb_report_t InputState::getPS4InputReport() {
+    static uint8_t report_counter = 0;
+    static uint8_t last_timestamp = 0;
+
+    memset(&m_ps4_report, 0, sizeof(m_ps4_report));
+
+    m_ps4_report.report_id = 0x01;
+
+    m_ps4_report.lx = sticks.left.x;
+    m_ps4_report.ly = sticks.left.y;
+    m_ps4_report.rx = sticks.right.x;
+    m_ps4_report.ry = sticks.right.y;
+
+    m_ps4_report.buttons1 = getHidHat(dpad)                  //
+                            | (buttons.west ? (1 << 4) : 0)  //
+                            | (buttons.south ? (1 << 5) : 0) //
+                            | (buttons.east ? (1 << 6) : 0)  //
+                            | (buttons.north ? (1 << 7) : 0);
+    m_ps4_report.buttons2 = 0                             //
+                            | (buttons.l1 ? (1 << 0) : 0) //
+                            | (buttons.r1 ? (1 << 1) : 0) //
+                            | (buttons.l2 ? (1 << 2) : 0) //
+                            | (buttons.r2 ? (1 << 3) : 0) //
+                            // | (buttons.select ? (1 << 4) : 0) // Using Touchpad click instead
+                            | (buttons.start ? (1 << 5) : 0) //
+                            | (buttons.l3 ? (1 << 6) : 0)    //
+                            | (buttons.r3 ? (1 << 7) : 0);
+    m_ps4_report.buttons3 = (report_counter << 2)           //
+                            | (buttons.home ? (1 << 0) : 0) //
+                            | (buttons.select ? (1 << 1) : 0);
+
+    m_ps4_report.lt = (buttons.l2 ? 0xFF : 0);
+    m_ps4_report.rt = (buttons.r2 ? 0xFF : 0);
+
+    m_ps4_report.timestamp = last_timestamp += 188; // Used for gyro/accel, so we don't need to be precise here.
+
+    m_ps4_report.battery = 0 | (1 << 4) | 11;
+    // m_ps4_report.extension = 0x1B;
+
+    m_ps4_report.gyrox = 1;
+    m_ps4_report.gyroy = 1;
+    m_ps4_report.gyroz = 1;
+    m_ps4_report.accelx = 1;
+    m_ps4_report.accely = 1;
+    m_ps4_report.accelz = 1;
+
+    m_ps4_report.touch_count = 0x01;
+    m_ps4_report.touchpad1_touch = (1 << 7);
+    m_ps4_report.touchpad2_touch = (1 << 7);
+
+    report_counter++;
+    if (report_counter > (UINT8_MAX >> 2)) {
+        report_counter = 0;
+    }
+
+    return {(uint8_t *)&m_ps4_report, sizeof(hid_ps4_report_t)};
 }
 
 usb_report_t InputState::getSwitchReport() {
@@ -159,7 +220,7 @@ usb_report_t InputState::getSwitchReport() {
     m_switch_report.rx = sticks.right.x;
     m_switch_report.ry = sticks.right.y;
 
-    return {(uint8_t *)&m_switch_report, sizeof(switch_report_t)};
+    return {(uint8_t *)&m_switch_report, sizeof(hid_switch_report_t)};
 }
 
 bool InputState::checkHotkey() {

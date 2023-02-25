@@ -10,9 +10,9 @@ static uint8_t read_byte(uint32_t offset) { return *(reinterpret_cast<uint8_t *>
 
 SettingsStore::SettingsStore()
     : m_store_cache({m_magic_byte,
-                     default_usb_mode,
-                     default_touch_slider_config.mode,
-                     default_touch_slider_leds_config.brightness,
+                     Config::Default::usb_mode,
+                     Config::Default::touch_slider_config.mode,
+                     Config::Default::touch_slider_leds_config.brightness,
                      {}}),
       m_dirty(true) {
 

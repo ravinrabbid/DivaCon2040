@@ -6,11 +6,11 @@
 
 #include "hardware/i2c.h"
 
-namespace Divacon {
+namespace Divacon::Config::Default {
 
-const usb_mode_t default_usb_mode = USB_MODE_DIRECTINPUT;
+const usb_mode_t usb_mode = USB_MODE_SWITCH_DIVACON;
 
-const Divacon::Peripherals::Buttons::Config default_buttons_config = {
+const Peripherals::Buttons::Config buttons_config = {
     {
         // Pin config
         {
@@ -43,8 +43,8 @@ const Divacon::Peripherals::Buttons::Config default_buttons_config = {
     3, // Debounce delay in milliseconds
 };
 
-const Divacon::Peripherals::TouchSlider::Config default_touch_slider_config = {
-    Divacon::Peripherals::TouchSlider::Config::Mode::ARCADE, // Stick emulation mode
+const Peripherals::TouchSlider::Config touch_slider_config = {
+    Peripherals::TouchSlider::Config::Mode::ARCADE, // Stick emulation mode
 
     12, // Touch threshold
     6,  // Release threshold
@@ -56,7 +56,7 @@ const Divacon::Peripherals::TouchSlider::Config default_touch_slider_config = {
     {0x5A, 0x5D, 0x5C}, // MPR121 Addresses
 };
 
-const Divacon::Peripherals::TouchSliderLeds::Config default_touch_slider_leds_config = {
+const Peripherals::TouchSliderLeds::Config touch_slider_leds_config = {
     28,             // LED Pin
     false,          // Is RGBW strip
     true,           // Reverse LED order
@@ -66,7 +66,7 @@ const Divacon::Peripherals::TouchSliderLeds::Config default_touch_slider_leds_co
     {60, 230, 255}, // Touched color
 };
 
-const Divacon::Peripherals::Display::Config default_display_config = {
+const Peripherals::Display::Config display_config = {
     26,      // SDA Pin
     27,      // SCL Pin
     i2c1,    // I2C Block

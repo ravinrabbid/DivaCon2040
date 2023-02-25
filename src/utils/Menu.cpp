@@ -8,27 +8,22 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
     {Menu::Page::Main,                                                  //
      {Menu::Descriptor::Type::Root,                                     //
       "Settings",                                                       //
-      {{"USB Proto", Menu::Descriptor::Action::GotoPageUsbMode},        //
-       {"Sldr Mode", Menu::Descriptor::Action::GotoPageSliderMode},     //
+      {{"Device Mode", Menu::Descriptor::Action::GotoPageDeviceMode},   //
        {"Brightness", Menu::Descriptor::Action::GotoPageLedBrightness}, //
        {"BOOTSEL", Menu::Descriptor::Action::GotoPageBootsel}},         //
       Menu::Page::None}},                                               //
 
-    {Menu::Page::UsbMode,                                         //
-     {Menu::Descriptor::Type::Selection,                          //
-      "USB Mode",                                                 //
-      {{"DInput", Menu::Descriptor::Action::ChangeUsbModeDInput}, //
-       {"Switch", Menu::Descriptor::Action::ChangeUsbModeSwitch}, //
-       {"XInput", Menu::Descriptor::Action::ChangeUsbModeXInput}, //
-       {"Debug", Menu::Descriptor::Action::ChangeUsbModeDebug}},  //
-      Menu::Page::Main}},                                         //
-
-    {Menu::Page::SliderMode,                                         //
-     {Menu::Descriptor::Type::Selection,                             //
-      "Slider Mode",                                                 //
-      {{"Arcade", Menu::Descriptor::Action::ChangeSliderModeArcade}, //
-       {"Stick", Menu::Descriptor::Action::ChangeSliderModeStick}},  //
-      Menu::Page::Main}},                                            //
+    {Menu::Page::DeviceMode,                                                  //
+     {Menu::Descriptor::Type::Selection,                                      //
+      "Device Mode",                                                          //
+      {{"Switch Diva", Menu::Descriptor::Action::ChangeUsbModeSwitchDivacon}, //
+       {"Switch Pro", Menu::Descriptor::Action::ChangeUsbModeSwitchPro},      //
+       {"Dualshock 3", Menu::Descriptor::Action::ChangeUsbModeDS3},           //
+       {"PS4 Diva", Menu::Descriptor::Action::ChangeUsbModePS4Divacon},       //
+       {"Dualshock 4", Menu::Descriptor::Action::ChangeUsbModeDS4},           //
+       {"Xbox 360", Menu::Descriptor::Action::ChangeUsbModeXbox360},          //
+       {"Debug", Menu::Descriptor::Action::ChangeUsbModeDebug}},              //
+      Menu::Page::Main}},                                                     //                                     //
 
     {Menu::Page::LedBrightness,                           //
      {Menu::Descriptor::Type::Value,                      //
@@ -120,11 +115,8 @@ static InputState::Buttons checkPressed(const InputState &input_state) {
 
 uint8_t Menu::getCurrentSelection(Menu::Page page) {
     switch (page) {
-    case Page::UsbMode:
+    case Page::DeviceMode:
         return static_cast<uint8_t>(m_store->getUsbMode());
-        break;
-    case Page::SliderMode:
-        return static_cast<uint8_t>(m_store->getSliderMode());
         break;
     case Page::LedBrightness:
         return m_store->getLedBrightness();
@@ -151,11 +143,8 @@ void Menu::performSelectionAction(Menu::Descriptor::Action action) {
     }
 
     switch (action) {
-    case Descriptor::Action::GotoPageUsbMode:
-        gotoPage(Page::UsbMode);
-        break;
-    case Descriptor::Action::GotoPageSliderMode:
-        gotoPage(Page::SliderMode);
+    case Descriptor::Action::GotoPageDeviceMode:
+        gotoPage(Page::DeviceMode);
         break;
     case Descriptor::Action::GotoPageLedBrightness:
         gotoPage(Page::LedBrightness);
@@ -163,28 +152,39 @@ void Menu::performSelectionAction(Menu::Descriptor::Action action) {
     case Descriptor::Action::GotoPageBootsel:
         gotoPage(Page::Bootsel);
         break;
-    case Descriptor::Action::ChangeUsbModeDInput:
-        m_store->setUsbMode(USB_MODE_DIRECTINPUT);
+    case Descriptor::Action::ChangeUsbModeSwitchDivacon:
+        m_store->setUsbMode(USB_MODE_SWITCH_DIVACON);
+        m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::ARCADE);
         gotoPage(descriptor_it->second.parent);
         break;
-    case Descriptor::Action::ChangeUsbModeSwitch:
-        m_store->setUsbMode(USB_MODE_SWITCH);
+    case Descriptor::Action::ChangeUsbModeSwitchPro:
+        m_store->setUsbMode(USB_MODE_SWITCH_PROCON);
+        m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::STICK);
         gotoPage(descriptor_it->second.parent);
         break;
-    case Descriptor::Action::ChangeUsbModeXInput:
-        m_store->setUsbMode(USB_MODE_XINPUT);
+    case Descriptor::Action::ChangeUsbModeDS3:
+        m_store->setUsbMode(USB_MODE_DUALSHOCK3);
+        m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::STICK);
+        gotoPage(descriptor_it->second.parent);
+        break;
+    case Descriptor::Action::ChangeUsbModePS4Divacon:
+        m_store->setUsbMode(USB_MODE_PS4_DIVACON);
+        m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::ARCADE);
+        gotoPage(descriptor_it->second.parent);
+        break;
+    case Descriptor::Action::ChangeUsbModeDS4:
+        m_store->setUsbMode(USB_MODE_DUALSHOCK4);
+        m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::STICK);
+        gotoPage(descriptor_it->second.parent);
+        break;
+    case Descriptor::Action::ChangeUsbModeXbox360:
+        m_store->setUsbMode(USB_MODE_XBOX360);
+        m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::ARCADE);
         gotoPage(descriptor_it->second.parent);
         break;
     case Descriptor::Action::ChangeUsbModeDebug:
         m_store->setUsbMode(USB_MODE_DEBUG);
-        gotoPage(descriptor_it->second.parent);
-        break;
-    case Descriptor::Action::ChangeSliderModeArcade:
         m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::ARCADE);
-        gotoPage(descriptor_it->second.parent);
-        break;
-    case Descriptor::Action::ChangeSliderModeStick:
-        m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::STICK);
         gotoPage(descriptor_it->second.parent);
         break;
     case Descriptor::Action::SetLedBrightness:

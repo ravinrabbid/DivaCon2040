@@ -34,6 +34,7 @@ class Display {
 
     uint32_t m_touched;
     usb_mode_t m_usb_mode;
+    uint8_t m_player;
     Utils::Menu::State m_menu_state;
 
     ssd1306_t m_display;
@@ -46,6 +47,7 @@ class Display {
 
     void setTouched(uint32_t touched);
     void setUsbMode(usb_mode_t mode);
+    void setPlayerId(uint8_t player);
     void setMenuState(const Utils::Menu::State &menu_state);
 
     void showIdle();

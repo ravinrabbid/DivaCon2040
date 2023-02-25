@@ -25,6 +25,7 @@ queue_t menu_display_queue;
 
 enum class ControlCommand {
     SetUsbMode,
+    SetPlayerId,
     SetLedBrightness,
     EnterMenu,
     ExitMenu,
@@ -34,6 +35,7 @@ struct ControlMessage {
     ControlCommand command;
     union {
         usb_mode_t usb_mode;
+        uint8_t player_id;
         uint8_t brightness;
     } data;
 };
@@ -41,8 +43,8 @@ struct ControlMessage {
 void core1_task() {
     multicore_lockout_victim_init();
 
-    Peripherals::Display display(default_display_config);
-    Peripherals::TouchSliderLeds sliderled(default_touch_slider_leds_config);
+    Peripherals::Display display(Config::Default::display_config);
+    Peripherals::TouchSliderLeds sliderled(Config::Default::touch_slider_leds_config);
 
     ControlMessage control_msg;
     Utils::InputState::InputMessage input_msg;
@@ -53,6 +55,9 @@ void core1_task() {
             switch (control_msg.command) {
             case ControlCommand::SetUsbMode:
                 display.setUsbMode(control_msg.data.usb_mode);
+                break;
+            case ControlCommand::SetPlayerId:
+                display.setPlayerId(control_msg.data.player_id);
                 break;
             case ControlCommand::SetLedBrightness:
                 sliderled.setBrightness(control_msg.data.brightness);
@@ -91,11 +96,16 @@ int main() {
     auto settings_store = std::make_shared<Utils::SettingsStore>();
     Utils::Menu menu(settings_store);
 
-    Peripherals::TouchSlider touch_slider(default_touch_slider_config);
-    Peripherals::Buttons buttons(default_buttons_config);
+    Peripherals::TouchSlider touch_slider(Config::Default::touch_slider_config);
+    Peripherals::Buttons buttons(Config::Default::buttons_config);
 
     auto mode = settings_store->getUsbMode();
     usb_driver_init(mode);
+    usb_driver_set_player_led_cb([](uint8_t player_id) {
+        auto ctrl_message = ControlMessage{ControlCommand::SetPlayerId, {.player_id = player_id}};
+        queue_add_blocking(&control_queue, &ctrl_message);
+    });
+
     stdio_init_all();
 
     auto readSettings = [&]() {

@@ -134,7 +134,7 @@ static const std::array<uint8_t, 1154> menu_screen_top = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
 Display::Display(const Config &config)
-    : m_config(config), m_state(State::Idle), m_touched(0), m_usb_mode(USB_MODE_DEBUG),
+    : m_config(config), m_state(State::Idle), m_touched(0), m_usb_mode(USB_MODE_DEBUG), m_player(39),
       m_menu_state({Utils::Menu::Page::None, 0}) {
 
     i2c_init(m_config.i2c_block, m_config.i2c_speed_hz);
@@ -150,6 +150,7 @@ Display::Display(const Config &config)
 
 void Display::setTouched(uint32_t touched) { m_touched = touched; }
 void Display::setUsbMode(usb_mode_t mode) { m_usb_mode = mode; };
+void Display::setPlayerId(uint8_t player) { m_player = player; };
 
 void Display::setMenuState(const Utils::Menu::State &menu_state) { m_menu_state = menu_state; }
 
@@ -158,14 +159,20 @@ void Display::showMenu() { m_state = State::Menu; }
 
 static std::string modeToString(usb_mode_t mode) {
     switch (mode) {
+    case USB_MODE_SWITCH_DIVACON:
+        return "Switch Diva";
+    case USB_MODE_SWITCH_PROCON:
+        return "Switch Pro";
+    case USB_MODE_DUALSHOCK3:
+        return "Dualshock 3";
+    case USB_MODE_PS4_DIVACON:
+        return "PS4 Diva";
+    case USB_MODE_DUALSHOCK4:
+        return "Dualshock 4";
+    case USB_MODE_XBOX360:
+        return "Xbox 360";
     case USB_MODE_DEBUG:
         return "Debug";
-    case USB_MODE_XINPUT:
-        return "XInput";
-    case USB_MODE_DIRECTINPUT:
-        return "DInput";
-    case USB_MODE_SWITCH:
-        return "Switch";
     }
     return "?";
 }
@@ -177,6 +184,9 @@ void Display::drawIdleScreen() {
 
     // Debug info
     ssd1306_draw_string(&m_display, 0, 14, 1, modeToString(m_usb_mode).c_str());
+
+    std::string player_str = "Player: " + std::to_string(m_player);
+    ssd1306_draw_string(&m_display, 0, 24, 1, player_str.c_str());
 
     // Slider state
     ssd1306_draw_line(&m_display, 0, 46, 128, 46);
