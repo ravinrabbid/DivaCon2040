@@ -171,18 +171,22 @@ static std::string modeToString(usb_mode_t mode) {
 }
 
 void Display::drawIdleScreen() {
+    // Header
     ssd1306_draw_string(&m_display, 0, 0, 1, "DivaCon2040 v0.3.9");
     ssd1306_draw_line(&m_display, 0, 10, 128, 10);
 
+    // Debug info
     ssd1306_draw_string(&m_display, 0, 14, 1, modeToString(m_usb_mode).c_str());
 
+    // Slider state
     ssd1306_draw_line(&m_display, 0, 46, 128, 46);
     for (int i = 0; i < 32; ++i) {
         if (m_touched & (1 << i)) {
-            ssd1306_draw_square(&m_display, i * 4, 46, 3, 8);
+            ssd1306_draw_square(&m_display, (127 - 3) - (i * 4), 46, 3, 8);
         }
     }
 
+    // Menu hint
     ssd1306_draw_line(&m_display, 0, 54, 128, 54);
     ssd1306_draw_string(&m_display, 0, 56, 1, "Hold STA+SEL for Menu");
 }
@@ -214,16 +218,16 @@ void Display::drawMenuScreen() {
         selection = std::to_string(m_menu_state.selection);
         break;
     }
-    ssd1306_draw_string(&m_display, (128 - (selection.length() * 12)) / 2, 15, 2, selection.c_str());
+    ssd1306_draw_string(&m_display, (127 - (selection.length() * 12)) / 2, 15, 2, selection.c_str());
 
     // Breadcrumbs
     if (descriptor_it->second.type != Utils::Menu::Descriptor::Type::Value) {
         auto selection_count = descriptor_it->second.items.size();
         for (uint8_t i = 0; i < selection_count; ++i) {
             if (i == m_menu_state.selection) {
-                ssd1306_draw_square(&m_display, ((128 - 6) - ((selection_count - i) * 6)) - 1, 2, 4, 4);
+                ssd1306_draw_square(&m_display, ((127 - 6) - ((selection_count - i) * 6)) - 1, 2, 4, 4);
             } else {
-                ssd1306_draw_square(&m_display, (128 - 6) - ((selection_count - i) * 6), 3, 2, 2);
+                ssd1306_draw_square(&m_display, (127 - 6) - ((selection_count - i) * 6), 3, 2, 2);
             }
         }
     }
