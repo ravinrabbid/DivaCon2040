@@ -1,6 +1,7 @@
 #include "usb/usb_driver.h"
 #include "usb/debug_driver.h"
 #include "usb/hid_driver.h"
+#include "usb/midi_driver.h"
 #include "usb/xinput_driver.h"
 
 #include "bsp/board.h"
@@ -25,6 +26,7 @@ char *const usbd_desc_str[] = {
     [USBD_STR_PS3] = USBD_PS3_NAME,               //
     [USBD_STR_PS4] = USBD_PS4_NAME,               //
     [USBD_STR_XINPUT] = USBD_XINPUT_NAME,         //
+    [USBD_STR_MIDI] = USBD_MIDI_NAME,             //
     [USBD_STR_CDC] = USBD_DEBUG_CDC_NAME,         //
     [USBD_STR_RPI_RESET] = USBD_DEBUG_RESET_NAME, //
 };
@@ -79,6 +81,13 @@ void usb_driver_init(usb_mode_t mode) {
         usbd_app_driver = &xinput_app_driver;
         usbd_send_report = send_xinput_report;
         usbd_receive_report = receive_xinput_report;
+        break;
+    case USB_MODE_MIDI:
+        usbd_desc_device = &midi_desc_device;
+        usbd_desc_cfg = midi_desc_cfg;
+        usbd_app_driver = &midi_app_driver;
+        usbd_send_report = send_midi_report;
+        usbd_receive_report = receive_midi_report;
         break;
     case USB_MODE_DEBUG:
         usbd_desc_device = &debug_desc_device;

@@ -49,6 +49,7 @@ class Menu {
             ChangeUsbModePS4Divacon,
             ChangeUsbModeDS4,
             ChangeUsbModeXbox360,
+            ChangeUsbModeMidi,
             ChangeUsbModeDebug,
 
             SetLedBrightness,

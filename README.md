@@ -15,6 +15,7 @@ It is pretty much tailored to this specific use case, if you are looking for som
   - Dualshock 3
   - Switch Pro Controller
   - XInput
+  - MIDI
   - Debug mode (will output current state via USB serial)
 - Arcade Style Touch Slider for arcade controller emulation modes
 - Slider to analog stick mapping for standard controllers

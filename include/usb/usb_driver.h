@@ -21,6 +21,7 @@ typedef enum {
     USB_MODE_PS4_DIVACON,
     USB_MODE_DUALSHOCK4,
     USB_MODE_XBOX360,
+    USB_MODE_MIDI,
     USB_MODE_DEBUG,
 } usb_mode_t;
 
@@ -34,6 +35,7 @@ enum {
     USBD_STR_PS3,
     USBD_STR_PS4,
     USBD_STR_XINPUT,
+    USBD_STR_MIDI,
     USBD_STR_RPI_RESET,
 };
 

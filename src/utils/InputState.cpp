@@ -11,28 +11,26 @@ InputState::InputState()
       buttons({false, false, false, false, false, false, false, false, false, false, false, false, false}), //
       sticks({{AnalogStick::center, AnalogStick::center}, {AnalogStick::center, AnalogStick::center}}),     //
       touches(0), m_switch_report({}), m_ps3_report({}), m_ps4_report({}),
-      m_xinput_report({0x00, sizeof(xinput_report_t), 0, 0, 0, 0, 0, 0, 0, 0, {}}) {}
+      m_xinput_report({0x00, sizeof(xinput_report_t), 0, 0, 0, 0, 0, 0, 0, 0, {}}),
+      m_midi_report({false, false, false, false, 60, 0, 64, false, false}) {}
 
 usb_report_t InputState::getReport(usb_mode_t mode) {
     switch (mode) {
     case USB_MODE_SWITCH_DIVACON:
     case USB_MODE_SWITCH_HORIPAD:
         return getSwitchReport();
-        break;
     case USB_MODE_DUALSHOCK3:
         return getPS3InputReport();
-        break;
     case USB_MODE_PS4_DIVACON:
     case USB_MODE_DUALSHOCK4:
         return getPS4InputReport();
-        break;
     case USB_MODE_XBOX360:
         return getXinputReport();
-        break;
+    case USB_MODE_MIDI:
+        return getMidiReport();
     case USB_MODE_DEBUG:
     default:
         return getDebugReport();
-        break;
     }
 }
 
@@ -237,6 +235,40 @@ usb_report_t InputState::getXinputReport() {
     m_xinput_report.ry = static_cast<int16_t>(~((sticks.right.y << 8) | sticks.right.y) + INT16_MIN);
 
     return {(uint8_t *)&m_xinput_report, sizeof(xinput_report_t)};
+}
+
+usb_report_t InputState::getMidiReport() {
+    static bool last_shift_down = false;
+    static bool last_shift_up = false;
+
+    m_midi_report.kick = buttons.north;
+    m_midi_report.snare = buttons.west;
+    m_midi_report.hihat_closed = buttons.south;
+    m_midi_report.hihat_open = buttons.east;
+
+    if (!last_shift_up && dpad.right) {
+        m_midi_report.shift = std::min(m_midi_report.shift + 12, 96);
+    }
+    if (!last_shift_down && dpad.left) {
+        m_midi_report.shift = std::max(m_midi_report.shift - 12, 0);
+    }
+    last_shift_up = dpad.right;
+    last_shift_down = dpad.left;
+
+    if (dpad.up) {
+        m_midi_report.pitch_bend = 80;
+    } else if (dpad.down) {
+        m_midi_report.pitch_bend = 48;
+    } else {
+        m_midi_report.pitch_bend = 64;
+    }
+
+    m_midi_report.touched = touches;
+
+    m_midi_report.damper = buttons.l1 || buttons.r1;
+    m_midi_report.portamento = buttons.l2 || buttons.r2;
+
+    return {(uint8_t *)&m_midi_report, sizeof(midi_report_t)};
 }
 
 usb_report_t InputState::getDebugReport() {
