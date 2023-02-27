@@ -16,7 +16,8 @@ static const usbd_class_driver_t *usbd_app_driver = NULL;
 static bool (*usbd_send_report)(usb_report_t report) = NULL;
 static bool (*usbd_receive_report)() = NULL;
 
-static char usbd_serial_str[PICO_UNIQUE_BOARD_ID_SIZE_BYTES * 2 + 1] = {};
+#define USBD_SERIAL_STR_SIZE (PICO_UNIQUE_BOARD_ID_SIZE_BYTES * 2 + 1 + 3)
+static char usbd_serial_str[USBD_SERIAL_STR_SIZE] = {};
 
 char *const usbd_desc_str[] = {
     [USBD_STR_MANUFACTURER] = USBD_MANUFACTURER,  //
@@ -144,6 +145,10 @@ const uint16_t *tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
     // Assign the SN using the unique flash id
     if (!usbd_serial_str[0]) {
         pico_get_unique_board_id_string(usbd_serial_str, sizeof(usbd_serial_str));
+        usbd_serial_str[USBD_SERIAL_STR_SIZE - 4] = '-';
+        usbd_serial_str[USBD_SERIAL_STR_SIZE - 3] = '0' + ((usbd_mode / 10) % 10);
+        usbd_serial_str[USBD_SERIAL_STR_SIZE - 2] = '0' + (usbd_mode % 10);
+        usbd_serial_str[USBD_SERIAL_STR_SIZE - 1] = '\0';
     }
 
     uint8_t len;
