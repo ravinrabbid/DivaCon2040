@@ -56,6 +56,7 @@ class SettingsStore {
     void scheduleReboot(bool bootsel = false);
 
     void store();
+    void reset();
 };
 } // namespace Divacon::Utils
 

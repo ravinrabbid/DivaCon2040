@@ -19,6 +19,7 @@ class Menu {
         Main,
         DeviceMode,
         LedBrightness,
+        Reset,
         Bootsel,
         BootselMsg,
     };
@@ -38,9 +39,11 @@ class Menu {
 
         enum class Action {
             None,
+            GotoParent,
 
             GotoPageDeviceMode,
             GotoPageLedBrightness,
+            GotoPageReset,
             GotoPageBootsel,
 
             ChangeUsbModeSwitchDivacon,
@@ -54,6 +57,7 @@ class Menu {
 
             SetLedBrightness,
 
+            DoReset,
             DoRebootToBootsel,
         };
 

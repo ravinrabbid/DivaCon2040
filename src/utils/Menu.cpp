@@ -8,6 +8,7 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
       "Settings",                                                       //
       {{"Mode", Menu::Descriptor::Action::GotoPageDeviceMode},          //
        {"Brightness", Menu::Descriptor::Action::GotoPageLedBrightness}, //
+       {"Reset", Menu::Descriptor::Action::GotoPageReset},              //
        {"BOOTSEL", Menu::Descriptor::Action::GotoPageBootsel}},         //
       Menu::Page::None}},                                               //
 
@@ -29,6 +30,13 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
       "LED Brightness",                                   //
       {{"", Menu::Descriptor::Action::SetLedBrightness}}, //
       Menu::Page::Main}},                                 //
+
+    {Menu::Page::Reset,                              //
+     {Menu::Descriptor::Type::Selection,             //
+      "Reset all Settings?",                         //
+      {{"No", Menu::Descriptor::Action::GotoParent}, //
+       {"Yes", Menu::Descriptor::Action::DoReset}},  //
+      Menu::Page::Main}},                            //
 
     {Menu::Page::Bootsel,                                         //
      {Menu::Descriptor::Type::Selection,                          //
@@ -127,6 +135,7 @@ uint8_t Menu::getCurrentSelection(Menu::Page page) {
         return m_store->getLedBrightness();
         break;
     case Page::Main:
+    case Page::Reset:
     case Page::Bootsel:
     case Page::BootselMsg:
     case Page::None:
@@ -154,6 +163,9 @@ void Menu::performSelectionAction(Menu::Descriptor::Action action) {
         break;
     case Descriptor::Action::GotoPageLedBrightness:
         gotoPage(Page::LedBrightness);
+        break;
+    case Descriptor::Action::GotoPageReset:
+        gotoPage(Page::Reset);
         break;
     case Descriptor::Action::GotoPageBootsel:
         gotoPage(Page::Bootsel);
@@ -201,11 +213,17 @@ void Menu::performSelectionAction(Menu::Descriptor::Action action) {
     case Descriptor::Action::SetLedBrightness:
         gotoPage(descriptor_it->second.parent);
         break;
+    case Descriptor::Action::DoReset:
+        m_store->reset();
+        break;
     case Descriptor::Action::DoRebootToBootsel:
         m_store->scheduleReboot(true);
         gotoPage(Page::BootselMsg);
         break;
-    default:
+    case Descriptor::Action::GotoParent:
+        gotoPage(descriptor_it->second.parent);
+        break;
+    case Descriptor::Action::None:
         break;
     }
 }

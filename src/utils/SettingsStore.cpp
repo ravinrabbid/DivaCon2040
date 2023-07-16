@@ -98,11 +98,27 @@ void SettingsStore::store() {
             ;
         break;
     case RebootType::Bootsel:
+        sleep_ms(100);
         reset_usb_boot(0, 0);
         break;
     case RebootType::None:
         break;
     }
+}
+
+void SettingsStore::reset() {
+    multicore_lockout_start_blocking();
+    uint32_t interrupts = save_and_disable_interrupts();
+
+    flash_range_erase(m_flash_offset, m_flash_size);
+    
+    restore_interrupts(interrupts);
+    multicore_lockout_end_blocking();
+
+    m_dirty = false;
+
+    scheduleReboot();
+    store();
 }
 
 void SettingsStore::scheduleReboot(bool bootsel) {
