@@ -307,6 +307,11 @@ const uint8_t ps4_desc_hid_report[] = {
 // MAC Address
 static uint8_t ps4_0x81_report[] = {0x39, 0x39, 0x39, 0x68, 0x22, 0x00};
 
+// Paring data
+// (Device MAC + {x1C, 0x08, 0x25} + Paired Host MAC)
+static uint8_t ps4_0x12_report[] = {0x39, 0x39, 0x39, 0x68, 0x22, 0x00, 0x1C, 0x08,
+                                    0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
 // Version Info
 static const uint8_t ps4_0xa3_report[] = {0x4a, 0x75, 0x6c, 0x20, 0x31, 0x31, 0x20, 0x32, 0x30, 0x31, 0x36, 0x00,
                                           0x00, 0x00, 0x00, 0x00, 0x31, 0x32, 0x3a, 0x33, 0x33, 0x3a, 0x33, 0x38,
@@ -338,26 +343,30 @@ uint16_t hid_ps4_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
 
     static bool do_init_mac = true;
 
+    if (do_init_mac) {
+        pico_unique_board_id_t uid;
+        pico_get_unique_board_id(&uid);
+
+        // Genrate manufacturer specific using pico board id
+        for (uint8_t i = 0; i < PICO_UNIQUE_BOARD_ID_SIZE_BYTES; ++i) {
+            ps4_0x81_report[(i % 3)] ^= uid.id[i];
+            ps4_0x12_report[(i % 3)] ^= uid.id[i];
+        }
+
+        do_init_mac = false;
+    }
+
     if (report_type == HID_REPORT_TYPE_INPUT) {
         memcpy(&buffer, &last_report, sizeof(hid_ps4_report_t));
         return sizeof(hid_ps4_report_t);
     } else if (report_type == HID_REPORT_TYPE_FEATURE) {
         switch (report_id) {
         case 0x81:
-            if (do_init_mac) {
-                pico_unique_board_id_t uid;
-                pico_get_unique_board_id(&uid);
-
-                // Genrate manufacturer specific using pico board id
-                for (uint8_t i = 0; i < PICO_UNIQUE_BOARD_ID_SIZE_BYTES; ++i) {
-                    ps4_0x81_report[(i % 3)] ^= uid.id[i];
-                }
-
-                do_init_mac = false;
-            }
-
             memcpy(buffer, ps4_0x81_report, sizeof(ps4_0x81_report));
             return sizeof(ps4_0x81_report);
+        case 0x12:
+            memcpy(buffer, ps4_0x12_report, sizeof(ps4_0x12_report));
+            return sizeof(ps4_0x12_report);
         case 0xa3:
             memcpy(buffer, ps4_0xa3_report, sizeof(ps4_0xa3_report));
             return sizeof(ps4_0xa3_report);
