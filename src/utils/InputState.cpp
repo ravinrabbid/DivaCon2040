@@ -137,7 +137,6 @@ usb_report_t InputState::getPS3InputReport() {
 
 usb_report_t InputState::getPS4InputReport() {
     static uint8_t report_counter = 0;
-    static uint8_t last_timestamp = 0;
 
     memset(&m_ps4_report, 0, sizeof(m_ps4_report));
 
@@ -169,35 +168,13 @@ usb_report_t InputState::getPS4InputReport() {
     m_ps4_report.lt = (buttons.l2 ? 0xFF : 0);
     m_ps4_report.rt = (buttons.r2 ? 0xFF : 0);
 
-    // Used for gyro/accel, so we don't need to be precise here.
-    m_ps4_report.timestamp = last_timestamp;
-
-    m_ps4_report.battery = 0 | (1 << 4) | 11;
-
-    m_ps4_report.gyrox = 0;
-    m_ps4_report.gyroy = 0;
-    m_ps4_report.gyroz = 0;
-    m_ps4_report.accelx = 0;
-    m_ps4_report.accely = 0;
-    m_ps4_report.accelz = 0;
-
-    m_ps4_report.extension = 0x01;
-
-    m_ps4_report.touchpad_event_active = 0;
-    m_ps4_report.touchpad_counter = 0;
-    m_ps4_report.touchpad1_touches = (1 << 7);
-    m_ps4_report.touchpad2_touches = (1 << 7);
-
-    m_ps4_report.unknown3[1] = 0x80;
-    m_ps4_report.unknown3[5] = 0x80;
-    m_ps4_report.unknown3[10] = 0x80;
-    m_ps4_report.unknown3[14] = 0x80;
-    m_ps4_report.unknown3[19] = 0x80;
+    m_ps4_report.battery = 0 | (1 << 4) | 11; // Cable connected and fully charged
+    m_ps4_report.peripheral = 0x01;
+    m_ps4_report.touch_report_count = 0;
 
     // This method actually gets called more often than the report is sent,
     // so counters are not consecutive ... let's see if this turns out to
     // be a problem.
-    last_timestamp += 188;
     report_counter++;
     if (report_counter > (UINT8_MAX >> 2)) {
         report_counter = 0;

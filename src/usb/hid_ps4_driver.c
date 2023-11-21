@@ -48,7 +48,7 @@ enum {
 #define USBD_PS4_DESC_LEN (TUD_CONFIG_DESC_LEN + TUD_HID_INOUT_DESC_LEN)
 const uint8_t ps4_desc_cfg[] = {
     TUD_CONFIG_DESCRIPTOR(1, USBD_ITF_MAX, USBD_STR_LANGUAGE, USBD_PS4_DESC_LEN, 0, USBD_MAX_POWER_MAX),
-    TUD_HID_INOUT_DESCRIPTOR(USBD_ITF_HID, USBD_STR_PS4, 0, 507, 0x03, 0x84, CFG_TUD_HID_EP_BUFSIZE, 1),
+    TUD_HID_INOUT_DESCRIPTOR(USBD_ITF_HID, USBD_STR_PS4, 0, 483, 0x03, 0x84, CFG_TUD_HID_EP_BUFSIZE, 1),
 };
 
 const uint8_t ps4_desc_hid_report[] = {
@@ -288,18 +288,6 @@ const uint8_t ps4_desc_hid_report[] = {
     0x85, 0xB2,       //   Report ID (-78)
     0x09, 0x56,       //   Usage (0x56)
     0x95, 0x02,       //   Report Count (2)
-    0xB1, 0x02,       //   Feature (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
-    0x85, 0xE0,       //   Report ID (-32)
-    0x09, 0x57,       //   Usage (0x57)
-    0x95, 0x02,       //   Report Count (2)
-    0xB1, 0x02,       //   Feature (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
-    0x85, 0xB3,       //   Report ID (-77)
-    0x09, 0x55,       //   Usage (0x55)
-    0x95, 0x3F,       //   Report Count (63)
-    0xB1, 0x02,       //   Feature (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
-    0x85, 0xB4,       //   Report ID (-76)
-    0x09, 0x55,       //   Usage (0x55)
-    0x95, 0x3F,       //   Report Count (63)
     0xB1, 0x02,       //   Feature (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
     0xC0,             // End Collection
 };

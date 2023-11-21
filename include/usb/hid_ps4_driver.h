@@ -13,7 +13,7 @@
 extern "C" {
 #endif
 
-// https://www.psdevwiki.com/ps4/DS4-USB
+// https://github.com/torvalds/linux/blob/master/drivers/hid/hid-playstation.c
 typedef struct __attribute((packed, aligned(1))) {
     uint8_t report_id;
     uint8_t lx;
@@ -25,24 +25,23 @@ typedef struct __attribute((packed, aligned(1))) {
     uint8_t buttons3;
     uint8_t lt;
     uint8_t rt;
-    uint16_t timestamp;
-    uint8_t battery;
+    uint16_t sensor_timestamp;
+    uint8_t sensor_temperature;
     uint16_t gyrox;
     uint16_t gyroy;
     uint16_t gyroz;
     int16_t accelx;
     int16_t accely;
     int16_t accelz;
-    uint8_t unknown1[5];
-    uint8_t extension;
-    uint8_t unknown2[2];
-    uint8_t touchpad_event_active;
-    uint8_t touchpad_counter;
-    uint8_t touchpad1_touches;
-    uint8_t touchpad1_position[3];
-    uint8_t touchpad2_touches;
-    uint8_t touchpad2_position[3];
-    uint8_t unknown3[21];
+    uint8_t _reserved1[5];
+    uint8_t battery;
+    uint8_t peripheral;
+    uint8_t _reserved2;
+    uint8_t touch_report_count;
+    uint8_t touch_report1[9];
+    uint8_t touch_report2[9];
+    uint8_t touch_report3[9];
+    uint8_t _reserved3[3];
 } hid_ps4_report_t;
 
 extern const tusb_desc_device_t ps4_divacon_desc_device;
