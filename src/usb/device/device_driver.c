@@ -1,8 +1,8 @@
-#include "usb/usb_driver.h"
-#include "usb/debug_driver.h"
-#include "usb/hid_driver.h"
-#include "usb/midi_driver.h"
-#include "usb/xinput_driver.h"
+#include "usb/device/debug_driver.h"
+#include "usb/device/hid_driver.h"
+#include "usb/device/midi_driver.h"
+#include "usb/device/device_driver.h"
+#include "usb/device/xinput_driver.h"
 
 #include "bsp/board.h"
 #include "pico/unique_id.h"
@@ -32,7 +32,7 @@ char *const usbd_desc_str[] = {
     [USBD_STR_RPI_RESET] = USBD_DEBUG_RESET_NAME, //
 };
 
-void usb_driver_init(usb_mode_t mode) {
+void usb_device_driver_init(usb_mode_t mode) {
     usbd_mode = mode;
 
     switch (mode) {
@@ -99,14 +99,14 @@ void usb_driver_init(usb_mode_t mode) {
         break;
     }
 
-    tusb_init();
+    tud_init(BOARD_TUD_RHPORT);
 }
 
-void usb_driver_task() { tud_task(); }
+void usb_device_driver_task() { tud_task(); }
 
-usb_mode_t usb_driver_get_mode() { return usbd_mode; }
+usb_mode_t usb_device_driver_get_mode() { return usbd_mode; }
 
-void usb_driver_send_and_receive_report(usb_report_t report) {
+void usb_device_driver_send_and_receive_report(usb_report_t report) {
     static const uint32_t interval_ms = 1;
     static uint32_t start_ms = 0;
 
@@ -128,9 +128,9 @@ void usb_driver_send_and_receive_report(usb_report_t report) {
     }
 }
 
-void usb_driver_set_player_led_cb(usbd_player_led_cb_t cb) { usbd_player_led_cb = cb; };
+void usb_device_driver_set_player_led_cb(usbd_player_led_cb_t cb) { usbd_player_led_cb = cb; };
 
-usbd_player_led_cb_t usb_driver_get_player_led_cb() { return usbd_player_led_cb; };
+usbd_player_led_cb_t usb_device_driver_get_player_led_cb() { return usbd_player_led_cb; };
 
 const uint8_t *tud_descriptor_device_cb(void) { return (const uint8_t *)usbd_desc_device; }
 

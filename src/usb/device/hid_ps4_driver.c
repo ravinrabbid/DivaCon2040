@@ -1,5 +1,5 @@
-#include "usb/hid_ps4_driver.h"
-#include "usb/usb_driver.h"
+#include "usb/device/hid_ps4_driver.h"
+#include "usb/device/device_driver.h"
 
 #include "class/hid/hid_device.h"
 #include "pico/unique_id.h"
@@ -402,7 +402,7 @@ void hid_ps4_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
                                                .red = report->led_red,
                                                .green = report->led_green,
                                                .blue = report->led_blue};
-                usb_driver_get_player_led_cb()(player_led);
+                usb_device_driver_get_player_led_cb()(player_led);
             }
         }
         break;

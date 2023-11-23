@@ -2,7 +2,7 @@
 #include "peripherals/Display.h"
 #include "peripherals/TouchSlider.h"
 #include "peripherals/TouchSliderLeds.h"
-#include "usb/usb_driver.h"
+#include "usb/device/device_driver.h"
 #include "utils/InputState.h"
 #include "utils/Menu.h"
 #include "utils/SettingsStore.h"
@@ -105,8 +105,8 @@ int main() {
     Peripherals::Buttons buttons(Config::Default::buttons_config);
 
     auto mode = settings_store->getUsbMode();
-    usb_driver_init(mode);
-    usb_driver_set_player_led_cb([](usb_player_led_t player_led) {
+    usb_device_driver_init(mode);
+    usb_device_driver_set_player_led_cb([](usb_player_led_t player_led) {
         auto ctrl_message = ControlMessage{ControlCommand::SetPlayerLed, {.player_led = player_led}};
         queue_add_blocking(&control_queue, &ctrl_message);
     });
@@ -151,10 +151,10 @@ int main() {
             ControlMessage ctrl_message{ControlCommand::EnterMenu, {}};
             queue_add_blocking(&control_queue, &ctrl_message);
         } else {
-            usb_driver_send_and_receive_report(input_state.getReport(mode));
+            usb_device_driver_send_and_receive_report(input_state.getReport(mode));
         }
 
-        usb_driver_task();
+        usb_device_driver_task();
 
         auto input_message = input_state.getInputMessage();
         queue_try_add(&input_queue, &input_message);

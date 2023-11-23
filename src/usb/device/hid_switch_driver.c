@@ -1,5 +1,5 @@
-#include "usb/hid_switch_driver.h"
-#include "usb/usb_driver.h"
+#include "usb/device/hid_switch_driver.h"
+#include "usb/device/device_driver.h"
 
 #include "class/hid/hid_device.h"
 

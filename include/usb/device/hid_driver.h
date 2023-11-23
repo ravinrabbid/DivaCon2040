@@ -1,12 +1,10 @@
 #ifndef _USB_HID_DRIVER_H_
 #define _USB_HID_DRIVER_H_
 
-#include "usb/hid_ps3_driver.h"
-#include "usb/hid_ps4_driver.h"
-#include "usb/hid_switch_driver.h"
-#include "usb/usb_driver.h"
-
-#include "device/usbd_pvt.h"
+#include "usb/device/hid_ps3_driver.h"
+#include "usb/device/hid_ps4_driver.h"
+#include "usb/device/hid_switch_driver.h"
+#include "usb/device/device_driver.h"
 
 #ifdef __cplusplus
 extern "C" {

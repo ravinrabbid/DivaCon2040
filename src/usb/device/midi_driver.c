@@ -1,5 +1,5 @@
-#include "usb/midi_driver.h"
-#include "usb/usb_driver.h"
+#include "usb/device/midi_driver.h"
+#include "usb/device/device_driver.h"
 
 #include "class/midi/midi_device.h"
 

@@ -1,7 +1,7 @@
 #ifndef _USB_XINPUT_DRIVER_H_
 #define _USB_XINPUT_DRIVER_H_
 
-#include "usb/usb_driver.h"
+#include "usb/device/device_driver.h"
 
 #include "device/usbd_pvt.h"
 

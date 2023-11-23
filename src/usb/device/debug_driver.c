@@ -1,5 +1,5 @@
-#include "usb/debug_driver.h"
-#include "usb/usb_driver.h"
+#include "usb/device/debug_driver.h"
+#include "usb/device/device_driver.h"
 
 #include "pico/bootrom.h"
 #include "pico/stdio_usb.h"

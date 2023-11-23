@@ -1,5 +1,5 @@
-#ifndef _USB_USB_DRIVER_H_
-#define _USB_USB_DRIVER_H_
+#ifndef _USB_DEVICE_DRIVER_H_
+#define _USB_DEVICE_DRIVER_H_
 
 #include "tusb.h"
 
@@ -65,18 +65,18 @@ extern char *const usbd_desc_str[];
 
 typedef void (*usbd_player_led_cb_t)(usb_player_led_t);
 
-void usb_driver_init(usb_mode_t mode);
-void usb_driver_task();
+void usb_device_driver_init(usb_mode_t mode);
+void usb_device_driver_task();
 
-usb_mode_t usb_driver_get_mode();
+usb_mode_t usb_device_driver_get_mode();
 
-void usb_driver_send_and_receive_report(usb_report_t report);
+void usb_device_driver_send_and_receive_report(usb_report_t report);
 
-void usb_driver_set_player_led_cb(usbd_player_led_cb_t cb);
-usbd_player_led_cb_t usb_driver_get_player_led_cb();
+void usb_device_driver_set_player_led_cb(usbd_player_led_cb_t cb);
+usbd_player_led_cb_t usb_device_driver_get_player_led_cb();
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // _USB_USB_DRIVER_H_
+#endif // _USB_DEVICE_DRIVER_H_

@@ -1,5 +1,5 @@
-#include "usb/xinput_driver.h"
-#include "usb/usb_driver.h"
+#include "usb/device/xinput_driver.h"
+#include "usb/device/device_driver.h"
 
 #include "tusb.h"
 
@@ -136,7 +136,7 @@ static bool xinput_xfer_callback(uint8_t rhport, uint8_t ep_addr, xfer_result_t 
                 break;
             default:
             }
-            usb_driver_get_player_led_cb()(player_led);
+            usb_device_driver_get_player_led_cb()(player_led);
         }
     }
     return true;
