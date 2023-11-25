@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <stack>
 #include <stddef.h>
 #include <string>
 #include <vector>
@@ -15,7 +16,6 @@ namespace Divacon::Utils {
 class Menu {
   public:
     enum class Page {
-        None,
         Main,
         DeviceMode,
         LedBrightness,
@@ -64,7 +64,6 @@ class Menu {
         Type type;
         std::string name;
         std::vector<std::pair<std::string, Action>> items;
-        Page parent;
     };
 
     const static std::map<Page, const Descriptor> descriptors;
@@ -72,10 +71,11 @@ class Menu {
   private:
     std::shared_ptr<SettingsStore> m_store;
     bool m_active;
-    State m_state;
+    std::stack<State> m_state_stack;
 
     uint8_t getCurrentSelection(Page page);
     void gotoPage(Page page);
+    void gotoParent();
     void performSelectionAction(Descriptor::Action action);
     void performValueAction(Descriptor::Action action, uint8_t value);
 

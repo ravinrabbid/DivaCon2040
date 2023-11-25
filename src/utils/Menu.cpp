@@ -9,8 +9,7 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
       {{"Mode", Menu::Descriptor::Action::GotoPageDeviceMode},          //
        {"Brightness", Menu::Descriptor::Action::GotoPageLedBrightness}, //
        {"Reset", Menu::Descriptor::Action::GotoPageReset},              //
-       {"BOOTSEL", Menu::Descriptor::Action::GotoPageBootsel}},         //
-      Menu::Page::None}},                                               //
+       {"BOOTSEL", Menu::Descriptor::Action::GotoPageBootsel}}}},       //
 
     {Menu::Page::DeviceMode,                                                 //
      {Menu::Descriptor::Type::Selection,                                     //
@@ -22,40 +21,37 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
        {"Dualshock4", Menu::Descriptor::Action::ChangeUsbModeDS4},           //
        {"Xbox 360", Menu::Descriptor::Action::ChangeUsbModeXbox360},         //
        {"MIDI", Menu::Descriptor::Action::ChangeUsbModeMidi},                //
-       {"Debug", Menu::Descriptor::Action::ChangeUsbModeDebug}},             //
-      Menu::Page::Main}},                                                    //
+       {"Debug", Menu::Descriptor::Action::ChangeUsbModeDebug}}}},           //
 
-    {Menu::Page::LedBrightness,                           //
-     {Menu::Descriptor::Type::Value,                      //
-      "LED Brightness",                                   //
-      {{"", Menu::Descriptor::Action::SetLedBrightness}}, //
-      Menu::Page::Main}},                                 //
+    {Menu::Page::LedBrightness,                             //
+     {Menu::Descriptor::Type::Value,                        //
+      "LED Brightness",                                     //
+      {{"", Menu::Descriptor::Action::SetLedBrightness}}}}, //
 
-    {Menu::Page::Reset,                              //
-     {Menu::Descriptor::Type::Selection,             //
-      "Reset all Settings?",                         //
-      {{"No", Menu::Descriptor::Action::GotoParent}, //
-       {"Yes", Menu::Descriptor::Action::DoReset}},  //
-      Menu::Page::Main}},                            //
+    {Menu::Page::Reset,                               //
+     {Menu::Descriptor::Type::Selection,              //
+      "Reset all Settings?",                          //
+      {{"No", Menu::Descriptor::Action::GotoParent},  //
+       {"Yes", Menu::Descriptor::Action::DoReset}}}}, //
 
-    {Menu::Page::Bootsel,                                         //
-     {Menu::Descriptor::Type::Selection,                          //
-      "Reboot to BOOTSEL",                                        //
-      {{"Reboot?", Menu::Descriptor::Action::DoRebootToBootsel}}, //
-      Menu::Page::Main}},                                         //
+    {Menu::Page::Bootsel, //
+     {
+         Menu::Descriptor::Type::Selection, //
+         "Reboot to BOOTSEL",               //
+         {{"Reboot?", Menu::Descriptor::Action::DoRebootToBootsel}},
+     }}, //
 
-    {Menu::Page::BootselMsg,                         //
-     {Menu::Descriptor::Type::RebootInfo,            //
-      "Ready to Flash...",                           //
-      {{"BOOTSEL", Menu::Descriptor::Action::None}}, //
-      Menu::Page::Main}},                            //
+    {Menu::Page::BootselMsg,                           //
+     {Menu::Descriptor::Type::RebootInfo,              //
+      "Ready to Flash...",                             //
+      {{"BOOTSEL", Menu::Descriptor::Action::None}}}}, //
 };
 
 Menu::Menu(std::shared_ptr<SettingsStore> settings_store)
-    : m_store(settings_store), m_active(false), m_state({Page::Main, 0}){};
+    : m_store(settings_store), m_active(false), m_state_stack({{Page::Main, 0}}){};
 
 void Menu::activate() {
-    m_state = {Page::Main, 0};
+    m_state_stack = std::stack<State>({{Page::Main, 0}});
     m_active = true;
 }
 
@@ -138,20 +134,18 @@ uint8_t Menu::getCurrentSelection(Menu::Page page) {
     case Page::Reset:
     case Page::Bootsel:
     case Page::BootselMsg:
-    case Page::None:
         break;
     }
 
     return 0;
 }
 
-void Menu::gotoPage(Menu::Page page) {
-    m_state.page = page;
-    m_state.selection = getCurrentSelection(page);
-}
+void Menu::gotoPage(Menu::Page page) { m_state_stack.push({page, getCurrentSelection(page)}); }
+
+void Menu::gotoParent() { m_state_stack.pop(); }
 
 void Menu::performSelectionAction(Menu::Descriptor::Action action) {
-    auto descriptor_it = descriptors.find(m_state.page);
+    auto descriptor_it = descriptors.find(m_state_stack.top().page);
     if (descriptor_it == descriptors.end()) {
         assert(false);
         return;
@@ -173,45 +167,45 @@ void Menu::performSelectionAction(Menu::Descriptor::Action action) {
     case Descriptor::Action::ChangeUsbModeSwitchDivacon:
         m_store->setUsbMode(USB_MODE_SWITCH_DIVACON);
         m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::ARCADE);
-        gotoPage(descriptor_it->second.parent);
+        gotoParent();
         break;
     case Descriptor::Action::ChangeUsbModeSwitchHoripad:
         m_store->setUsbMode(USB_MODE_SWITCH_HORIPAD);
         m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::STICK);
-        gotoPage(descriptor_it->second.parent);
+        gotoParent();
         break;
     case Descriptor::Action::ChangeUsbModeDS3:
         m_store->setUsbMode(USB_MODE_DUALSHOCK3);
         m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::STICK);
-        gotoPage(descriptor_it->second.parent);
+        gotoParent();
         break;
     case Descriptor::Action::ChangeUsbModePS4Divacon:
         m_store->setUsbMode(USB_MODE_PS4_DIVACON);
         m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::ARCADE);
-        gotoPage(descriptor_it->second.parent);
+        gotoParent();
         break;
     case Descriptor::Action::ChangeUsbModeDS4:
         m_store->setUsbMode(USB_MODE_DUALSHOCK4);
         m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::STICK);
-        gotoPage(descriptor_it->second.parent);
+        gotoParent();
         break;
     case Descriptor::Action::ChangeUsbModeXbox360:
         m_store->setUsbMode(USB_MODE_XBOX360);
         m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::STICK);
-        gotoPage(descriptor_it->second.parent);
+        gotoParent();
         break;
     case Descriptor::Action::ChangeUsbModeMidi:
         m_store->setUsbMode(USB_MODE_MIDI);
         m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::ARCADE);
-        gotoPage(descriptor_it->second.parent);
+        gotoParent();
         break;
     case Descriptor::Action::ChangeUsbModeDebug:
         m_store->setUsbMode(USB_MODE_DEBUG);
         m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::ARCADE);
-        gotoPage(descriptor_it->second.parent);
+        gotoParent();
         break;
     case Descriptor::Action::SetLedBrightness:
-        gotoPage(descriptor_it->second.parent);
+        gotoParent();
         break;
     case Descriptor::Action::DoReset:
         m_store->reset();
@@ -221,7 +215,7 @@ void Menu::performSelectionAction(Menu::Descriptor::Action action) {
         gotoPage(Page::BootselMsg);
         break;
     case Descriptor::Action::GotoParent:
-        gotoPage(descriptor_it->second.parent);
+        gotoParent();
         break;
     case Descriptor::Action::None:
         break;
@@ -229,7 +223,7 @@ void Menu::performSelectionAction(Menu::Descriptor::Action action) {
 }
 
 void Menu::performValueAction(Menu::Descriptor::Action action, uint8_t value) {
-    auto descriptor_it = descriptors.find(m_state.page);
+    auto descriptor_it = descriptors.find(m_state_stack.top().page);
     if (descriptor_it == descriptors.end()) {
         assert(false);
         return;
@@ -246,8 +240,9 @@ void Menu::performValueAction(Menu::Descriptor::Action action, uint8_t value) {
 
 void Menu::update(const InputState &input_state) {
     InputState::Buttons pressed = checkPressed(input_state);
+    State &current_state = m_state_stack.top();
 
-    auto descriptor_it = descriptors.find(m_state.page);
+    auto descriptor_it = descriptors.find(current_state.page);
     if (descriptor_it == descriptors.end()) {
         assert(false);
         return;
@@ -258,17 +253,17 @@ void Menu::update(const InputState &input_state) {
     } else if (pressed.north) {
         switch (descriptor_it->second.type) {
         case Descriptor::Type::Value:
-            if (m_state.selection > 0) {
-                m_state.selection--;
-                performValueAction(descriptor_it->second.items.at(0).second, m_state.selection);
+            if (current_state.selection > 0) {
+                current_state.selection--;
+                performValueAction(descriptor_it->second.items.at(0).second, current_state.selection);
             }
             break;
         case Descriptor::Type::Selection:
         case Descriptor::Type::Root:
-            if (m_state.selection == 0) {
-                m_state.selection = descriptor_it->second.items.size() - 1;
+            if (current_state.selection == 0) {
+                current_state.selection = descriptor_it->second.items.size() - 1;
             } else {
-                m_state.selection--;
+                current_state.selection--;
             }
             break;
         case Descriptor::Type::RebootInfo:
@@ -277,17 +272,17 @@ void Menu::update(const InputState &input_state) {
     } else if (pressed.west) {
         switch (descriptor_it->second.type) {
         case Descriptor::Type::Value:
-            if (m_state.selection < UINT8_MAX) {
-                m_state.selection++;
-                performValueAction(descriptor_it->second.items.at(0).second, m_state.selection);
+            if (current_state.selection < UINT8_MAX) {
+                current_state.selection++;
+                performValueAction(descriptor_it->second.items.at(0).second, current_state.selection);
             }
             break;
         case Descriptor::Type::Selection:
         case Descriptor::Type::Root:
-            if (m_state.selection == descriptor_it->second.items.size() - 1) {
-                m_state.selection = 0;
+            if (current_state.selection == descriptor_it->second.items.size() - 1) {
+                current_state.selection = 0;
             } else {
-                m_state.selection++;
+                current_state.selection++;
             }
             break;
         case Descriptor::Type::RebootInfo:
@@ -297,7 +292,7 @@ void Menu::update(const InputState &input_state) {
         switch (descriptor_it->second.type) {
         case Descriptor::Type::Value:
         case Descriptor::Type::Selection:
-            gotoPage(descriptor_it->second.parent);
+            gotoParent();
             break;
         case Descriptor::Type::Root:
             m_active = false;
@@ -312,7 +307,7 @@ void Menu::update(const InputState &input_state) {
             break;
         case Descriptor::Type::Selection:
         case Descriptor::Type::Root:
-            performSelectionAction(descriptor_it->second.items.at(m_state.selection).second);
+            performSelectionAction(descriptor_it->second.items.at(current_state.selection).second);
             break;
         case Descriptor::Type::RebootInfo:
             break;
@@ -322,6 +317,6 @@ void Menu::update(const InputState &input_state) {
 
 bool Menu::active() { return m_active; }
 
-Menu::State Menu::getState() { return m_state; }
+Menu::State Menu::getState() { return m_state_stack.top(); }
 
 } // namespace Divacon::Utils
