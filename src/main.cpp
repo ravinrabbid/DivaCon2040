@@ -94,7 +94,6 @@ int main() {
     queue_init(&control_queue, sizeof(ControlMessage), 1);
     queue_init(&input_queue, sizeof(Utils::InputState::InputMessage), 1);
     queue_init(&menu_display_queue, sizeof(Utils::Menu::State), 1);
-    multicore_launch_core1(core1_task);
 
     Utils::InputState input_state;
 
@@ -104,6 +103,8 @@ int main() {
     Peripherals::TouchSlider touch_slider(Config::Default::touch_slider_config);
     Peripherals::Buttons buttons(Config::Default::buttons_config);
 
+    multicore_launch_core1(core1_task);
+    
     auto mode = settings_store->getUsbMode();
     usb_device_driver_init(mode);
     usb_device_driver_set_player_led_cb([](usb_player_led_t player_led) {

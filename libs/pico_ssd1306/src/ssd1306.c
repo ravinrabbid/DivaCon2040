@@ -40,29 +40,23 @@ inline static void swap(int32_t *a, int32_t *b) {
     *b = *t;
 }
 
-inline static void fancy_write(i2c_inst_t *i2c, uint8_t addr, const uint8_t *src, size_t len, char *name) {
-    switch (i2c_write_blocking(i2c, addr, src, len, false)) {
-    case PICO_ERROR_GENERIC:
-        printf("[%s] addr not acknowledged!\n", name);
-        break;
-    case PICO_ERROR_TIMEOUT:
-        printf("[%s] timeout!\n", name);
-        break;
-    default:
-        // printf("[%s] wrote successfully %lu bytes!\n", name, len);
-        break;
+inline static void wait_i2c_ready(ssd1306_t *p) {
+    dma_channel_wait_for_finish_blocking(p->dma_channel);
+    i2c_hw_t *i2c_hw = i2c_get_hw(p->i2c_i);
+    while (!(i2c_hw->status & I2C_IC_STATUS_TFE_BITS)) {
+        tight_loop_contents();
     }
 }
 
 inline static void ssd1306_write(ssd1306_t *p, uint8_t val) {
-    dma_channel_wait_for_finish_blocking(p->dma_channel);
+    wait_i2c_ready(p);
 
     uint8_t d[2] = {0x00, val};
-    fancy_write(p->i2c_i, p->address, d, 2, "ssd1306_write");
+    i2c_write_blocking(p->i2c_i, p->address, d, 2, false);
 }
 
 inline static void ssd1306_dma_write_buffer(ssd1306_t *p) {
-    dma_channel_wait_for_finish_blocking(p->dma_channel);
+    wait_i2c_ready(p);
 
     for (size_t i = 0; i < (p->bufsize); ++i) {
         p->dma_buffer[i + 1] = (p->buffer[i]);
@@ -136,6 +130,8 @@ inline void ssd1306_deinit(ssd1306_t *p) {
     dma_channel_unclaim(p->dma_channel);
     free(p->buffer);
     free(p->dma_buffer);
+
+    wait_i2c_ready(p);
 }
 
 inline void ssd1306_poweroff(ssd1306_t *p) { ssd1306_write(p, SET_DISP | 0x00); }

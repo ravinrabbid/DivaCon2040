@@ -345,7 +345,7 @@ void Display::drawMenuScreen() {
 }
 
 void Display::update() {
-    static const uint32_t interval_ms = 17; // Limit to ~60fps
+    static const uint32_t interval_ms = 20; // Limit to ~50fps
     static uint32_t start_ms = 0;
 
     if (to_ms_since_boot(get_absolute_time()) - start_ms < interval_ms) {
