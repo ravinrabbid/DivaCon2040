@@ -44,12 +44,6 @@ enum {
     USBD_ITF_MAX,
 };
 
-#define USBD_SWITCH_DESC_LEN (TUD_CONFIG_DESC_LEN + TUD_HID_INOUT_DESC_LEN)
-const uint8_t switch_desc_cfg[] = {
-    TUD_CONFIG_DESCRIPTOR(1, USBD_ITF_MAX, USBD_STR_LANGUAGE, USBD_SWITCH_DESC_LEN, 0, USBD_MAX_POWER_MAX),
-    TUD_HID_INOUT_DESCRIPTOR(USBD_ITF_HID, USBD_STR_SWITCH, 0, 86, 0x02, 0x81, CFG_TUD_HID_EP_BUFSIZE, 1),
-};
-
 const uint8_t switch_desc_hid_report[] = {
     0x05, 0x01,       // Usage Page (Generic Desktop Ctrls)
     0x09, 0x05,       // Usage (Game Pad)
@@ -92,6 +86,13 @@ const uint8_t switch_desc_hid_report[] = {
     0x95, 0x08,       //   Report Count (8)
     0x91, 0x02,       //   Output (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
     0xC0,             // End Collection
+};
+
+#define USBD_SWITCH_DESC_LEN (TUD_CONFIG_DESC_LEN + TUD_HID_INOUT_DESC_LEN)
+const uint8_t switch_desc_cfg[] = {
+    TUD_CONFIG_DESCRIPTOR(1, USBD_ITF_MAX, USBD_STR_LANGUAGE, USBD_SWITCH_DESC_LEN, 0, USBD_MAX_POWER_MAX),
+    TUD_HID_INOUT_DESCRIPTOR(USBD_ITF_HID, USBD_STR_SWITCH, 0, sizeof(switch_desc_hid_report), 0x02, 0x81,
+                             CFG_TUD_HID_EP_BUFSIZE, 1),
 };
 
 static hid_switch_report_t last_report = {};

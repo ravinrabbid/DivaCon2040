@@ -20,6 +20,7 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
        {"PS4 Diva", Menu::Descriptor::Action::ChangeUsbModePS4Divacon},      //
        {"Dualshock4", Menu::Descriptor::Action::ChangeUsbModeDS4},           //
        {"Xbox 360", Menu::Descriptor::Action::ChangeUsbModeXbox360},         //
+       {"Keyboard", Menu::Descriptor::Action::ChangeUsbModeKeyboard},        //
        {"MIDI", Menu::Descriptor::Action::ChangeUsbModeMidi},                //
        {"Debug", Menu::Descriptor::Action::ChangeUsbModeDebug}}}},           //
 
@@ -191,6 +192,11 @@ void Menu::performSelectionAction(Menu::Descriptor::Action action) {
         break;
     case Descriptor::Action::ChangeUsbModeXbox360:
         m_store->setUsbMode(USB_MODE_XBOX360);
+        m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::STICK);
+        gotoParent();
+        break;
+    case Descriptor::Action::ChangeUsbModeKeyboard:
+        m_store->setUsbMode(USB_MODE_KEYBOARD);
         m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::STICK);
         gotoParent();
         break;

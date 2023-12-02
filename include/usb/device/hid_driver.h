@@ -4,6 +4,7 @@
 #include "usb/device/hid_ps3_driver.h"
 #include "usb/device/hid_ps4_driver.h"
 #include "usb/device/hid_switch_driver.h"
+#include "usb/device/hid_keyboard_driver.h"
 #include "usb/device/device_driver.h"
 
 #ifdef __cplusplus

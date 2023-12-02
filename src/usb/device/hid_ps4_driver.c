@@ -45,12 +45,6 @@ enum {
     USBD_ITF_MAX,
 };
 
-#define USBD_PS4_DESC_LEN (TUD_CONFIG_DESC_LEN + TUD_HID_INOUT_DESC_LEN)
-const uint8_t ps4_desc_cfg[] = {
-    TUD_CONFIG_DESCRIPTOR(1, USBD_ITF_MAX, USBD_STR_LANGUAGE, USBD_PS4_DESC_LEN, 0, USBD_MAX_POWER_MAX),
-    TUD_HID_INOUT_DESCRIPTOR(USBD_ITF_HID, USBD_STR_PS4, 0, 483, 0x03, 0x84, CFG_TUD_HID_EP_BUFSIZE, 1),
-};
-
 const uint8_t ps4_desc_hid_report[] = {
     0x05, 0x01,       // Usage Page (Generic Desktop Ctrls)
     0x09, 0x05,       // Usage (Game Pad)
@@ -290,6 +284,13 @@ const uint8_t ps4_desc_hid_report[] = {
     0x95, 0x02,       //   Report Count (2)
     0xB1, 0x02,       //   Feature (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
     0xC0,             // End Collection
+};
+
+#define USBD_PS4_DESC_LEN (TUD_CONFIG_DESC_LEN + TUD_HID_INOUT_DESC_LEN)
+const uint8_t ps4_desc_cfg[] = {
+    TUD_CONFIG_DESCRIPTOR(1, USBD_ITF_MAX, USBD_STR_LANGUAGE, USBD_PS4_DESC_LEN, 0, USBD_MAX_POWER_MAX),
+    TUD_HID_INOUT_DESCRIPTOR(USBD_ITF_HID, USBD_STR_PS4, 0, sizeof(ps4_desc_hid_report), 0x03, 0x84,
+                             CFG_TUD_HID_EP_BUFSIZE, 1),
 };
 
 // MAC Address

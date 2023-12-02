@@ -10,7 +10,7 @@ InputState::InputState()
     : dpad({false, false, false, false}),                                                                   //
       buttons({false, false, false, false, false, false, false, false, false, false, false, false, false}), //
       sticks({{AnalogStick::center, AnalogStick::center}, {AnalogStick::center, AnalogStick::center}}),     //
-      touches(0), m_switch_report({}), m_ps3_report({}), m_ps4_report({}),
+      touches(0), m_switch_report({}), m_ps3_report({}), m_ps4_report({}), m_keyboard_report({}),
       m_xinput_report({0x00, sizeof(xinput_report_t), 0, 0, 0, 0, 0, 0, 0, 0, {}}),
       m_midi_report({false, false, false, false, 60, 0, 64, false, false}) {}
 
@@ -26,6 +26,8 @@ usb_report_t InputState::getReport(usb_mode_t mode) {
         return getPS4InputReport();
     case USB_MODE_XBOX360:
         return getXinputReport();
+    case USB_MODE_KEYBOARD:
+        return getKeyboardReport();
     case USB_MODE_MIDI:
         return getMidiReport();
     case USB_MODE_DEBUG:
@@ -212,6 +214,45 @@ usb_report_t InputState::getXinputReport() {
     m_xinput_report.ry = static_cast<int16_t>(~((sticks.right.y << 8) | sticks.right.y) + INT16_MIN);
 
     return {(uint8_t *)&m_xinput_report, sizeof(xinput_report_t)};
+}
+
+usb_report_t InputState::getKeyboardReport() {
+    m_keyboard_report = {.keycodes = {0}};
+
+    auto set_key = [&](const bool input, const uint8_t keycode) {
+        if (input) {
+            m_keyboard_report.keycodes[keycode / 8] |= 1 << (keycode % 8);
+        }
+    };
+
+    set_key(dpad.up, HID_KEY_ARROW_UP);
+    set_key(dpad.down, HID_KEY_ARROW_DOWN);
+    set_key(dpad.left, HID_KEY_ARROW_LEFT);
+    set_key(dpad.right, HID_KEY_ARROW_RIGHT);
+
+    set_key(buttons.north, HID_KEY_I);
+    set_key(buttons.south, HID_KEY_K);
+    set_key(buttons.west, HID_KEY_J);
+    set_key(buttons.east, HID_KEY_L);
+
+    set_key(buttons.l1, HID_KEY_Q);
+    set_key(buttons.l2, HID_KEY_R);
+    set_key(buttons.l3, HID_KEY_F3);
+
+    set_key(buttons.r1, HID_KEY_E);
+    set_key(buttons.r2, HID_KEY_T);
+    set_key(buttons.r3, HID_KEY_F4);
+
+    set_key(buttons.start, HID_KEY_ENTER);
+    set_key(buttons.select, HID_KEY_F1);
+    set_key(buttons.home, HID_KEY_ESCAPE);
+
+    set_key(sticks.left.x < AnalogStick::center, HID_KEY_Q);
+    set_key(sticks.left.x > AnalogStick::center, HID_KEY_E);
+    set_key(sticks.right.x < AnalogStick::center, HID_KEY_U);
+    set_key(sticks.right.x > AnalogStick::center, HID_KEY_O);
+
+    return {(uint8_t *)&m_keyboard_report, sizeof(hid_nkro_keyboard_report_t)};
 }
 
 usb_report_t InputState::getMidiReport() {
