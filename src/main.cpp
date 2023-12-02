@@ -104,7 +104,7 @@ int main() {
     Peripherals::Buttons buttons(Config::Default::buttons_config);
 
     multicore_launch_core1(core1_task);
-    
+
     auto mode = settings_store->getUsbMode();
     usb_device_driver_init(mode);
     usb_device_driver_set_player_led_cb([](usb_player_led_t player_led) {
@@ -148,6 +148,9 @@ int main() {
 
         } else if (input_state.checkHotkey()) {
             menu.activate();
+
+            input_state.releaseAll();
+            usb_device_driver_send_and_receive_report(input_state.getReport(mode));
 
             ControlMessage ctrl_message{ControlCommand::EnterMenu, {}};
             queue_add_blocking(&control_queue, &ctrl_message);

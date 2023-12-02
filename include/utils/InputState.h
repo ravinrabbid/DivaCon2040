@@ -67,6 +67,8 @@ struct InputState {
     usb_report_t getReport(usb_mode_t mode);
     InputMessage getInputMessage();
 
+    void releaseAll();
+
     bool checkHotkey();
 };
 
