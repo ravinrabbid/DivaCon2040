@@ -3,11 +3,9 @@
 
 #include "class/hid/hid_device.h"
 
-#include "tusb.h"
-
 uint16_t tud_hid_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t *buffer,
                                uint16_t reqlen) {
-    switch (usb_device_driver_get_mode()) {
+    switch (usbd_driver_get_mode()) {
     case USB_MODE_SWITCH_DIVACON:
     case USB_MODE_SWITCH_HORIPAD:
         return hid_switch_get_report_cb(itf, report_id, report_type, buffer, reqlen);
@@ -26,7 +24,7 @@ uint16_t tud_hid_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
 
 void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t const *buffer,
                            uint16_t bufsize) {
-    switch (usb_device_driver_get_mode()) {
+    switch (usbd_driver_get_mode()) {
     case USB_MODE_SWITCH_DIVACON:
     case USB_MODE_SWITCH_HORIPAD:
         hid_switch_set_report_cb(itf, report_id, report_type, buffer, bufsize);

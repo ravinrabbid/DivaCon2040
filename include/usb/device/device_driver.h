@@ -1,7 +1,7 @@
 #ifndef _USB_DEVICE_DRIVER_H_
 #define _USB_DEVICE_DRIVER_H_
 
-#include "tusb.h"
+#include "device/usbd_pvt.h"
 
 #include <stdint.h>
 
@@ -48,6 +48,18 @@ typedef struct {
     uint16_t size;
 } usb_report_t;
 
+typedef struct {
+    const usbd_class_driver_t *app_driver;
+    // Descriptors
+    const tusb_desc_device_t *desc_device;
+    const uint8_t *desc_cfg;
+    const uint8_t *desc_hid_report;
+    const uint8_t *desc_bos;
+    // Callbacks
+    bool (*send_report)(usb_report_t report);
+    bool (*vendor_control_xfer_cb)(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request);
+} usbd_driver_t;
+
 typedef enum {
     USB_PLAYER_LED_ID,
     USB_PLAYER_LED_COLOR,
@@ -70,18 +82,18 @@ extern char *const usbd_desc_str[];
 typedef void (*usbd_player_led_cb_t)(usb_player_led_t);
 typedef void (*usbd_slider_led_cb_t)(const uint8_t *, size_t);
 
-void usb_device_driver_init(usb_mode_t mode);
-void usb_device_driver_task();
+void usbd_driver_init(usb_mode_t mode);
+void usbd_driver_task();
 
-usb_mode_t usb_device_driver_get_mode();
+usb_mode_t usbd_driver_get_mode();
 
-void usb_device_driver_send_and_receive_report(usb_report_t report);
+void usbd_driver_send_and_receive_report(usb_report_t report);
 
-void usb_device_driver_set_player_led_cb(usbd_player_led_cb_t cb);
-usbd_player_led_cb_t usb_device_driver_get_player_led_cb();
+void usbd_driver_set_player_led_cb(usbd_player_led_cb_t cb);
+usbd_player_led_cb_t usbd_driver_get_player_led_cb();
 
-void usb_device_driver_set_slider_led_cb(usbd_slider_led_cb_t cb);
-usbd_slider_led_cb_t usb_device_driver_get_slider_led_cb();
+void usbd_driver_set_slider_led_cb(usbd_slider_led_cb_t cb);
+usbd_slider_led_cb_t usbd_driver_get_slider_led_cb();
 
 #ifdef __cplusplus
 }

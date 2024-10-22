@@ -3,6 +3,7 @@
 
 #include "usb/device/device_driver.h"
 
+#include "class/hid/hid_device.h"
 #include "device/usbd_pvt.h"
 
 #include <stdint.h>
@@ -23,12 +24,9 @@ typedef struct __attribute((packed, aligned(1))) {
     uint8_t vendor;
 } hid_switch_report_t;
 
-extern const tusb_desc_device_t switch_divacon_desc_device;
-extern const tusb_desc_device_t switch_horipad_desc_device;
-extern const uint8_t switch_desc_cfg[];
-extern const uint8_t switch_desc_hid_report[];
+extern const usbd_driver_t hid_switch_horipad_device_driver;
+extern const usbd_driver_t hid_switch_divacon_device_driver;
 
-bool send_hid_switch_report(usb_report_t report);
 uint16_t hid_switch_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t *buffer,
                                   uint16_t reqlen);
 void hid_switch_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t const *buffer,

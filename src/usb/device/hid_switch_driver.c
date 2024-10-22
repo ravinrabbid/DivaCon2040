@@ -1,7 +1,6 @@
 #include "usb/device/hid_switch_driver.h"
-#include "usb/device/device_driver.h"
 
-#include "class/hid/hid_device.h"
+#include "usb/device/hid_driver.h"
 
 #include "tusb.h"
 
@@ -129,3 +128,23 @@ void hid_switch_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t 
     (void)bufsize;
     (void)buffer;
 }
+
+const usbd_driver_t hid_switch_horipad_device_driver = {
+    .app_driver = &hid_app_driver,
+    .desc_device = &switch_horipad_desc_device,
+    .desc_cfg = switch_desc_cfg,
+    .desc_hid_report = switch_desc_hid_report,
+    .desc_bos = NULL,
+    .send_report = send_hid_switch_report,
+    .vendor_control_xfer_cb = NULL,
+};
+
+const usbd_driver_t hid_switch_divacon_device_driver = {
+    .app_driver = &hid_app_driver,
+    .desc_device = &switch_divacon_desc_device,
+    .desc_cfg = switch_desc_cfg,
+    .desc_hid_report = switch_desc_hid_report,
+    .desc_bos = NULL,
+    .send_report = send_hid_switch_report,
+    .vendor_control_xfer_cb = NULL,
+};

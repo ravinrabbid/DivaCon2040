@@ -21,12 +21,7 @@ typedef struct __attribute((packed, aligned(1))) {
     bool damper, portamento;
 } midi_report_t;
 
-bool receive_midi_report(void);
-bool send_midi_report(usb_report_t report);
-
-extern const tusb_desc_device_t midi_desc_device;
-extern const uint8_t midi_desc_cfg[];
-extern const usbd_class_driver_t midi_app_driver;
+extern const usbd_driver_t midi_device_driver;
 
 #ifdef __cplusplus
 }

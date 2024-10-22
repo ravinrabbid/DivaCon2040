@@ -1,7 +1,7 @@
 #include "usb/device/hid_ps3_driver.h"
-#include "usb/device/device_driver.h"
 
-#include "class/hid/hid_device.h"
+#include "usb/device/hid_driver.h"
+
 #include "pico/unique_id.h"
 
 #include "tusb.h"
@@ -200,9 +200,19 @@ void hid_ps3_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
                             | ((report->leds_bitmap & 0x08) ? (1 << 2) : 0)   //
                             | ((report->leds_bitmap & 0x10) ? (1 << 3) : 0);
 
-            usb_device_driver_get_player_led_cb()(player_led);
+            usbd_driver_get_player_led_cb()(player_led);
         }
         break;
     default:
     }
 }
+
+const usbd_driver_t hid_ds3_device_driver = {
+    .app_driver = &hid_app_driver,
+    .desc_device = &ds3_desc_device,
+    .desc_cfg = ps3_desc_cfg,
+    .desc_hid_report = ps3_desc_hid_report,
+    .desc_bos = NULL,
+    .send_report = send_hid_ps3_report,
+    .vendor_control_xfer_cb = NULL,
+};

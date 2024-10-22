@@ -155,3 +155,13 @@ void tud_cdc_line_coding_cb(__unused uint8_t itf, cdc_line_coding_t const *p_lin
     }
 }
 #endif
+
+const usbd_driver_t debug_device_driver = {
+    .app_driver = &debug_app_driver,
+    .desc_device = &debug_desc_device,
+    .desc_cfg = debug_desc_cfg,
+    .desc_hid_report = NULL,
+    .desc_bos = NULL,
+    .send_report = send_debug_report,
+    .vendor_control_xfer_cb = NULL,
+};

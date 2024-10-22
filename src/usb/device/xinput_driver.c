@@ -1,5 +1,4 @@
 #include "usb/device/xinput_driver.h"
-#include "usb/device/device_driver.h"
 
 #include "tusb.h"
 
@@ -46,16 +45,16 @@ static uint8_t endpoint_in = 0;
 static uint8_t endpoint_out = 0;
 static uint8_t xinput_out_buffer[XINPUT_OUT_SIZE] = {};
 
-bool receive_xinput_report(void) {
-    bool success = false;
+// bool receive_xinput_report(void) {
+//     bool success = false;
 
-    if (tud_ready() && (endpoint_out != 0) && (!usbd_edpt_busy(0, endpoint_out))) {
-        usbd_edpt_claim(0, endpoint_out);                                              // Take control of OUT endpoint
-        success = usbd_edpt_xfer(0, endpoint_out, xinput_out_buffer, XINPUT_OUT_SIZE); // Retrieve report buffer
-        usbd_edpt_release(0, endpoint_out); // Release control of OUT endpoint
-    }
-    return success;
-}
+//     if (tud_ready() && (endpoint_out != 0) && (!usbd_edpt_busy(0, endpoint_out))) {
+//         usbd_edpt_claim(0, endpoint_out);                                              // Take control of OUT
+//         endpoint success = usbd_edpt_xfer(0, endpoint_out, xinput_out_buffer, XINPUT_OUT_SIZE); // Retrieve report
+//         buffer usbd_edpt_release(0, endpoint_out); // Release control of OUT endpoint
+//     }
+//     return success;
+// }
 
 bool send_xinput_report(usb_report_t report) {
     bool success = false;
@@ -136,7 +135,7 @@ static bool xinput_xfer_callback(uint8_t rhport, uint8_t ep_addr, xfer_result_t 
                 break;
             default:
             }
-            usb_device_driver_get_player_led_cb()(player_led);
+            usbd_driver_get_player_led_cb()(player_led);
         }
     }
     return true;
@@ -152,3 +151,13 @@ const usbd_class_driver_t xinput_app_driver = {
     .control_xfer_cb = xinput_control_xfer_callback,
     .xfer_cb = xinput_xfer_callback,
     .sof = NULL};
+
+const usbd_driver_t xinput_device_driver = {
+    .app_driver = &xinput_app_driver,
+    .desc_device = &xinput_desc_device,
+    .desc_cfg = xinput_desc_cfg,
+    .desc_hid_report = NULL,
+    .desc_bos = NULL,
+    .send_report = send_xinput_report,
+    .vendor_control_xfer_cb = NULL,
+};

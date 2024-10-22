@@ -1,5 +1,4 @@
 #include "usb/device/midi_driver.h"
-#include "usb/device/device_driver.h"
 
 #include "class/midi/midi_device.h"
 
@@ -39,16 +38,6 @@ const uint8_t midi_desc_cfg[USBD_DESC_LEN] = {
 };
 
 static midi_report_t last_report = {};
-
-bool receive_midi_report(void) {
-    // Read and discard incoming data to avoid blocking the sender
-    uint8_t packet[4];
-    while (tud_midi_available()) {
-        tud_midi_packet_read(packet);
-    }
-
-    return true;
-}
 
 static void write_midi_message(uint8_t status, uint8_t byte1, uint8_t byte2) {
     uint8_t midi_message[3] = {status, byte1, byte2};
@@ -122,6 +111,16 @@ bool send_midi_report(usb_report_t report) {
     return true;
 }
 
+void tud_midi_rx_cb(uint8_t itf) {
+    (void)itf;
+
+    // Read and discard incoming data to avoid blocking the sender
+    uint8_t packet[4];
+    while (tud_midi_available()) {
+        tud_midi_packet_read(packet);
+    }
+}
+
 const usbd_class_driver_t midi_app_driver = {
 #if CFG_TUSB_DEBUG >= 2
     .name = "MIDI",
@@ -132,3 +131,13 @@ const usbd_class_driver_t midi_app_driver = {
     .control_xfer_cb = midid_control_xfer_cb,
     .xfer_cb = midid_xfer_cb,
     .sof = NULL};
+
+const usbd_driver_t midi_device_driver = {
+    .app_driver = &midi_app_driver,
+    .desc_device = &midi_desc_device,
+    .desc_cfg = midi_desc_cfg,
+    .desc_hid_report = NULL,
+    .desc_bos = NULL,
+    .send_report = send_midi_report,
+    .vendor_control_xfer_cb = NULL,
+};

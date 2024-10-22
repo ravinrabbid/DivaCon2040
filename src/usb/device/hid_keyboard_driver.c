@@ -1,8 +1,6 @@
 #include "usb/device/hid_keyboard_driver.h"
-#include "usb/device/device_driver.h"
 
-#include "class/hid/hid_device.h"
-#include "pico/unique_id.h"
+#include "usb/device/hid_driver.h"
 
 #include "tusb.h"
 
@@ -87,3 +85,13 @@ void hid_keyboard_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_
     (void)buffer;
     (void)bufsize;
 }
+
+const usbd_driver_t hid_keyboard_device_driver = {
+    .app_driver = &hid_app_driver,
+    .desc_device = &keyboard_desc_device,
+    .desc_cfg = keyboard_desc_cfg,
+    .desc_hid_report = keyboard_desc_hid_report,
+    .desc_bos = NULL,
+    .send_report = send_hid_keyboard_report,
+    .vendor_control_xfer_cb = NULL,
+};

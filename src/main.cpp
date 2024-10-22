@@ -113,13 +113,13 @@ int main() {
     multicore_launch_core1(core1_task);
 
     auto mode = settings_store->getUsbMode();
-    usb_device_driver_init(mode);
-    usb_device_driver_set_player_led_cb([](usb_player_led_t player_led) {
+    usbd_driver_init(mode);
+    usbd_driver_set_player_led_cb([](usb_player_led_t player_led) {
         auto ctrl_message = ControlMessage{ControlCommand::SetPlayerLed, {.player_led = player_led}};
         queue_add_blocking(&control_queue, &ctrl_message);
     });
 
-    usb_device_driver_set_slider_led_cb([](const uint8_t *frame, size_t len) {
+    usbd_driver_set_slider_led_cb([](const uint8_t *frame, size_t len) {
         auto led_message = Peripherals::TouchSliderLeds::RawFrameMessage();
 
         // Colors in `frame` 3 byte in the order: Green, Red, Blue from right
@@ -178,15 +178,13 @@ int main() {
             menu.activate();
 
             input_state.releaseAll();
-            usb_device_driver_send_and_receive_report(input_state.getReport(mode));
 
             ControlMessage ctrl_message{ControlCommand::EnterMenu, {}};
             queue_add_blocking(&control_queue, &ctrl_message);
-        } else {
-            usb_device_driver_send_and_receive_report(input_state.getReport(mode));
         }
 
-        usb_device_driver_task();
+        usbd_driver_send_and_receive_report(input_state.getReport(mode));
+        usbd_driver_task();
 
         auto input_message = input_state.getInputMessage();
         queue_try_add(&input_queue, &input_message);

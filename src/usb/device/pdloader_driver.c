@@ -1,5 +1,4 @@
 #include "usb/device/pdloader_driver.h"
-#include "usb/device/device_driver.h"
 
 #include "tusb.h"
 
@@ -136,8 +135,8 @@ bool receive_pdloader_report(uint8_t const *buf, uint32_t size) {
     // If the buffer is full our report is complete and we can use the data and restart
     if (reassemble_buffer_write_offset >= sizeof(reassemble_buffer)) {
         usb_player_led_t player_led = {.type = USB_PLAYER_LED_ID, .id = (uint8_t)(reassemble_buffer[3] >> 4)};
-        usb_device_driver_get_player_led_cb()(player_led);
-        usb_device_driver_get_slider_led_cb()(&reassemble_buffer[4], sizeof(reassemble_buffer) - 4);
+        usbd_driver_get_player_led_cb()(player_led);
+        usbd_driver_get_slider_led_cb()(&reassemble_buffer[4], sizeof(reassemble_buffer) - 4);
 
         reassemble_buffer_write_offset = 0;
     }
@@ -212,3 +211,13 @@ const usbd_class_driver_t pdloader_app_driver = {
     .control_xfer_cb = pdloader_control_xfer_cb,
     .xfer_cb = pdloader_xfer_cb,
     .sof = NULL};
+
+const usbd_driver_t pdloader_device_driver = {
+    .app_driver = &pdloader_app_driver,
+    .desc_device = &pdloader_desc_device,
+    .desc_cfg = pdloader_desc_cfg,
+    .desc_hid_report = NULL,
+    .desc_bos = pdloader_desc_bos,
+    .send_report = send_pdloader_report,
+    .vendor_control_xfer_cb = pdloader_control_xfer_cb,
+};
