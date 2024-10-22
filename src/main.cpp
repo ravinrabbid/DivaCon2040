@@ -19,8 +19,9 @@
 using namespace Divacon;
 
 queue_t control_queue;
-queue_t input_queue;
 queue_t menu_display_queue;
+queue_t input_queue;
+queue_t led_queue;
 
 enum class ControlCommand {
     SetUsbMode,
@@ -46,8 +47,9 @@ void core1_task() {
     Peripherals::TouchSliderLeds sliderled(Config::Default::touch_slider_leds_config);
 
     ControlMessage control_msg;
-    Utils::InputState::InputMessage input_msg;
     Utils::Menu::State menu_display_msg;
+    Utils::InputState::InputMessage input_msg;
+    Peripherals::TouchSliderLeds::RawFrameMessage slider_led_msg;
 
     while (true) {
         if (queue_try_remove(&control_queue, &control_msg)) {
@@ -79,11 +81,15 @@ void core1_task() {
             display.setTouched(input_msg.touches);
             display.setButtons(input_msg.buttons);
         }
+        if (queue_try_remove(&led_queue, &slider_led_msg)) {
+            sliderled.update(slider_led_msg);
+        } else {
+            sliderled.update();
+        }
         if (queue_try_remove(&menu_display_queue, &menu_display_msg)) {
             display.setMenuState(menu_display_msg);
         }
 
-        sliderled.update();
         display.update();
 
         sleep_ms(1);
@@ -92,8 +98,9 @@ void core1_task() {
 
 int main() {
     queue_init(&control_queue, sizeof(ControlMessage), 1);
-    queue_init(&input_queue, sizeof(Utils::InputState::InputMessage), 1);
     queue_init(&menu_display_queue, sizeof(Utils::Menu::State), 1);
+    queue_init(&input_queue, sizeof(Utils::InputState::InputMessage), 1);
+    queue_init(&led_queue, sizeof(Peripherals::TouchSliderLeds::RawFrameMessage), 1);
 
     Utils::InputState input_state;
 
@@ -110,6 +117,27 @@ int main() {
     usb_device_driver_set_player_led_cb([](usb_player_led_t player_led) {
         auto ctrl_message = ControlMessage{ControlCommand::SetPlayerLed, {.player_led = player_led}};
         queue_add_blocking(&control_queue, &ctrl_message);
+    });
+
+    usb_device_driver_set_slider_led_cb([](const uint8_t *frame, size_t len) {
+        auto led_message = Peripherals::TouchSliderLeds::RawFrameMessage();
+
+        // Colors in `frame` 3 byte in the order: Green, Red, Blue from right
+        // to left (so we need to reverse the order).
+        for (size_t color_idx = 0; color_idx < len / 3; ++color_idx) {
+            if (color_idx >= led_message.size()) {
+                break;
+            }
+
+            led_message[led_message.size() - 1 - color_idx] =
+                Peripherals::TouchSliderLeds::TouchSliderLeds::Config::Color{
+                    .r = frame[color_idx * 3 + 1],
+                    .g = frame[color_idx * 3],
+                    .b = frame[color_idx * 3 + 2],
+                };
+        }
+
+        queue_try_add(&led_queue, &led_message);
     });
 
     stdio_init_all();

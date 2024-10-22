@@ -1,9 +1,10 @@
 #ifndef _UTILS_INPUTSTATE_H_
 #define _UTILS_INPUTSTATE_H_
 
+#include "usb/device/device_driver.h"
 #include "usb/device/hid_driver.h"
 #include "usb/device/midi_driver.h"
-#include "usb/device/device_driver.h"
+#include "usb/device/pdloader_driver.h"
 #include "usb/device/xinput_driver.h"
 
 #include <stdint.h>
@@ -50,6 +51,7 @@ struct InputState {
     hid_ps4_report_t m_ps4_report;
     hid_nkro_keyboard_report_t m_keyboard_report;
     xinput_report_t m_xinput_report;
+    pdloader_report_t m_pdloader_report;
     midi_report_t m_midi_report;
     std::string m_debug_report;
 
@@ -57,6 +59,7 @@ struct InputState {
     usb_report_t getPS3InputReport();
     usb_report_t getPS4InputReport();
     usb_report_t getXinputReport();
+    usb_report_t getPDLoaderReport();
     usb_report_t getKeyboardReport();
     usb_report_t getMidiReport();
     usb_report_t getDebugReport();

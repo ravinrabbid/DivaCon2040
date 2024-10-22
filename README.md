@@ -15,6 +15,7 @@ It is pretty much tailored to this specific use case, if you are looking for som
   - Dualshock 3
   - Switch Pro Controller
   - XInput
+  - PD-Loader Arcade Controller (Compatible with [PD-Loader](https://github.com/PDModdingCommunity/PD-Loader/)'s Divaller driver)
   - Keyboard
   - MIDI
   - Debug mode (will output current state via USB serial)

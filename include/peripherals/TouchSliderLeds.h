@@ -27,6 +27,8 @@ class TouchSliderLeds {
         Color touched_color;
     };
 
+    using RawFrameMessage = std::array<Config::Color, 32>;
+
   private:
     Config m_config;
     uint32_t m_touched;
@@ -34,6 +36,8 @@ class TouchSliderLeds {
 
     uint8_t m_background_brightness;
     std::array<uint8_t, 32> m_touched_brightness;
+
+    bool m_raw_mode;
 
   public:
     TouchSliderLeds(const Config &config);
@@ -43,6 +47,7 @@ class TouchSliderLeds {
     void setPlayerColor(Config::Color color);
 
     void update();
+    void update(const RawFrameMessage &frame);
 };
 
 } // namespace Divacon::Peripherals

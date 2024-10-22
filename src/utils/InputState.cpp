@@ -11,7 +11,7 @@ InputState::InputState()
       buttons({false, false, false, false, false, false, false, false, false, false, false, false, false}), //
       sticks({{AnalogStick::center, AnalogStick::center}, {AnalogStick::center, AnalogStick::center}}),     //
       touches(0), m_switch_report({}), m_ps3_report({}), m_ps4_report({}), m_keyboard_report({}),
-      m_xinput_report({0x00, sizeof(xinput_report_t), 0, 0, 0, 0, 0, 0, 0, 0, {}}),
+      m_xinput_report({0x00, sizeof(xinput_report_t), 0, 0, 0, 0, 0, 0, 0, 0, {}}), m_pdloader_report({}),
       m_midi_report({false, false, false, false, 60, 0, 64, false, false}) {}
 
 usb_report_t InputState::getReport(usb_mode_t mode) {
@@ -26,6 +26,8 @@ usb_report_t InputState::getReport(usb_mode_t mode) {
         return getPS4InputReport();
     case USB_MODE_XBOX360:
         return getXinputReport();
+    case USB_MODE_PDLOADER:
+        return getPDLoaderReport();
     case USB_MODE_KEYBOARD:
         return getKeyboardReport();
     case USB_MODE_MIDI:
@@ -214,6 +216,42 @@ usb_report_t InputState::getXinputReport() {
     m_xinput_report.ry = static_cast<int16_t>(~((sticks.right.y << 8) | sticks.right.y) + INT16_MIN);
 
     return {(uint8_t *)&m_xinput_report, sizeof(xinput_report_t)};
+}
+
+usb_report_t InputState::getPDLoaderReport() {
+    m_pdloader_report.vendor[0] = 0x42;
+    m_pdloader_report.vendor[1] = 0x56;
+    m_pdloader_report.vendor[2] = 0x5a;
+
+    m_pdloader_report.buttons1 = 0                                //
+                                 | (buttons.start ? (1 << 1) : 0) //
+                                 | (buttons.west ? (1 << 2) : 0)  //
+                                 | (buttons.east ? (1 << 3) : 0)  //
+                                 | (buttons.north ? (1 << 4) : 0) //
+                                 | (buttons.south ? (1 << 5) : 0);
+    m_pdloader_report.buttons2 = 0                             //
+                                 | (buttons.l3 ? (1 << 6) : 0) //
+                                 | (buttons.l2 ? (1 << 7) : 0);
+    m_pdloader_report.buttons3_slider1 = 0 //
+                                         | (buttons.l1 ? (1 << 0) : 0);
+
+    auto reverse = [](uint32_t val) {
+        val = (val & 0xaaaaaaaa) >> 1 | (val & 0x55555555) << 1;
+        val = (val & 0xcccccccc) >> 2 | (val & 0x33333333) << 2;
+        val = (val & 0xf0f0f0f0) >> 4 | (val & 0x0f0f0f0f) << 4;
+        val = (val & 0xff00ff00) >> 8 | (val & 0x00ff00ff) << 8;
+        return val >> 16 | val << 16;
+    };
+
+    auto reversed_touches = reverse(touches);
+
+    m_pdloader_report.buttons3_slider1 |= (reversed_touches & 0x0000000f) << 4;
+    m_pdloader_report.slider2 = (reversed_touches & 0x00000ff0) >> 4;
+    m_pdloader_report.slider3 = (reversed_touches & 0x000ff000) >> 12;
+    m_pdloader_report.slider4 = (reversed_touches & 0x0ff00000) >> 20;
+    m_pdloader_report.slider5 = (reversed_touches & 0xf0000000) >> 28;
+
+    return {(uint8_t *)&m_pdloader_report, sizeof(pdloader_report_t)};
 }
 
 usb_report_t InputState::getKeyboardReport() {

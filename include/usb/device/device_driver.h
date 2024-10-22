@@ -20,8 +20,9 @@ typedef enum {
     USB_MODE_DUALSHOCK3,
     USB_MODE_PS4_DIVACON,
     USB_MODE_DUALSHOCK4,
-    USB_MODE_KEYBOARD,
     USB_MODE_XBOX360,
+    USB_MODE_PDLOADER,
+    USB_MODE_KEYBOARD,
     USB_MODE_MIDI,
     USB_MODE_DEBUG,
 } usb_mode_t;
@@ -37,6 +38,7 @@ enum {
     USBD_STR_PS4,
     USBD_STR_KEYBOARD,
     USBD_STR_XINPUT,
+    USBD_STR_PDLOADER,
     USBD_STR_MIDI,
     USBD_STR_RPI_RESET,
 };
@@ -66,6 +68,7 @@ typedef struct {
 extern char *const usbd_desc_str[];
 
 typedef void (*usbd_player_led_cb_t)(usb_player_led_t);
+typedef void (*usbd_slider_led_cb_t)(const uint8_t *, size_t);
 
 void usb_device_driver_init(usb_mode_t mode);
 void usb_device_driver_task();
@@ -76,6 +79,9 @@ void usb_device_driver_send_and_receive_report(usb_report_t report);
 
 void usb_device_driver_set_player_led_cb(usbd_player_led_cb_t cb);
 usbd_player_led_cb_t usb_device_driver_get_player_led_cb();
+
+void usb_device_driver_set_slider_led_cb(usbd_slider_led_cb_t cb);
+usbd_slider_led_cb_t usb_device_driver_get_slider_led_cb();
 
 #ifdef __cplusplus
 }

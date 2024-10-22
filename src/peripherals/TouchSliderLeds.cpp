@@ -7,7 +7,8 @@
 namespace Divacon::Peripherals {
 
 TouchSliderLeds::TouchSliderLeds(const Config &config)
-    : m_config(config), m_touched(0), m_background_brightness(config.brightness), m_touched_brightness({}) {
+    : m_config(config), m_touched(0), m_background_brightness(config.brightness), m_touched_brightness({}),
+      m_raw_mode(false) {
     m_frame = std::vector<uint32_t>(32 * config.leds_per_segment, ws2812_rgb_to_u32pixel(0, 0, 0));
 
     ws2812_init(config.led_pin, m_config.is_rgbw);
@@ -27,6 +28,10 @@ static uint32_t get_dimmed_pixel(TouchSliderLeds::Config::Color color, uint8_t d
 void TouchSliderLeds::update() {
     const static uint32_t interval = 10;
     static uint32_t last_fade_frame = 0;
+
+    if (m_raw_mode) {
+        return;
+    }
 
     uint32_t now = to_ms_since_boot(get_absolute_time());
     uint8_t brightness_step = 0;
@@ -70,6 +75,21 @@ void TouchSliderLeds::update() {
         for (int led = 0; led < m_config.leds_per_segment; ++led) {
             m_frame.at((bit * m_config.leds_per_segment) + led) = segment_color;
         }
+    }
+
+    ws2812_put_frame(m_frame.data(), m_frame.size());
+}
+
+void TouchSliderLeds::update(const TouchSliderLeds::RawFrameMessage &frame) {
+    m_raw_mode = true;
+
+    size_t idx = 0;
+    for (const auto &color : frame) {
+        for (int led = 0; led < m_config.leds_per_segment; ++led) {
+            // Raw frames are already gamma corrected.
+            m_frame.at((idx * m_config.leds_per_segment) + led) = ws2812_rgb_to_u32pixel(color.r, color.g, color.b);
+        }
+        ++idx;
     }
 
     ws2812_put_frame(m_frame.data(), m_frame.size());

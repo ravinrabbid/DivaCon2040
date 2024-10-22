@@ -52,6 +52,7 @@ class Menu {
             ChangeUsbModePS4Divacon,
             ChangeUsbModeDS4,
             ChangeUsbModeXbox360,
+            ChangeUsbModePDLoader,
             ChangeUsbModeKeyboard,
             ChangeUsbModeMidi,
             ChangeUsbModeDebug,
