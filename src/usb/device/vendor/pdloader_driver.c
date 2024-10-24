@@ -1,5 +1,6 @@
-#include "usb/device/pdloader_driver.h"
+#include "usb/device/vendor/pdloader_driver.h"
 
+#include "device/usbd_pvt.h"
 #include "tusb.h"
 
 const tusb_desc_device_t pdloader_desc_device = {
@@ -95,7 +96,7 @@ typedef struct {
 
 CFG_TUSB_MEM_SECTION static pdloader_interface_t _pdl_itf;
 
-bool pdloader_ready() {
+static bool pdloader_ready() {
     uint8_t const ep_in = _pdl_itf.ep_in;
 
     return tud_ready() && (ep_in != 0) && !usbd_edpt_busy(0, ep_in);
@@ -116,7 +117,7 @@ bool send_pdloader_report(usb_report_t report) {
 
 // The data PDLoader sends is larger than the Fullspeed USB max size of 64.
 // Therefore we need to reassemble the data from multiple packets.
-bool receive_pdloader_report(uint8_t const *buf, uint32_t size) {
+static bool receive_pdloader_report(uint8_t const *buf, uint32_t size) {
     static uint8_t reassemble_buffer[USBD_PDLOADER_READ_BUFFER_LEN] = {};
     static size_t reassemble_buffer_write_offset = 0;
 
@@ -144,15 +145,15 @@ bool receive_pdloader_report(uint8_t const *buf, uint32_t size) {
     return true;
 }
 
-void pdloader_reset(uint8_t rhport) {
+static void pdloader_reset(uint8_t rhport) {
     (void)rhport;
 
     tu_memclr(&_pdl_itf, sizeof(_pdl_itf));
 }
 
-void pdloader_init(void) { pdloader_reset(0); }
+static void pdloader_init(void) { pdloader_reset(0); }
 
-uint16_t pdloader_open(uint8_t rhport, tusb_desc_interface_t const *desc_itf, uint16_t max_len) {
+static uint16_t pdloader_open(uint8_t rhport, tusb_desc_interface_t const *desc_itf, uint16_t max_len) {
     TU_VERIFY(TUSB_CLASS_VENDOR_SPECIFIC == desc_itf->bInterfaceClass, 0);
 
     uint16_t const drv_len =
@@ -190,7 +191,7 @@ bool pdloader_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_reques
     return tud_control_xfer(rhport, request, (void *)(uintptr_t)pdloader_desc_ms_os_20, total_len);
 }
 
-bool pdloader_xfer_cb(uint8_t rhport, uint8_t ep_addr, xfer_result_t result, uint32_t xferred_bytes) {
+static bool pdloader_xfer_cb(uint8_t rhport, uint8_t ep_addr, xfer_result_t result, uint32_t xferred_bytes) {
     TU_ASSERT(result == XFER_RESULT_SUCCESS);
 
     if (ep_addr == _pdl_itf.ep_out) {
@@ -216,8 +217,6 @@ const usbd_driver_t pdloader_device_driver = {
     .app_driver = &pdloader_app_driver,
     .desc_device = &pdloader_desc_device,
     .desc_cfg = pdloader_desc_cfg,
-    .desc_hid_report = NULL,
     .desc_bos = pdloader_desc_bos,
     .send_report = send_pdloader_report,
-    .vendor_control_xfer_cb = pdloader_control_xfer_cb,
 };

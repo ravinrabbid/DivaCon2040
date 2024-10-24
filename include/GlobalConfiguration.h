@@ -2,7 +2,7 @@
 #include "peripherals/Display.h"
 #include "peripherals/TouchSlider.h"
 #include "peripherals/TouchSliderLeds.h"
-#include "usb/device/device_driver.h"
+#include "usb/device_driver.h"
 
 #include "hardware/i2c.h"
 

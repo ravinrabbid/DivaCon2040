@@ -57,7 +57,6 @@ typedef struct {
     const uint8_t *desc_bos;
     // Callbacks
     bool (*send_report)(usb_report_t report);
-    bool (*vendor_control_xfer_cb)(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request);
 } usbd_driver_t;
 
 typedef enum {
@@ -87,7 +86,7 @@ void usbd_driver_task();
 
 usb_mode_t usbd_driver_get_mode();
 
-void usbd_driver_send_and_receive_report(usb_report_t report);
+void usbd_driver_send_report(usb_report_t report);
 
 void usbd_driver_set_player_led_cb(usbd_player_led_cb_t cb);
 usbd_player_led_cb_t usbd_driver_get_player_led_cb();

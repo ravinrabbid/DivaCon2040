@@ -1,6 +1,6 @@
-#include "usb/device/hid_ps3_driver.h"
+#include "usb/device/hid/ps3_driver.h"
 
-#include "usb/device/hid_driver.h"
+#include "usb/device/hid/common.h"
 
 #include "pico/unique_id.h"
 
@@ -211,8 +211,6 @@ const usbd_driver_t hid_ds3_device_driver = {
     .app_driver = &hid_app_driver,
     .desc_device = &ds3_desc_device,
     .desc_cfg = ps3_desc_cfg,
-    .desc_hid_report = ps3_desc_hid_report,
     .desc_bos = NULL,
     .send_report = send_hid_ps3_report,
-    .vendor_control_xfer_cb = NULL,
 };

@@ -1,5 +1,6 @@
 #include "usb/device/debug_driver.h"
-#include "usb/device/device_driver.h"
+
+#include "usb/device_driver.h"
 
 #include "pico/bootrom.h"
 #include "pico/stdio_usb.h"
@@ -160,8 +161,6 @@ const usbd_driver_t debug_device_driver = {
     .app_driver = &debug_app_driver,
     .desc_device = &debug_desc_device,
     .desc_cfg = debug_desc_cfg,
-    .desc_hid_report = NULL,
     .desc_bos = NULL,
     .send_report = send_debug_report,
-    .vendor_control_xfer_cb = NULL,
 };

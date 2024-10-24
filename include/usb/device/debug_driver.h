@@ -1,11 +1,7 @@
-#ifndef _USB_DEBUG_DRIVER_H_
-#define _USB_DEBUG_DRIVER_H_
+#ifndef _USB_DEVICE_DEBUG_DRIVER_H_
+#define _USB_DEVICE_DEBUG_DRIVER_H_
 
-#include "usb/device/device_driver.h"
-
-#include "device/usbd_pvt.h"
-
-#include <stdint.h>
+#include "usb/device_driver.h"
 
 #define USBD_DEBUG_CDC_NAME "Serial Debug"
 #define USBD_DEBUG_RESET_NAME "Picotool Reset"
@@ -20,4 +16,4 @@ extern const usbd_driver_t debug_device_driver;
 }
 #endif
 
-#endif // _USB_DEBUG_DRIVER_H_
+#endif // _USB_DEVICE_DEBUG_DRIVER_H_

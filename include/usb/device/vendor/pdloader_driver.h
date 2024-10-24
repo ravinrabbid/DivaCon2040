@@ -1,9 +1,7 @@
-#ifndef _USB_PDLOADER_DRIVER_H_
-#define _USB_PDLOADER_DRIVER_H_
+#ifndef _USB_DEVICE_VENDOR_PDLOADER_DRIVER_H_
+#define _USB_DEVICE_VENDOR_PDLOADER_DRIVER_H_
 
-#include "usb/device/device_driver.h"
-
-#include "device/usbd_pvt.h"
+#include "usb/device_driver.h"
 
 #include <stdint.h>
 
@@ -27,8 +25,10 @@ typedef struct __attribute((packed, aligned(1))) {
 
 extern const usbd_driver_t pdloader_device_driver;
 
+bool pdloader_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request);
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif // _USB_PDLOADER_DRIVER_H_
+#endif // _USB_DEVICE_VENDOR_PDLOADER_DRIVER_H_

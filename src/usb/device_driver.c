@@ -1,19 +1,21 @@
-#include "usb/device/device_driver.h"
+#include "usb/device_driver.h"
 
 #include "usb/device/debug_driver.h"
-#include "usb/device/hid_keyboard_driver.h"
-#include "usb/device/hid_ps3_driver.h"
-#include "usb/device/hid_ps4_driver.h"
-#include "usb/device/hid_switch_driver.h"
+#include "usb/device/hid/keyboard_driver.h"
+#include "usb/device/hid/ps3_driver.h"
+#include "usb/device/hid/ps4_driver.h"
+#include "usb/device/hid/switch_driver.h"
 #include "usb/device/midi_driver.h"
-#include "usb/device/pdloader_driver.h"
-#include "usb/device/xinput_driver.h"
+#include "usb/device/vendor/pdloader_driver.h"
+#include "usb/device/vendor/xinput_driver.h"
 
 #include "bsp/board.h"
 #include "pico/unique_id.h"
 
+#include "tusb.h"
+
 static usb_mode_t usbd_mode = USB_MODE_DEBUG;
-static usbd_driver_t usbd_driver = {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+static usbd_driver_t usbd_driver = {NULL, NULL, NULL, NULL, NULL, NULL};
 static usbd_player_led_cb_t usbd_player_led_cb = NULL;
 static usbd_slider_led_cb_t usbd_slider_led_cb = NULL;
 
@@ -78,7 +80,7 @@ void usbd_driver_task() { tud_task(); }
 
 usb_mode_t usbd_driver_get_mode() { return usbd_mode; }
 
-void usbd_driver_send_and_receive_report(usb_report_t report) {
+void usbd_driver_send_report(usb_report_t report) {
     static const uint32_t interval_ms = 1;
     static uint32_t start_ms = 0;
 
@@ -106,7 +108,11 @@ usbd_slider_led_cb_t usbd_driver_get_slider_led_cb() { return usbd_slider_led_cb
 
 const uint8_t *tud_descriptor_device_cb(void) { return (const uint8_t *)usbd_driver.desc_device; }
 
-const uint8_t *tud_descriptor_configuration_cb(uint8_t __unused index) { return usbd_driver.desc_cfg; }
+const uint8_t *tud_descriptor_configuration_cb(uint8_t index) {
+    (void)index;
+
+    return usbd_driver.desc_cfg;
+}
 
 const uint16_t *tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
 #define DESC_STR_MAX (20)
@@ -143,22 +149,7 @@ const uint16_t *tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
     return desc_str;
 }
 
-uint8_t const *tud_hid_descriptor_report_cb(uint8_t itf) {
-    (void)itf;
-
-    return usbd_driver.desc_hid_report;
-}
-
 uint8_t const *tud_descriptor_bos_cb(void) { return usbd_driver.desc_bos; }
-
-// Implement TinyUSB internal callback since vendor control requests are not forwarded to custom drivers.
-bool tud_vendor_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request) {
-    if (!usbd_driver.vendor_control_xfer_cb) {
-        return false;
-    }
-
-    return usbd_driver.vendor_control_xfer_cb(rhport, stage, request);
-}
 
 // Implement callback to add our custom driver
 const usbd_class_driver_t *usbd_app_driver_get_cb(uint8_t *driver_count) {

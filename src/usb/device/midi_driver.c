@@ -136,8 +136,6 @@ const usbd_driver_t midi_device_driver = {
     .app_driver = &midi_app_driver,
     .desc_device = &midi_desc_device,
     .desc_cfg = midi_desc_cfg,
-    .desc_hid_report = NULL,
     .desc_bos = NULL,
     .send_report = send_midi_report,
-    .vendor_control_xfer_cb = NULL,
 };

@@ -2,7 +2,7 @@
 #include "peripherals/Display.h"
 #include "peripherals/TouchSlider.h"
 #include "peripherals/TouchSliderLeds.h"
-#include "usb/device/device_driver.h"
+#include "usb/device_driver.h"
 #include "utils/InputState.h"
 #include "utils/Menu.h"
 #include "utils/SettingsStore.h"
@@ -118,7 +118,6 @@ int main() {
         auto ctrl_message = ControlMessage{ControlCommand::SetPlayerLed, {.player_led = player_led}};
         queue_add_blocking(&control_queue, &ctrl_message);
     });
-
     usbd_driver_set_slider_led_cb([](const uint8_t *frame, size_t len) {
         auto led_message = Peripherals::TouchSliderLeds::RawFrameMessage();
 
@@ -183,7 +182,7 @@ int main() {
             queue_add_blocking(&control_queue, &ctrl_message);
         }
 
-        usbd_driver_send_and_receive_report(input_state.getReport(mode));
+        usbd_driver_send_report(input_state.getReport(mode));
         usbd_driver_task();
 
         auto input_message = input_state.getInputMessage();

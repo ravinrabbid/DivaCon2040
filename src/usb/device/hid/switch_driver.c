@@ -1,6 +1,6 @@
-#include "usb/device/hid_switch_driver.h"
+#include "usb/device/hid/switch_driver.h"
 
-#include "usb/device/hid_driver.h"
+#include "usb/device/hid/common.h"
 
 #include "tusb.h"
 
@@ -133,18 +133,14 @@ const usbd_driver_t hid_switch_horipad_device_driver = {
     .app_driver = &hid_app_driver,
     .desc_device = &switch_horipad_desc_device,
     .desc_cfg = switch_desc_cfg,
-    .desc_hid_report = switch_desc_hid_report,
     .desc_bos = NULL,
     .send_report = send_hid_switch_report,
-    .vendor_control_xfer_cb = NULL,
 };
 
 const usbd_driver_t hid_switch_divacon_device_driver = {
     .app_driver = &hid_app_driver,
     .desc_device = &switch_divacon_desc_device,
     .desc_cfg = switch_desc_cfg,
-    .desc_hid_report = switch_desc_hid_report,
     .desc_bos = NULL,
     .send_report = send_hid_switch_report,
-    .vendor_control_xfer_cb = NULL,
 };

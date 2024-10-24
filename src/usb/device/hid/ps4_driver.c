@@ -1,6 +1,6 @@
-#include "usb/device/hid_ps4_driver.h"
+#include "usb/device/hid/ps4_driver.h"
 
-#include "usb/device/hid_driver.h"
+#include "usb/device/hid/common.h"
 
 #include "pico/unique_id.h"
 
@@ -415,18 +415,14 @@ const usbd_driver_t hid_ds4_device_driver = {
     .app_driver = &hid_app_driver,
     .desc_device = &ds4_desc_device,
     .desc_cfg = ps4_desc_cfg,
-    .desc_hid_report = ps4_desc_hid_report,
     .desc_bos = NULL,
     .send_report = send_hid_ps4_report,
-    .vendor_control_xfer_cb = NULL,
 };
 
 const usbd_driver_t hid_ps4_divacon_device_driver = {
     .app_driver = &hid_app_driver,
     .desc_device = &ps4_divacon_desc_device,
     .desc_cfg = ps4_desc_cfg,
-    .desc_hid_report = ps4_desc_hid_report,
     .desc_bos = NULL,
     .send_report = send_hid_ps4_report,
-    .vendor_control_xfer_cb = NULL,
 };

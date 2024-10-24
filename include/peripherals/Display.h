@@ -1,7 +1,7 @@
 #ifndef _PERIPHERALS_DISPLAY_H_
 #define _PERIPHERALS_DISPLAY_H_
 
-#include "usb/device/device_driver.h"
+#include "usb/device_driver.h"
 #include "utils/InputState.h"
 #include "utils/Menu.h"
 

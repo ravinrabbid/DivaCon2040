@@ -1,6 +1,6 @@
-#include "usb/device/hid_keyboard_driver.h"
+#include "usb/device/hid/keyboard_driver.h"
 
-#include "usb/device/hid_driver.h"
+#include "usb/device/hid/common.h"
 
 #include "tusb.h"
 
@@ -90,8 +90,6 @@ const usbd_driver_t hid_keyboard_device_driver = {
     .app_driver = &hid_app_driver,
     .desc_device = &keyboard_desc_device,
     .desc_cfg = keyboard_desc_cfg,
-    .desc_hid_report = keyboard_desc_hid_report,
     .desc_bos = NULL,
     .send_report = send_hid_keyboard_report,
-    .vendor_control_xfer_cb = NULL,
 };

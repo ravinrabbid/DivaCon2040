@@ -1,9 +1,7 @@
-#ifndef _USB_MIDI_DRIVER_H_
-#define _USB_MIDI_DRIVER_H_
+#ifndef _USB_DEVICE_MIDI_DRIVER_H_
+#define _USB_DEVICE_MIDI_DRIVER_H_
 
-#include "usb/device/device_driver.h"
-
-#include "device/usbd_pvt.h"
+#include "usb/device_driver.h"
 
 #include <stdint.h>
 
@@ -27,4 +25,4 @@ extern const usbd_driver_t midi_device_driver;
 }
 #endif
 
-#endif // _USB_MIDI_DRIVER_H_
+#endif // _USB_DEVICE_MIDI_DRIVER_H_

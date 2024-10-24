@@ -1,5 +1,6 @@
-#include "usb/device/xinput_driver.h"
+#include "usb/device/vendor/xinput_driver.h"
 
+#include "device/usbd_pvt.h"
 #include "tusb.h"
 
 #include <stdlib.h>
@@ -69,7 +70,7 @@ typedef struct {
 
 CFG_TUSB_MEM_SECTION static xinput_interface_t _xinput_itf;
 
-bool xinput_ready() {
+static bool xinput_ready() {
     uint8_t const ep_in = _xinput_itf.ep_in;
 
     return tud_ready() && (ep_in != 0) && !usbd_edpt_busy(0, ep_in);
@@ -88,7 +89,7 @@ bool send_xinput_report(usb_report_t report) {
     return usbd_edpt_xfer(0, _xinput_itf.ep_in, _xinput_itf.epin_buf, size);
 }
 
-bool receive_xinput_report(uint8_t const *buf, uint32_t size) {
+static bool receive_xinput_report(uint8_t const *buf, uint32_t size) {
     enum {
         REPORT_RUMBLE = 0x00,
         REPORT_LED = 0x01,
@@ -167,7 +168,7 @@ bool receive_xinput_report(uint8_t const *buf, uint32_t size) {
     return false;
 }
 
-void xinput_reset(uint8_t rhport) {
+static void xinput_reset(uint8_t rhport) {
     (void)rhport;
 
     tu_memclr(&_xinput_itf, sizeof(_xinput_itf));
@@ -201,7 +202,7 @@ static uint16_t xinput_open(uint8_t rhport, tusb_desc_interface_t const *desc_it
     return drv_len;
 }
 
-static bool xinput_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request) {
+bool xinput_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request) {
     (void)rhport;
 
     if (stage != CONTROL_STAGE_SETUP)
@@ -249,8 +250,6 @@ const usbd_driver_t xinput_device_driver = {
     .app_driver = &xinput_app_driver,
     .desc_device = &xinput_desc_device,
     .desc_cfg = xinput_desc_cfg,
-    .desc_hid_report = NULL,
     .desc_bos = NULL,
     .send_report = send_xinput_report,
-    .vendor_control_xfer_cb = xinput_control_xfer_cb,
 };
