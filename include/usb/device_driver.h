@@ -76,10 +76,18 @@ typedef struct {
     };
 } usb_player_led_t;
 
+typedef struct {
+    bool north;
+    bool east;
+    bool south;
+    bool west;
+} usb_button_led_t;
+
 extern char *const usbd_desc_str[];
 
 typedef void (*usbd_player_led_cb_t)(usb_player_led_t);
 typedef void (*usbd_slider_led_cb_t)(const uint8_t *, size_t);
+typedef void (*usbd_button_led_cb_t)(usb_button_led_t);
 
 void usbd_driver_init(usb_mode_t mode);
 void usbd_driver_task();
@@ -93,6 +101,9 @@ usbd_player_led_cb_t usbd_driver_get_player_led_cb();
 
 void usbd_driver_set_slider_led_cb(usbd_slider_led_cb_t cb);
 usbd_slider_led_cb_t usbd_driver_get_slider_led_cb();
+
+void usbd_driver_set_button_led_cb(usbd_button_led_cb_t cb);
+usbd_button_led_cb_t usbd_driver_get_button_led_cb();
 
 #ifdef __cplusplus
 }

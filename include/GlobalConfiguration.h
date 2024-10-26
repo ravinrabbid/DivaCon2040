@@ -1,3 +1,4 @@
+#include "peripherals/ButtonLeds.h"
 #include "peripherals/Buttons.h"
 #include "peripherals/Display.h"
 #include "peripherals/TouchSlider.h"
@@ -41,6 +42,16 @@ const Peripherals::Buttons::Config buttons_config = {
         },
     },
     3, // Debounce delay in milliseconds
+};
+
+const Peripherals::ButtonLeds::Config button_leds_config = {
+    {
+        22, // North
+        5,  // East
+        4,  // South
+        12, // West
+    },
+    false, // Invert
 };
 
 const Peripherals::TouchSlider::Config touch_slider_config = {

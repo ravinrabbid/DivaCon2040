@@ -18,6 +18,7 @@ static usb_mode_t usbd_mode = USB_MODE_DEBUG;
 static usbd_driver_t usbd_driver = {NULL, NULL, NULL, NULL, NULL, NULL};
 static usbd_player_led_cb_t usbd_player_led_cb = NULL;
 static usbd_slider_led_cb_t usbd_slider_led_cb = NULL;
+static usbd_button_led_cb_t usbd_button_led_cb = NULL;
 
 #define USBD_SERIAL_STR_SIZE (PICO_UNIQUE_BOARD_ID_SIZE_BYTES * 2 + 1 + 3)
 static char usbd_serial_str[USBD_SERIAL_STR_SIZE] = {};
@@ -99,12 +100,12 @@ void usbd_driver_send_report(usb_report_t report) {
 }
 
 void usbd_driver_set_player_led_cb(usbd_player_led_cb_t cb) { usbd_player_led_cb = cb; };
-
 void usbd_driver_set_slider_led_cb(usbd_slider_led_cb_t cb) { usbd_slider_led_cb = cb; };
+void usbd_driver_set_button_led_cb(usbd_button_led_cb_t cb) { usbd_button_led_cb = cb; };
 
 usbd_player_led_cb_t usbd_driver_get_player_led_cb() { return usbd_player_led_cb; };
-
 usbd_slider_led_cb_t usbd_driver_get_slider_led_cb() { return usbd_slider_led_cb; };
+usbd_button_led_cb_t usbd_driver_get_button_led_cb() { return usbd_button_led_cb; };
 
 const uint8_t *tud_descriptor_device_cb(void) { return (const uint8_t *)usbd_driver.desc_device; }
 

@@ -1,3 +1,4 @@
+#include "peripherals/ButtonLeds.h"
 #include "peripherals/Buttons.h"
 #include "peripherals/Display.h"
 #include "peripherals/TouchSlider.h"
@@ -26,6 +27,7 @@ queue_t led_queue;
 enum class ControlCommand {
     SetUsbMode,
     SetPlayerLed,
+    SetButtonLed,
     SetLedBrightness,
     EnterMenu,
     ExitMenu,
@@ -36,6 +38,7 @@ struct ControlMessage {
     union {
         usb_mode_t usb_mode;
         usb_player_led_t player_led;
+        usb_button_led_t button_led;
         uint8_t brightness;
     } data;
 };
@@ -44,7 +47,8 @@ void core1_task() {
     multicore_lockout_victim_init();
 
     Peripherals::Display display(Config::Default::display_config);
-    Peripherals::TouchSliderLeds sliderled(Config::Default::touch_slider_leds_config);
+    Peripherals::TouchSliderLeds sliderleds(Config::Default::touch_slider_leds_config);
+    Peripherals::ButtonLeds buttonleds(Config::Default::button_leds_config);
 
     ControlMessage control_msg;
     Utils::Menu::State menu_display_msg;
@@ -61,12 +65,15 @@ void core1_task() {
                 if (control_msg.data.player_led.type == USB_PLAYER_LED_ID) {
                     display.setPlayerId(control_msg.data.player_led.id);
                 } else if (control_msg.data.player_led.type == USB_PLAYER_LED_COLOR) {
-                    sliderled.setPlayerColor({control_msg.data.player_led.red, control_msg.data.player_led.green,
-                                              control_msg.data.player_led.blue});
+                    sliderleds.setPlayerColor({control_msg.data.player_led.red, control_msg.data.player_led.green,
+                                               control_msg.data.player_led.blue});
                 }
                 break;
+            case ControlCommand::SetButtonLed:
+                buttonleds.update(control_msg.data.button_led);
+                break;
             case ControlCommand::SetLedBrightness:
-                sliderled.setBrightness(control_msg.data.brightness);
+                sliderleds.setBrightness(control_msg.data.brightness);
                 break;
             case ControlCommand::EnterMenu:
                 display.showMenu();
@@ -77,19 +84,21 @@ void core1_task() {
             }
         }
         if (queue_try_remove(&input_queue, &input_msg)) {
-            sliderled.setTouched(input_msg.touches);
+            sliderleds.setTouched(input_msg.touches);
+            buttonleds.setButtons(input_msg.buttons);
             display.setTouched(input_msg.touches);
             display.setButtons(input_msg.buttons);
         }
         if (queue_try_remove(&led_queue, &slider_led_msg)) {
-            sliderled.update(slider_led_msg);
+            sliderleds.update(slider_led_msg);
         } else {
-            sliderled.update();
+            sliderleds.update();
         }
         if (queue_try_remove(&menu_display_queue, &menu_display_msg)) {
             display.setMenuState(menu_display_msg);
         }
 
+        buttonleds.update();
         display.update();
 
         sleep_ms(1);
@@ -116,6 +125,10 @@ int main() {
     usbd_driver_init(mode);
     usbd_driver_set_player_led_cb([](usb_player_led_t player_led) {
         auto ctrl_message = ControlMessage{ControlCommand::SetPlayerLed, {.player_led = player_led}};
+        queue_add_blocking(&control_queue, &ctrl_message);
+    });
+    usbd_driver_set_button_led_cb([](usb_button_led_t button_led) {
+        auto ctrl_message = ControlMessage{ControlCommand::SetButtonLed, {.button_led = button_led}};
         queue_add_blocking(&control_queue, &ctrl_message);
     });
     usbd_driver_set_slider_led_cb([](const uint8_t *frame, size_t len) {

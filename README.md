@@ -21,7 +21,8 @@ It is pretty much tailored to this specific use case, if you are looking for som
   - Debug mode (will output current state via USB serial)
 - Arcade Style Touch Slider for arcade controller emulation modes
 - Slider to analog stick mapping for standard controllers
-- Slider illumination using WS2812 LED strip
+- Slider illumination using WS2812 LED strip (can be controlled by PD-Loader)
+- Button illumination (can be controlled by PD-Loader)
 - Basic configuration via on-screen menu on attached OLED screen
 - Player LEDs are visualized on OLED screen for DS3 and XInput, player color on the slider LEDs for DS4
 - BPM counter (because why not?)
@@ -71,6 +72,11 @@ Supported are:
 - Three vendor specific buttons (Options/TouchPad/PS on DS4, Start/Select/PS on DS3, +/-/Home on Switch, Start/Back/Guide on XInput)
 
 For the face buttons, I highly recommend to use some optical switches like the ridiculously expensive Sanwa OBSA-LHSXF or [steelpuxnastik's excellent DIY switches](https://github.com/steelpuxnastik/SHINSANWASWITCH) for an authentic feel.
+
+
+### Button LEDs
+
+Illumination for the four face buttons can be controlled by GPIO pins. I recommend to not directly hook up the LEDs to the GPIO pins, but rather use a simple transistor based driving circuit since the power than can be delivered through the GPIOs is rather limited.
 
 ### Touch Slider
 

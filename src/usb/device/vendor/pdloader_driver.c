@@ -135,8 +135,13 @@ static bool receive_pdloader_report(uint8_t const *buf, uint32_t size) {
 
     // If the buffer is full our report is complete and we can use the data and restart
     if (reassemble_buffer_write_offset >= sizeof(reassemble_buffer)) {
-        usb_player_led_t player_led = {.type = USB_PLAYER_LED_ID, .id = (uint8_t)(reassemble_buffer[3] >> 4)};
-        usbd_driver_get_player_led_cb()(player_led);
+        usb_button_led_t buttons_leds = {
+            .north = (reassemble_buffer[3] >> 6) & 0x0001,
+            .east = (reassemble_buffer[3] >> 5) & 0x0001,
+            .south = (reassemble_buffer[3] >> 7) & 0x0001,
+            .west = (reassemble_buffer[3] >> 4) & 0x0001,
+        };
+        usbd_driver_get_button_led_cb()(buttons_leds);
         usbd_driver_get_slider_led_cb()(&reassemble_buffer[4], sizeof(reassemble_buffer) - 4);
 
         reassemble_buffer_write_offset = 0;
