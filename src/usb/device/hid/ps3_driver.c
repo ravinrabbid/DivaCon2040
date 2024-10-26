@@ -181,12 +181,14 @@ void hid_ps3_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
                            uint16_t bufsize) {
     (void)itf;
 
-    if (report_type == HID_REPORT_TYPE_INVALID) {
-        if (bufsize > 0) {
-            report_id = buffer[0];
-            buffer = &buffer[1];
-            bufsize--;
-        }
+    if (report_type != HID_REPORT_TYPE_OUTPUT) {
+        return;
+    }
+
+    if (report_id == 0 && bufsize > 0) {
+        report_id = buffer[0];
+        buffer = &buffer[1];
+        bufsize--;
     }
 
     switch (report_id) {

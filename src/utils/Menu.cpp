@@ -9,7 +9,7 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
       {{"Mode", Menu::Descriptor::Action::GotoPageDeviceMode},          //
        {"Brightness", Menu::Descriptor::Action::GotoPageLedBrightness}, //
        {"Reset", Menu::Descriptor::Action::GotoPageReset},              //
-       {"BOOTSEL", Menu::Descriptor::Action::GotoPageBootsel}}}},       //
+       {"USB Flash", Menu::Descriptor::Action::GotoPageBootsel}}}},     //
 
     {Menu::Page::DeviceMode,                                                 //
      {Menu::Descriptor::Type::Selection,                                     //
@@ -39,7 +39,7 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
     {Menu::Page::Bootsel, //
      {
          Menu::Descriptor::Type::Selection, //
-         "Reboot to BOOTSEL",               //
+         "Reboot to Flash Mode",            //
          {{"Reboot?", Menu::Descriptor::Action::DoRebootToBootsel}},
      }}, //
 

@@ -73,7 +73,6 @@ Supported are:
 
 For the face buttons, I highly recommend to use some optical switches like the ridiculously expensive Sanwa OBSA-LHSXF or [steelpuxnastik's excellent DIY switches](https://github.com/steelpuxnastik/SHINSANWASWITCH) for an authentic feel.
 
-
 ### Button LEDs
 
 Illumination for the four face buttons can be controlled by GPIO pins. I recommend to not directly hook up the LEDs to the GPIO pins, but rather use a simple transistor based driving circuit since the power than can be delivered through the GPIOs is rather limited.

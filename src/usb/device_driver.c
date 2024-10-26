@@ -1,11 +1,11 @@
 #include "usb/device_driver.h"
 
-#include "usb/device/debug_driver.h"
 #include "usb/device/hid/keyboard_driver.h"
 #include "usb/device/hid/ps3_driver.h"
 #include "usb/device/hid/ps4_driver.h"
 #include "usb/device/hid/switch_driver.h"
 #include "usb/device/midi_driver.h"
+#include "usb/device/vendor/debug_driver.h"
 #include "usb/device/vendor/pdloader_driver.h"
 #include "usb/device/vendor/xinput_driver.h"
 

@@ -121,7 +121,7 @@ void tud_midi_rx_cb(uint8_t itf) {
     }
 }
 
-const usbd_class_driver_t midi_app_driver = {
+static const usbd_class_driver_t midi_app_driver = {
 #if CFG_TUSB_DEBUG >= 2
     .name = "MIDI",
 #endif

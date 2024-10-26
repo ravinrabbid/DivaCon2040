@@ -235,7 +235,7 @@ static bool xinput_xfer_cb(uint8_t rhport, uint8_t ep_addr, xfer_result_t result
     return true;
 }
 
-const usbd_class_driver_t xinput_app_driver = {
+static const usbd_class_driver_t xinput_app_driver = {
 #if CFG_TUSB_DEBUG >= 2
     .name = "XINPUT",
 #endif
