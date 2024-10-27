@@ -193,11 +193,10 @@ int main() {
             }
 
             readSettings();
+            input_state.releaseAll();
 
         } else if (input_state.checkHotkey()) {
             menu.activate();
-
-            input_state.releaseAll();
 
             ControlMessage ctrl_message{ControlCommand::EnterMenu, {}};
             queue_add_blocking(&control_queue, &ctrl_message);
