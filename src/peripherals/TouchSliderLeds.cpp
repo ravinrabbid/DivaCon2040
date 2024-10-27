@@ -23,8 +23,15 @@ void TouchSliderLeds::setPlayerColor(TouchSliderLeds::Config::Color color) { m_p
 void TouchSliderLeds::setUsePlayerColor(bool do_use) { m_config.use_player_color = do_use; };
 
 static uint32_t get_dimmed_pixel(TouchSliderLeds::Config::Color color, uint8_t dim) {
-    float dim_factor = dim / 255.;
-    return ws2812_rgb_to_gamma_corrected_u32pixel(color.r * dim_factor, color.g * dim_factor, color.b * dim_factor);
+    float dim_factor = (float)dim / 255.;
+    return ws2812_rgb_to_gamma_corrected_u32pixel((float)color.r * dim_factor, (float)color.g * dim_factor,
+                                                  (float)color.b * dim_factor);
+}
+
+static uint32_t get_dimmed_raw_pixel(TouchSliderLeds::Config::Color color, uint8_t dim, uint8_t max) {
+    float dim_factor = (float)dim / (float)max;
+    return ws2812_rgb_to_u32pixel((float)color.r * dim_factor, (float)color.g * dim_factor,
+                                  (float)color.b * dim_factor);
 }
 
 void TouchSliderLeds::update() {
@@ -95,8 +102,14 @@ void TouchSliderLeds::update(const TouchSliderLeds::RawFrameMessage &frame) {
     size_t idx = 0;
     for (const auto &color : frame) {
         for (int led = 0; led < m_config.leds_per_segment; ++led) {
-            // Raw frames are already gamma corrected.
-            m_frame.at((idx * m_config.leds_per_segment) + led) = ws2812_rgb_to_u32pixel(color.r, color.g, color.b);
+            // Allow limiting max brightness to stay within USB power restrictions.
+            uint8_t color_max = std::max(color.r, std::max(color.g, color.b));
+            if (color_max > m_config.brightness) {
+                m_frame.at((idx * m_config.leds_per_segment) + led) =
+                    get_dimmed_raw_pixel(color, m_config.brightness, color_max);
+            } else {
+                m_frame.at((idx * m_config.leds_per_segment) + led) = ws2812_rgb_to_u32pixel(color.r, color.g, color.b);
+            }
         }
         ++idx;
     }
