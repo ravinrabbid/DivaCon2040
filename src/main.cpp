@@ -29,6 +29,7 @@ enum class ControlCommand {
     SetPlayerLed,
     SetButtonLed,
     SetLedBrightness,
+    SetUsePlayerColor,
     EnterMenu,
     ExitMenu,
 };
@@ -40,6 +41,7 @@ struct ControlMessage {
         usb_player_led_t player_led;
         usb_button_led_t button_led;
         uint8_t brightness;
+        bool use_player_color;
     } data;
 };
 
@@ -74,6 +76,9 @@ void core1_task() {
                 break;
             case ControlCommand::SetLedBrightness:
                 sliderleds.setBrightness(control_msg.data.brightness);
+                break;
+            case ControlCommand::SetUsePlayerColor:
+                sliderleds.setUsePlayerColor(control_msg.data.use_player_color);
                 break;
             case ControlCommand::EnterMenu:
                 display.showMenu();
@@ -161,6 +166,9 @@ int main() {
         queue_add_blocking(&control_queue, &ctrl_message);
 
         ctrl_message = {ControlCommand::SetLedBrightness, {.brightness = settings_store->getLedBrightness()}};
+        queue_add_blocking(&control_queue, &ctrl_message);
+
+        ctrl_message = {ControlCommand::SetUsePlayerColor, {.use_player_color = settings_store->getUsePlayerColor()}};
         queue_add_blocking(&control_queue, &ctrl_message);
 
         touch_slider.setMode(settings_store->getSliderMode());

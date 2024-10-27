@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <array>
+#include <optional>
 #include <stdint.h>
 #include <vector>
 
@@ -21,10 +22,13 @@ class TouchSliderLeds {
         bool is_rgbw;
         bool reverse;
         uint16_t leds_per_segment;
+
         uint8_t brightness;
         uint8_t fade_speed;
         Color background_color;
         Color touched_color;
+
+        bool use_player_color;
     };
 
     using RawFrameMessage = std::array<Config::Color, 32>;
@@ -37,6 +41,8 @@ class TouchSliderLeds {
     uint8_t m_background_brightness;
     std::array<uint8_t, 32> m_touched_brightness;
 
+    std::optional<Config::Color> m_player_color;
+
     bool m_raw_mode;
 
   public:
@@ -45,6 +51,7 @@ class TouchSliderLeds {
     void setBrightness(uint8_t brightness);
     void setTouched(uint32_t touched);
     void setPlayerColor(Config::Color color);
+    void setUsePlayerColor(bool do_use);
 
     void update();
     void update(const RawFrameMessage &frame);

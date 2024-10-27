@@ -8,6 +8,7 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
       "Settings",                                                       //
       {{"Mode", Menu::Descriptor::Action::GotoPageDeviceMode},          //
        {"Brightness", Menu::Descriptor::Action::GotoPageLedBrightness}, //
+       {"Plyr Color", Menu::Descriptor::Action::GotoPagePlayerColor},   //
        {"Reset", Menu::Descriptor::Action::GotoPageReset},              //
        {"USB Flash", Menu::Descriptor::Action::GotoPageBootsel}}}},     //
 
@@ -29,6 +30,11 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
      {Menu::Descriptor::Type::Value,                        //
       "LED Brightness",                                     //
       {{"", Menu::Descriptor::Action::SetLedBrightness}}}}, //
+
+    {Menu::Page::UsePlayerColor,                             //
+     {Menu::Descriptor::Type::Toggle,                        //
+      "Player Color (PS4)",                                  //
+      {{"", Menu::Descriptor::Action::SetUsePlayerColor}}}}, //
 
     {Menu::Page::Reset,                               //
      {Menu::Descriptor::Type::Selection,              //
@@ -132,6 +138,9 @@ uint8_t Menu::getCurrentSelection(Menu::Page page) {
     case Page::LedBrightness:
         return m_store->getLedBrightness();
         break;
+    case Page::UsePlayerColor:
+        return m_store->getUsePlayerColor();
+        break;
     case Page::Main:
     case Page::Reset:
     case Page::Bootsel:
@@ -159,6 +168,9 @@ void Menu::performSelectionAction(Menu::Descriptor::Action action) {
         break;
     case Descriptor::Action::GotoPageLedBrightness:
         gotoPage(Page::LedBrightness);
+        break;
+    case Descriptor::Action::GotoPagePlayerColor:
+        gotoPage(Page::UsePlayerColor);
         break;
     case Descriptor::Action::GotoPageReset:
         gotoPage(Page::Reset);
@@ -219,6 +231,9 @@ void Menu::performSelectionAction(Menu::Descriptor::Action action) {
     case Descriptor::Action::SetLedBrightness:
         gotoParent();
         break;
+    case Descriptor::Action::SetUsePlayerColor:
+        gotoParent();
+        break;
     case Descriptor::Action::DoReset:
         m_store->reset();
         break;
@@ -250,6 +265,22 @@ void Menu::performValueAction(Menu::Descriptor::Action action, uint8_t value) {
     }
 }
 
+void Menu::performToggleAction(Menu::Descriptor::Action action, bool toggle) {
+    auto descriptor_it = descriptors.find(m_state_stack.top().page);
+    if (descriptor_it == descriptors.end()) {
+        assert(false);
+        return;
+    }
+
+    switch (action) {
+    case Descriptor::Action::SetUsePlayerColor:
+        m_store->setUsePlayerColor(toggle);
+        break;
+    default:
+        break;
+    }
+}
+
 void Menu::update(const InputState &input_state) {
     InputState::Buttons pressed = checkPressed(input_state);
     State &current_state = m_state_stack.top();
@@ -270,6 +301,10 @@ void Menu::update(const InputState &input_state) {
                 performValueAction(descriptor_it->second.items.at(0).second, current_state.selection);
             }
             break;
+        case Descriptor::Type::Toggle:
+            current_state.selection = !current_state.selection;
+            performToggleAction(descriptor_it->second.items.at(0).second, current_state.selection);
+            break;
         case Descriptor::Type::Selection:
         case Descriptor::Type::Root:
             if (current_state.selection == 0) {
@@ -289,6 +324,10 @@ void Menu::update(const InputState &input_state) {
                 performValueAction(descriptor_it->second.items.at(0).second, current_state.selection);
             }
             break;
+        case Descriptor::Type::Toggle:
+            current_state.selection = !current_state.selection;
+            performToggleAction(descriptor_it->second.items.at(0).second, current_state.selection);
+            break;
         case Descriptor::Type::Selection:
         case Descriptor::Type::Root:
             if (current_state.selection == descriptor_it->second.items.size() - 1) {
@@ -303,6 +342,7 @@ void Menu::update(const InputState &input_state) {
     } else if (pressed.south) {
         switch (descriptor_it->second.type) {
         case Descriptor::Type::Value:
+        case Descriptor::Type::Toggle:
         case Descriptor::Type::Selection:
             gotoParent();
             break;
@@ -315,6 +355,7 @@ void Menu::update(const InputState &input_state) {
     } else if (pressed.east) {
         switch (descriptor_it->second.type) {
         case Descriptor::Type::Value:
+        case Descriptor::Type::Toggle:
             performSelectionAction(descriptor_it->second.items.at(0).second);
             break;
         case Descriptor::Type::Selection:

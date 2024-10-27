@@ -8,7 +8,7 @@ namespace Divacon::Peripherals {
 
 TouchSliderLeds::TouchSliderLeds(const Config &config)
     : m_config(config), m_touched(0), m_background_brightness(config.brightness), m_touched_brightness({}),
-      m_raw_mode(false) {
+      m_player_color(std::nullopt), m_raw_mode(false) {
     m_frame = std::vector<uint32_t>(32 * config.leds_per_segment, ws2812_rgb_to_u32pixel(0, 0, 0));
 
     ws2812_init(config.led_pin, m_config.is_rgbw);
@@ -18,7 +18,9 @@ void TouchSliderLeds::setBrightness(uint8_t brightness) { m_config.brightness = 
 
 void TouchSliderLeds::setTouched(uint32_t touched) { m_touched = touched; }
 
-void TouchSliderLeds::setPlayerColor(TouchSliderLeds::Config::Color color) { m_config.background_color = color; }
+void TouchSliderLeds::setPlayerColor(TouchSliderLeds::Config::Color color) { m_player_color = color; }
+
+void TouchSliderLeds::setUsePlayerColor(bool do_use) { m_config.use_player_color = do_use; };
 
 static uint32_t get_dimmed_pixel(TouchSliderLeds::Config::Color color, uint8_t dim) {
     float dim_factor = dim / 255.;
@@ -48,7 +50,14 @@ void TouchSliderLeds::update() {
     }
 
     for (uint8_t bit = 0; bit < 32; ++bit) {
-        uint32_t segment_color = get_dimmed_pixel(m_config.background_color, m_background_brightness);
+        uint32_t segment_color;
+
+        if (m_config.use_player_color) {
+            segment_color =
+                get_dimmed_pixel(m_player_color.value_or(m_config.background_color), m_background_brightness);
+        } else {
+            segment_color = get_dimmed_pixel(m_config.background_color, m_background_brightness);
+        }
 
         if (m_touched) {
             auto is_touched = [this](uint8_t bit) {

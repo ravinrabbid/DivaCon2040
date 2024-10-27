@@ -45,6 +45,7 @@ const Peripherals::Buttons::Config buttons_config = {
 };
 
 const Peripherals::ButtonLeds::Config button_leds_config = {
+    // Pin config
     {
         22, // North
         5,  // East
@@ -68,14 +69,17 @@ const Peripherals::TouchSlider::Config touch_slider_config = {
 };
 
 const Peripherals::TouchSliderLeds::Config touch_slider_leds_config = {
-    28,              // LED Pin
-    false,           // Is RGBW strip
-    true,            // Reverse LED order
-    2,               // LEDs per segment
+    28,    // LED Pin
+    false, // Is RGBW strip
+    true,  // Reverse LED order
+    2,     // LEDs per segment
+
     128,             // Brightness
     96,              // Fade speed
     {235, 85, 120},  // Background color
     {140, 255, 220}, // Touched color
+
+    true, // Use Player Color (PS4 only)
 };
 
 const Peripherals::Display::Config display_config = {

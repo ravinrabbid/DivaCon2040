@@ -15,6 +15,7 @@ SettingsStore::SettingsStore()
                      Config::Default::usb_mode,
                      Config::Default::touch_slider_config.mode,
                      Config::Default::touch_slider_leds_config.brightness,
+                     Config::Default::touch_slider_leds_config.use_player_color,
                      {}}),
       m_dirty(true), m_scheduled_reboot(RebootType::None) {
 
@@ -61,6 +62,15 @@ void SettingsStore::setLedBrightness(uint8_t brightness) {
     }
 }
 uint8_t SettingsStore::getLedBrightness() { return m_store_cache.led_brightness; }
+
+void SettingsStore::setUsePlayerColor(bool do_use) {
+    if (m_store_cache.use_player_color != do_use) {
+        m_store_cache.use_player_color = do_use;
+        m_dirty = true;
+    }
+}
+
+bool SettingsStore::getUsePlayerColor() { return m_store_cache.use_player_color; };
 
 void SettingsStore::store() {
     if (m_dirty) {

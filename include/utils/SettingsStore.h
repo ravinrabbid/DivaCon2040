@@ -21,9 +21,10 @@ class SettingsStore {
         usb_mode_t usb_mode;
         Peripherals::TouchSlider::Config::Mode slider_mode;
         uint8_t led_brightness;
+        bool use_player_color;
 
         uint8_t _padding[m_store_size - sizeof(uint8_t) - sizeof(usb_mode_t) -
-                         sizeof(Peripherals::TouchSlider::Config::Mode) - sizeof(uint8_t)];
+                         sizeof(Peripherals::TouchSlider::Config::Mode) - sizeof(uint8_t) - sizeof(bool)];
     };
     static_assert(sizeof(Storecache) == m_store_size);
 
@@ -52,6 +53,9 @@ class SettingsStore {
 
     void setLedBrightness(uint8_t brightness);
     uint8_t getLedBrightness();
+
+    void setUsePlayerColor(bool do_use);
+    bool getUsePlayerColor();
 
     void scheduleReboot(bool bootsel = false);
 

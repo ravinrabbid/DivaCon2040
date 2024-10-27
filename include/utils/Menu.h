@@ -19,6 +19,7 @@ class Menu {
         Main,
         DeviceMode,
         LedBrightness,
+        UsePlayerColor,
         Reset,
         Bootsel,
         BootselMsg,
@@ -34,6 +35,7 @@ class Menu {
             Root,
             Selection,
             Value,
+            Toggle,
             RebootInfo,
         };
 
@@ -43,6 +45,7 @@ class Menu {
 
             GotoPageDeviceMode,
             GotoPageLedBrightness,
+            GotoPagePlayerColor,
             GotoPageReset,
             GotoPageBootsel,
 
@@ -58,6 +61,8 @@ class Menu {
             ChangeUsbModeDebug,
 
             SetLedBrightness,
+
+            SetUsePlayerColor,
 
             DoReset,
             DoRebootToBootsel,
@@ -80,6 +85,7 @@ class Menu {
     void gotoParent();
     void performSelectionAction(Descriptor::Action action);
     void performValueAction(Descriptor::Action action, uint8_t value);
+    void performToggleAction(Descriptor::Action action, bool toggle);
 
   public:
     Menu(std::shared_ptr<SettingsStore> settings_store);

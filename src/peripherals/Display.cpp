@@ -305,6 +305,7 @@ void Display::drawMenuScreen() {
         break;
     case Utils::Menu::Descriptor::Type::Selection:
     case Utils::Menu::Descriptor::Type::Value:
+    case Utils::Menu::Descriptor::Type::Toggle:
         ssd1306_bmp_show_image(&m_display, menu_screen_sub.data(), menu_screen_sub.size());
         break;
     case Utils::Menu::Descriptor::Type::RebootInfo:
@@ -325,6 +326,9 @@ void Display::drawMenuScreen() {
     case Utils::Menu::Descriptor::Type::Value:
         selection = std::to_string(m_menu_state.selection);
         break;
+    case Utils::Menu::Descriptor::Type::Toggle:
+        selection = m_menu_state.selection ? "On" : "Off";
+        break;
     }
     ssd1306_draw_string(&m_display, (127 - (selection.length() * 12)) / 2, 15, 2, selection.c_str());
 
@@ -344,6 +348,7 @@ void Display::drawMenuScreen() {
     case Utils::Menu::Descriptor::Type::RebootInfo:
         break;
     case Utils::Menu::Descriptor::Type::Value:
+    case Utils::Menu::Descriptor::Type::Toggle:
         break;
     }
 }
