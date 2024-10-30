@@ -82,13 +82,13 @@ void usbd_driver_task() { tud_task(); }
 usb_mode_t usbd_driver_get_mode() { return usbd_mode; }
 
 void usbd_driver_send_report(usb_report_t report) {
-    static const uint32_t interval_ms = 1;
-    static uint32_t start_ms = 0;
+    static const uint64_t interval_us = 900;
+    static uint64_t start_us = 0;
 
-    if (board_millis() - start_ms < interval_ms) {
+    if (to_us_since_boot(get_absolute_time()) - start_us <= interval_us) {
         return;
     }
-    start_ms += interval_ms;
+    start_us += interval_us;
 
     if (tud_suspended()) {
         tud_remote_wakeup();
