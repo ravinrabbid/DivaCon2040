@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#define USBD_PS4_NAME "Dualshock4 Emulation"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

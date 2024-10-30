@@ -46,8 +46,8 @@ const uint8_t keyboard_desc_hid_report[] = {
 uint8_t const keyboard_desc_cfg[] = {
     TUD_CONFIG_DESCRIPTOR(0x01, USBD_ITF_MAX, USBD_STR_LANGUAGE, USBD_KEYBOARD_DESC_LEN,
                           TUSB_DESC_CONFIG_ATT_REMOTE_WAKEUP, USBD_MAX_POWER_MAX),
-    TUD_HID_DESCRIPTOR(USBD_ITF_HID, USBD_STR_KEYBOARD, HID_ITF_PROTOCOL_KEYBOARD, sizeof(keyboard_desc_hid_report),
-                       0x81, CFG_TUD_HID_EP_BUFSIZE, 1),
+    TUD_HID_DESCRIPTOR(USBD_ITF_HID, 0, HID_ITF_PROTOCOL_KEYBOARD, sizeof(keyboard_desc_hid_report), 0x81,
+                       CFG_TUD_HID_EP_BUFSIZE, 1),
 };
 
 static hid_keyboard_report_t last_report = {};
@@ -87,6 +87,7 @@ void hid_keyboard_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_
 }
 
 const usbd_driver_t hid_keyboard_device_driver = {
+    .name = "Keyboard",
     .app_driver = &hid_app_driver,
     .desc_device = &keyboard_desc_device,
     .desc_cfg = keyboard_desc_cfg,

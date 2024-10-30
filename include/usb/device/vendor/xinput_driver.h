@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#define USBD_XINPUT_NAME "XInput Gamepad"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

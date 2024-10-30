@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#define USBD_KEYBOARD_NAME "Keyboard Mode"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

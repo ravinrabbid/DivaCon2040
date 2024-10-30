@@ -289,8 +289,7 @@ const uint8_t ps4_desc_hid_report[] = {
 #define USBD_PS4_DESC_LEN (TUD_CONFIG_DESC_LEN + TUD_HID_INOUT_DESC_LEN)
 const uint8_t ps4_desc_cfg[] = {
     TUD_CONFIG_DESCRIPTOR(1, USBD_ITF_MAX, USBD_STR_LANGUAGE, USBD_PS4_DESC_LEN, 0, USBD_MAX_POWER_MAX),
-    TUD_HID_INOUT_DESCRIPTOR(USBD_ITF_HID, USBD_STR_PS4, 0, sizeof(ps4_desc_hid_report), 0x03, 0x84,
-                             CFG_TUD_HID_EP_BUFSIZE, 1),
+    TUD_HID_INOUT_DESCRIPTOR(USBD_ITF_HID, 0, 0, sizeof(ps4_desc_hid_report), 0x03, 0x84, CFG_TUD_HID_EP_BUFSIZE, 1),
 };
 
 // MAC Address
@@ -414,6 +413,7 @@ void hid_ps4_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
 }
 
 const usbd_driver_t hid_ds4_device_driver = {
+    .name = "DS4",
     .app_driver = &hid_app_driver,
     .desc_device = &ds4_desc_device,
     .desc_cfg = ps4_desc_cfg,
@@ -422,6 +422,7 @@ const usbd_driver_t hid_ds4_device_driver = {
 };
 
 const usbd_driver_t hid_ps4_divacon_device_driver = {
+    .name = "PS4 Arcade",
     .app_driver = &hid_app_driver,
     .desc_device = &ps4_divacon_desc_device,
     .desc_cfg = ps4_desc_cfg,

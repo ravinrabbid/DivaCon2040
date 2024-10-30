@@ -5,9 +5,6 @@
 
 #include <stdint.h>
 
-#define USBD_DEBUG_CDC_NAME "Serial Debug"
-#define USBD_DEBUG_RESET_NAME "Picotool Reset"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

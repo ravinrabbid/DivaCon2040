@@ -45,9 +45,9 @@ enum {
 
 const uint8_t debug_desc_cfg[USBD_DESC_LEN] = {
     TUD_CONFIG_DESCRIPTOR(1, USBD_ITF_MAX, USBD_STR_LANGUAGE, USBD_DESC_LEN, 0, USBD_MAX_POWER_MAX),
-    TUD_CDC_DESCRIPTOR(USBD_ITF_CDC, USBD_STR_CDC, USBD_CDC_EP_CMD, USBD_CDC_CMD_MAX_SIZE, USBD_CDC_EP_OUT,
-                       USBD_CDC_EP_IN, USBD_CDC_IN_OUT_MAX_SIZE),
-    TUD_RPI_RESET_DESCRIPTOR(USBD_ITF_RPI_RESET, USBD_STR_RPI_RESET),
+    TUD_CDC_DESCRIPTOR(USBD_ITF_CDC, 0, USBD_CDC_EP_CMD, USBD_CDC_CMD_MAX_SIZE, USBD_CDC_EP_OUT, USBD_CDC_EP_IN,
+                       USBD_CDC_IN_OUT_MAX_SIZE),
+    TUD_RPI_RESET_DESCRIPTOR(USBD_ITF_RPI_RESET, 0),
 };
 
 #define TUD_DEBUG_MS_OS_20_DESC_LEN 166
@@ -159,6 +159,7 @@ static usbd_class_driver_t const debug_app_driver = {
     .sof = NULL};
 
 const usbd_driver_t debug_device_driver = {
+    .name = "Debug",
     .app_driver = &debug_app_driver,
     .desc_device = &debug_desc_device,
     .desc_cfg = debug_desc_cfg,

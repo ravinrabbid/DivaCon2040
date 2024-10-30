@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#define USBD_SWITCH_NAME "Switch Horipad Emulation"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

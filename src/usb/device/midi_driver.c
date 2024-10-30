@@ -133,6 +133,7 @@ static const usbd_class_driver_t midi_app_driver = {
     .sof = NULL};
 
 const usbd_driver_t midi_device_driver = {
+    .name = "MIDI",
     .app_driver = &midi_app_driver,
     .desc_device = &midi_desc_device,
     .desc_cfg = midi_desc_cfg,

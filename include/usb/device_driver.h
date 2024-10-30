@@ -5,8 +5,8 @@
 
 #include <stdint.h>
 
-#define USBD_MANUFACTURER "Project DivaCon"
-#define USBD_PRODUCT "DivaCon rev1"
+#define USBD_MANUFACTURER "DivaCon2040"
+#define USBD_PRODUCT_BASE "Project Diva Controller"
 
 #define USBD_MAX_POWER_MAX (500)
 
@@ -32,15 +32,6 @@ enum {
     USBD_STR_MANUFACTURER,
     USBD_STR_PRODUCT,
     USBD_STR_SERIAL,
-    USBD_STR_CDC,
-    USBD_STR_SWITCH,
-    USBD_STR_PS3,
-    USBD_STR_PS4,
-    USBD_STR_KEYBOARD,
-    USBD_STR_XINPUT,
-    USBD_STR_PDLOADER,
-    USBD_STR_MIDI,
-    USBD_STR_RPI_RESET,
 };
 
 typedef struct {
@@ -49,6 +40,7 @@ typedef struct {
 } usb_report_t;
 
 typedef struct {
+    const char *name;
     const usbd_class_driver_t *app_driver;
     // Descriptors
     const tusb_desc_device_t *desc_device;

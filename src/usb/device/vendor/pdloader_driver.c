@@ -40,8 +40,7 @@ enum {
 
 const uint8_t pdloader_desc_cfg[] = {
     TUD_CONFIG_DESCRIPTOR(1, USBD_ITF_MAX, USBD_STR_LANGUAGE, USBD_DESC_LEN, 0, USBD_MAX_POWER_MAX),
-    TUD_PDLOADER_DESCRIPTOR(USBD_ITF_PDLOADER, USBD_STR_PDLOADER, TUD_PDLOADER_EP_OUT, TUD_PDLOADER_EP_IN,
-                            TUD_PDLOADER_EP_BUFSIZE, 1),
+    TUD_PDLOADER_DESCRIPTOR(USBD_ITF_PDLOADER, 0, TUD_PDLOADER_EP_OUT, TUD_PDLOADER_EP_IN, TUD_PDLOADER_EP_BUFSIZE, 1),
 };
 
 #define TUD_PDLOADER_MS_OS_20_DESC_LEN 162
@@ -217,6 +216,7 @@ static const usbd_class_driver_t pdloader_app_driver = {
     .sof = NULL};
 
 const usbd_driver_t pdloader_device_driver = {
+    .name = "PD-Loader",
     .app_driver = &pdloader_app_driver,
     .desc_device = &pdloader_desc_device,
     .desc_cfg = pdloader_desc_cfg,

@@ -5,8 +5,6 @@
 
 #include <stdint.h>
 
-#define USBD_MIDI_NAME "MIDI Controller"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

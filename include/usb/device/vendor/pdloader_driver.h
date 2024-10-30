@@ -5,8 +5,6 @@
 
 #include <stdint.h>
 
-#define USBD_PDLOADER_NAME "PD-Loader Arcade Controller"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

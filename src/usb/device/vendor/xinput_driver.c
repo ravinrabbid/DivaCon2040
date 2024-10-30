@@ -47,7 +47,7 @@ enum {
 
 const uint8_t xinput_desc_cfg[USBD_DESC_LEN] = {
     TUD_CONFIG_DESCRIPTOR(1, USBD_ITF_MAX, USBD_STR_LANGUAGE, USBD_DESC_LEN, 0, USBD_MAX_POWER_MAX),
-    TUD_XINPUT_DESCRIPTOR(USBD_ITF_XINPUT, USBD_STR_XINPUT, TUD_XINPUT_EP_OUT, TUD_XINPUT_EP_IN, TUD_XINPUT_EP_BUFSIZE),
+    TUD_XINPUT_DESCRIPTOR(USBD_ITF_XINPUT, 0, TUD_XINPUT_EP_OUT, TUD_XINPUT_EP_IN, TUD_XINPUT_EP_BUFSIZE),
 };
 
 typedef struct __attribute((packed, aligned(1))) {
@@ -247,6 +247,7 @@ static const usbd_class_driver_t xinput_app_driver = {
     .sof = NULL};
 
 const usbd_driver_t xinput_device_driver = {
+    .name = "XInput",
     .app_driver = &xinput_app_driver,
     .desc_device = &xinput_desc_device,
     .desc_cfg = xinput_desc_cfg,
