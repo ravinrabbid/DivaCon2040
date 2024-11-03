@@ -13,7 +13,6 @@ static uint8_t read_byte(uint32_t offset) { return *(reinterpret_cast<uint8_t *>
 SettingsStore::SettingsStore()
     : m_store_cache({m_magic_byte,
                      Config::Default::usb_mode,
-                     Config::Default::touch_slider_config.mode,
                      Config::Default::touch_slider_leds_config.brightness,
                      Config::Default::touch_slider_leds_config.animation_speed,
                      Config::Default::touch_slider_leds_config.idle_mode,
@@ -49,14 +48,6 @@ void SettingsStore::setUsbMode(usb_mode_t mode) {
 }
 
 usb_mode_t SettingsStore::getUsbMode() { return m_store_cache.usb_mode; }
-
-void SettingsStore::setSliderMode(Peripherals::TouchSlider::Config::Mode mode) {
-    if (m_store_cache.slider_mode != mode) {
-        m_store_cache.slider_mode = mode;
-        m_dirty = true;
-    }
-}
-Peripherals::TouchSlider::Config::Mode SettingsStore::getSliderMode() { return m_store_cache.slider_mode; }
 
 void SettingsStore::setLedBrightness(uint8_t brightness) {
     if (m_store_cache.led_brightness != brightness) {

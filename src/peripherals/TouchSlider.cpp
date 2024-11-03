@@ -4,7 +4,7 @@
 
 namespace Divacon::Peripherals {
 
-TouchSlider::TouchSlider(const Config &config) : m_config(config), m_touched(0) {
+TouchSlider::TouchSlider(const Config &config, usb_mode_t mode) : m_config(config), m_mode(mode), m_touched(0) {
     i2c_init(m_config.i2c_block, m_config.i2c_speed_hz);
     gpio_set_function(m_config.sda_pin, GPIO_FUNC_I2C);
     gpio_set_function(m_config.scl_pin, GPIO_FUNC_I2C);
@@ -18,8 +18,6 @@ TouchSlider::TouchSlider(const Config &config) : m_config(config), m_touched(0) 
         idx++;
     }
 }
-
-void TouchSlider::setMode(Config::Mode mode) { m_config.mode = mode; };
 
 void TouchSlider::updateInputStateArcade(Utils::InputState &input_state) {
     // The 32bit state vector is mapped into the 4 8bit axes of the analog sticks, XORed
@@ -97,11 +95,20 @@ void TouchSlider::updateInputState(Utils::InputState &input_state) {
 
     read();
 
-    switch (m_config.mode) {
-    case Config::Mode::ARCADE:
+    switch (m_mode) {
+
+    case USB_MODE_SWITCH_DIVACON:
+    case USB_MODE_PS4_DIVACON:
+    case USB_MODE_PDLOADER:
+    case USB_MODE_MIDI:
+    case USB_MODE_DEBUG:
         updateInputStateArcade(input_state);
         break;
-    case Config::Mode::STICK:
+    case USB_MODE_SWITCH_HORIPAD:
+    case USB_MODE_DUALSHOCK3:
+    case USB_MODE_DUALSHOCK4:
+    case USB_MODE_XBOX360:
+    case USB_MODE_KEYBOARD:
         updateInputStateStick(input_state);
         break;
     }

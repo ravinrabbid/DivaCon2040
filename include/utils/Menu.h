@@ -7,7 +7,6 @@
 #include <map>
 #include <memory>
 #include <stack>
-#include <stddef.h>
 #include <string>
 #include <vector>
 
@@ -17,26 +16,30 @@ class Menu {
   public:
     enum class Page {
         Main,
+
         DeviceMode,
         Led,
+        Reset,
+        Bootsel,
+
         LedBrightness,
         LedAnimationSpeed,
         LedIdleMode,
         LedTouchedMode,
-        UsePlayerColor,
-        Reset,
-        Bootsel,
+        LedUsePlayerColor,
+
         BootselMsg,
     };
 
     struct State {
         Page page;
-        uint8_t selection;
+        uint8_t selected_value;
+        uint8_t original_value;
     };
 
     struct Descriptor {
         enum class Type {
-            Root,
+            Menu,
             Selection,
             Value,
             Toggle,
@@ -57,32 +60,13 @@ class Menu {
             GotoPageReset,
             GotoPageBootsel,
 
-            ChangeUsbModeSwitchDivacon,
-            ChangeUsbModeSwitchHoripad,
-            ChangeUsbModeDS3,
-            ChangeUsbModePS4Divacon,
-            ChangeUsbModeDS4,
-            ChangeUsbModeXbox360,
-            ChangeUsbModePDLoader,
-            ChangeUsbModeKeyboard,
-            ChangeUsbModeMidi,
-            ChangeUsbModeDebug,
+            SetUsbMode,
 
-            ChangeLedIdleModeOff,
-            ChangeLedIdleModeStatic,
-            ChangeLedIdleModePulse,
-            ChangeLedIdleModeRainbowStatic,
-            ChangeLedIdleModeRainbowCycle,
-
-            ChangeLedTouchedModeOff,
-            ChangeLedTouchedModeIdle,
-            ChangeLedTouchedModeTouched,
-            ChangeLedTouchedModeTouchedFade,
-            ChangeLedTouchedModeTouchedIdle,
-
+            SetLedIdleMode,
+            SetLedTouchedMode,
             SetLedBrightness,
             SetLedAnimationSpeed,
-            SetUsePlayerColor,
+            SetLedUsePlayerColor,
 
             DoReset,
             DoRebootToBootsel,
@@ -100,12 +84,11 @@ class Menu {
     bool m_active;
     std::stack<State> m_state_stack;
 
-    uint8_t getCurrentSelection(Page page);
+    uint8_t getCurrentValue(Page page);
     void gotoPage(Page page);
-    void gotoParent();
-    void performSelectionAction(Descriptor::Action action);
-    void performValueAction(Descriptor::Action action, uint8_t value);
-    void performToggleAction(Descriptor::Action action, bool toggle);
+    void gotoParent(bool do_restore);
+
+    void performAction(Descriptor::Action action, uint8_t value);
 
   public:
     Menu(std::shared_ptr<SettingsStore> settings_store);

@@ -56,8 +56,6 @@ const Peripherals::ButtonLeds::Config button_leds_config = {
 };
 
 const Peripherals::TouchSlider::Config touch_slider_config = {
-    Peripherals::TouchSlider::Config::Mode::ARCADE, // Stick emulation mode
-
     12, // Touch threshold
     6,  // Release threshold
 

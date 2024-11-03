@@ -1,7 +1,6 @@
 #ifndef _UTILS_SETTINGSSTORE_H_
 #define _UTILS_SETTINGSSTORE_H_
 
-#include "peripherals/TouchSlider.h"
 #include "peripherals/TouchSliderLeds.h"
 #include "usb/device_driver.h"
 
@@ -20,15 +19,13 @@ class SettingsStore {
     struct __attribute((packed, aligned(1))) Storecache {
         uint8_t in_use;
         usb_mode_t usb_mode;
-        Peripherals::TouchSlider::Config::Mode slider_mode;
         uint8_t led_brightness;
         uint8_t led_animation_speed;
         Peripherals::TouchSliderLeds::Config::IdleMode led_idle_mode;
         Peripherals::TouchSliderLeds::Config::TouchedMode led_touched_mode;
         bool use_player_color;
 
-        uint8_t _padding[m_store_size - sizeof(uint8_t) - sizeof(usb_mode_t) -
-                         sizeof(Peripherals::TouchSlider::Config::Mode) - sizeof(uint8_t) - sizeof(uint8_t) -
+        uint8_t _padding[m_store_size - sizeof(uint8_t) - sizeof(usb_mode_t) - sizeof(uint8_t) - sizeof(uint8_t) -
                          sizeof(Peripherals::TouchSliderLeds::Config::IdleMode) -
                          sizeof(Peripherals::TouchSliderLeds::Config::TouchedMode) - sizeof(bool)];
     };
@@ -53,9 +50,6 @@ class SettingsStore {
 
     void setUsbMode(usb_mode_t mode);
     usb_mode_t getUsbMode();
-
-    void setSliderMode(Peripherals::TouchSlider::Config::Mode mode);
-    Peripherals::TouchSlider::Config::Mode getSliderMode();
 
     void setLedBrightness(uint8_t brightness);
     uint8_t getLedBrightness();

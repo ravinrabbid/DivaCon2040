@@ -138,7 +138,7 @@ static const std::array<uint8_t, 1154> menu_screen_top = {
 
 Display::Display(const Config &config)
     : m_config(config), m_state(State::Idle), m_touched(0), m_buttons({}), m_usb_mode(USB_MODE_DEBUG), m_player_id(0),
-      m_menu_state({Utils::Menu::Page::Main, 0}) {
+      m_menu_state({Utils::Menu::Page::Main, 0, 0}) {
 
     i2c_init(m_config.i2c_block, m_config.i2c_speed_hz);
     gpio_set_function(m_config.sda_pin, GPIO_FUNC_I2C);
@@ -300,8 +300,12 @@ void Display::drawMenuScreen() {
 
     // Background
     switch (descriptor_it->second.type) {
-    case Utils::Menu::Descriptor::Type::Root:
-        ssd1306_bmp_show_image(&m_display, menu_screen_top.data(), menu_screen_top.size());
+    case Utils::Menu::Descriptor::Type::Menu:
+        if (m_menu_state.page == Utils::Menu::Page::Main) {
+            ssd1306_bmp_show_image(&m_display, menu_screen_top.data(), menu_screen_top.size());
+        } else {
+            ssd1306_bmp_show_image(&m_display, menu_screen_sub.data(), menu_screen_sub.size());
+        }
         break;
     case Utils::Menu::Descriptor::Type::Selection:
     case Utils::Menu::Descriptor::Type::Value:
@@ -318,27 +322,27 @@ void Display::drawMenuScreen() {
     // Current Selection
     std::string selection;
     switch (descriptor_it->second.type) {
-    case Utils::Menu::Descriptor::Type::Root:
+    case Utils::Menu::Descriptor::Type::Menu:
     case Utils::Menu::Descriptor::Type::Selection:
     case Utils::Menu::Descriptor::Type::RebootInfo:
-        selection = descriptor_it->second.items.at(m_menu_state.selection).first;
+        selection = descriptor_it->second.items.at(m_menu_state.selected_value).first;
         break;
     case Utils::Menu::Descriptor::Type::Value:
-        selection = std::to_string(m_menu_state.selection);
+        selection = std::to_string(m_menu_state.selected_value);
         break;
     case Utils::Menu::Descriptor::Type::Toggle:
-        selection = m_menu_state.selection ? "On" : "Off";
+        selection = m_menu_state.selected_value ? "On" : "Off";
         break;
     }
     ssd1306_draw_string(&m_display, (127 - (selection.length() * 12)) / 2, 15, 2, selection.c_str());
 
     // Breadcrumbs
     switch (descriptor_it->second.type) {
-    case Utils::Menu::Descriptor::Type::Root:
+    case Utils::Menu::Descriptor::Type::Menu:
     case Utils::Menu::Descriptor::Type::Selection: {
         auto selection_count = descriptor_it->second.items.size();
         for (uint8_t i = 0; i < selection_count; ++i) {
-            if (i == m_menu_state.selection) {
+            if (i == m_menu_state.selected_value) {
                 ssd1306_draw_square(&m_display, ((127) - ((selection_count - i) * 6)) - 1, 2, 4, 4);
             } else {
                 ssd1306_draw_square(&m_display, (127) - ((selection_count - i) * 6), 3, 2, 2);

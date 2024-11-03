@@ -136,12 +136,13 @@ int main() {
     auto settings_store = std::make_shared<Utils::SettingsStore>();
     Utils::Menu menu(settings_store);
 
-    Peripherals::TouchSlider touch_slider(Config::Default::touch_slider_config);
+    auto mode = settings_store->getUsbMode();
+
+    Peripherals::TouchSlider touch_slider(Config::Default::touch_slider_config, mode);
     Peripherals::Buttons buttons(Config::Default::buttons_config);
 
     multicore_launch_core1(core1_task);
 
-    auto mode = settings_store->getUsbMode();
     usbd_driver_init(mode);
     usbd_driver_set_player_led_cb([](usb_player_led_t player_led) {
         auto ctrl_message = ControlMessage{ControlCommand::SetPlayerLed, {.player_led = player_led}};
@@ -191,8 +192,6 @@ int main() {
         queue_add_blocking(&control_queue, &ctrl_message);
         ctrl_message = {ControlCommand::SetUsePlayerColor, {.use_player_color = settings_store->getUsePlayerColor()}};
         queue_add_blocking(&control_queue, &ctrl_message);
-
-        touch_slider.setMode(settings_store->getSliderMode());
     };
 
     readSettings();
@@ -200,6 +199,8 @@ int main() {
     while (true) {
         buttons.updateInputState(input_state);
         touch_slider.updateInputState(input_state);
+
+        auto input_message = input_state.getInputMessage();
 
         if (menu.active()) {
             menu.update(input_state);
@@ -226,7 +227,6 @@ int main() {
         usbd_driver_send_report(input_state.getReport(mode));
         usbd_driver_task();
 
-        auto input_message = input_state.getInputMessage();
         queue_try_add(&input_queue, &input_message);
     }
 
