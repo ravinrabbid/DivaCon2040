@@ -16,6 +16,9 @@ class TouchSliderLeds {
   public:
     struct Config {
         struct Color {
+            bool operator==(const Color &rhs) const { return (r == rhs.r) && (g == rhs.g) && (b == rhs.b); }
+            bool operator!=(const Color &rhs) const { return !operator==(rhs); }
+
             uint8_t r;
             uint8_t g;
             uint8_t b;
@@ -81,6 +84,8 @@ class TouchSliderLeds {
     void setAnimationSpeed(uint8_t speed);
     void setIdleMode(Config::IdleMode mode);
     void setTouchedMode(Config::TouchedMode mode);
+    void setIdleColor(Config::Color color);
+    void setTouchedColor(Config::Color color);
     void setEnablePlayerColor(bool do_enable);
     void setEnablePdloaderSupport(bool do_enable);
 

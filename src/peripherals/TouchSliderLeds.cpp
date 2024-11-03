@@ -92,6 +92,8 @@ void TouchSliderLeds::setBrightness(uint8_t brightness) { m_config.brightness = 
 void TouchSliderLeds::setAnimationSpeed(uint8_t speed) { m_config.animation_speed = speed; };
 void TouchSliderLeds::setIdleMode(Config::IdleMode mode) { m_config.idle_mode = mode; };
 void TouchSliderLeds::setTouchedMode(Config::TouchedMode mode) { m_config.touched_mode = mode; };
+void TouchSliderLeds::setIdleColor(Config::Color color) { m_config.idle_color = color; };
+void TouchSliderLeds::setTouchedColor(Config::Color color) { m_config.touched_color = color; };
 void TouchSliderLeds::setEnablePlayerColor(bool do_enable) { m_config.enable_player_color = do_enable; };
 void TouchSliderLeds::setEnablePdloaderSupport(bool do_enable) { m_config.enable_pdloader_support = do_enable; };
 

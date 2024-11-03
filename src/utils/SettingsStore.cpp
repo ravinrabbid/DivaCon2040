@@ -17,6 +17,8 @@ SettingsStore::SettingsStore()
                      Config::Default::touch_slider_leds_config.animation_speed,
                      Config::Default::touch_slider_leds_config.idle_mode,
                      Config::Default::touch_slider_leds_config.touched_mode,
+                     Config::Default::touch_slider_leds_config.idle_color,
+                     Config::Default::touch_slider_leds_config.touched_color,
                      Config::Default::touch_slider_leds_config.enable_player_color,
                      Config::Default::touch_slider_leds_config.enable_pdloader_support,
                      {}}),
@@ -82,6 +84,24 @@ void SettingsStore::setLedTouchedMode(Peripherals::TouchSliderLeds::Config::Touc
 }
 Peripherals::TouchSliderLeds::Config::TouchedMode SettingsStore::getLedTouchedMode() {
     return m_store_cache.led_touched_mode;
+}
+
+void SettingsStore::setLedIdleColor(Peripherals::TouchSliderLeds::Config::Color color) {
+    if (m_store_cache.led_idle_color != color) {
+        m_store_cache.led_idle_color = color;
+        m_dirty = true;
+    }
+}
+Peripherals::TouchSliderLeds::Config::Color SettingsStore::getLedIdleColor() { return m_store_cache.led_idle_color; }
+
+void SettingsStore::setLedTouchedColor(Peripherals::TouchSliderLeds::Config::Color color) {
+    if (m_store_cache.led_touched_color != color) {
+        m_store_cache.led_touched_color = color;
+        m_dirty = true;
+    }
+}
+Peripherals::TouchSliderLeds::Config::Color SettingsStore::getLedTouchedColor() {
+    return m_store_cache.led_touched_color;
 }
 
 void SettingsStore::setLedEnablePlayerColor(bool do_enable) {

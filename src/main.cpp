@@ -32,6 +32,8 @@ enum class ControlCommand {
     SetLedAnimationSpeed,
     SetLedIdleMode,
     SetLedTouchedMode,
+    SetLedIdleColor,
+    SetLedTouchedColor,
     SetLedEnablePlayerColor,
     SetLedEnablePdloaderSupport,
     EnterMenu,
@@ -48,6 +50,8 @@ struct ControlMessage {
         uint8_t led_animation_speed;
         Peripherals::TouchSliderLeds::Config::IdleMode led_idle_mode;
         Peripherals::TouchSliderLeds::Config::TouchedMode led_touched_mode;
+        Peripherals::TouchSliderLeds::Config::Color led_idle_color;
+        Peripherals::TouchSliderLeds::Config::Color led_touched_color;
         bool led_enable_player_color;
         bool led_enable_pdloader_support;
     } data;
@@ -94,6 +98,12 @@ void core1_task() {
                 break;
             case ControlCommand::SetLedTouchedMode:
                 sliderleds.setTouchedMode(control_msg.data.led_touched_mode);
+                break;
+            case ControlCommand::SetLedIdleColor:
+                sliderleds.setIdleColor(control_msg.data.led_idle_color);
+                break;
+            case ControlCommand::SetLedTouchedColor:
+                sliderleds.setTouchedColor(control_msg.data.led_touched_color);
                 break;
             case ControlCommand::SetLedEnablePlayerColor:
                 sliderleds.setEnablePlayerColor(control_msg.data.led_enable_player_color);
@@ -196,6 +206,11 @@ int main() {
         ctrl_message = {ControlCommand::SetLedIdleMode, {.led_idle_mode = settings_store->getLedIdleMode()}};
         queue_add_blocking(&control_queue, &ctrl_message);
         ctrl_message = {ControlCommand::SetLedTouchedMode, {.led_touched_mode = settings_store->getLedTouchedMode()}};
+        queue_add_blocking(&control_queue, &ctrl_message);
+        ctrl_message = {ControlCommand::SetLedIdleColor, {.led_idle_color = settings_store->getLedIdleColor()}};
+        queue_add_blocking(&control_queue, &ctrl_message);
+        ctrl_message = {ControlCommand::SetLedTouchedColor,
+                        {.led_touched_color = settings_store->getLedTouchedColor()}};
         queue_add_blocking(&control_queue, &ctrl_message);
         ctrl_message = {ControlCommand::SetLedEnablePlayerColor,
                         {.led_enable_player_color = settings_store->getLedEnablePlayerColor()}};

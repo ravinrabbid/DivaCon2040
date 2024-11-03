@@ -25,9 +25,19 @@ class Menu {
         LedBrightness,
         LedAnimationSpeed,
         LedIdleMode,
+        LedIdleColor,
         LedTouchedMode,
+        LedTouchedColor,
         LedEnablePlayerColor,
         LedEnablePdloaderSupport,
+
+        LedIdleColorRed,
+        LedIdleColorGreen,
+        LedIdleColorBlue,
+
+        LedTouchedColorRed,
+        LedTouchedColorGreen,
+        LedTouchedColorBlue,
 
         BootselMsg,
     };
@@ -56,20 +66,38 @@ class Menu {
             GotoPageLedBrightness,
             GotoPageLedAnimationSpeed,
             GotoPageLedIdleMode,
+            GotoPageLedIdleColor,
             GotoPageLedTouchedMode,
+            GotoPageLedTouchedColor,
             GotoPageLedEnablePlayerColor,
             GotoPageLedEnablePdloaderSupport,
             GotoPageReset,
             GotoPageBootsel,
 
+            GotoPageLedIdleColorRed,
+            GotoPageLedIdleColorGreen,
+            GotoPageLedIdleColorBlue,
+
+            GotoPageLedTouchedColorRed,
+            GotoPageLedTouchedColorGreen,
+            GotoPageLedTouchedColorBlue,
+
             SetUsbMode,
 
-            SetLedIdleMode,
-            SetLedTouchedMode,
             SetLedBrightness,
             SetLedAnimationSpeed,
+            SetLedIdleMode,
+            SetLedTouchedMode,
             SetLedEnablePlayerColor,
             SetLedEnablePdloaderSupport,
+
+            SetLedIdleColorRed,
+            SetLedIdleColorGreen,
+            SetLedIdleColorBlue,
+
+            SetLedTouchedColorRed,
+            SetLedTouchedColorGreen,
+            SetLedTouchedColorBlue,
 
             DoReset,
             DoRebootToBootsel,
