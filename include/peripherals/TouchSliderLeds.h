@@ -49,7 +49,8 @@ class TouchSliderLeds {
         Color idle_color;
         Color touched_color;
 
-        bool use_player_color;
+        bool enable_player_color;
+        bool enable_pdloader_support;
     };
 
     using RawFrameMessage = std::array<Config::Color, SEGMENT_COUNT>;
@@ -80,7 +81,8 @@ class TouchSliderLeds {
     void setAnimationSpeed(uint8_t speed);
     void setIdleMode(Config::IdleMode mode);
     void setTouchedMode(Config::TouchedMode mode);
-    void setUsePlayerColor(bool do_use);
+    void setEnablePlayerColor(bool do_enable);
+    void setEnablePdloaderSupport(bool do_enable);
 
     void setTouched(uint32_t touched);
     void setPlayerColor(Config::Color color);

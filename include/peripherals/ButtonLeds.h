@@ -21,17 +21,19 @@ class ButtonLeds {
 
   private:
     Config m_config;
+    bool m_enable_pdloader_support;
 
     Utils::InputState::Buttons m_buttons;
     bool m_raw_mode;
 
   public:
-    ButtonLeds(const Config &config);
+    ButtonLeds(const Config &config, bool enable_pdloader_support);
+
+    void setEnablePdloaderSupport(bool do_enable);
 
     void setButtons(const Utils::InputState::Buttons &buttons);
 
     void update();
-
     void update(const usb_button_led_t &raw);
 };
 

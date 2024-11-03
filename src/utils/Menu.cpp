@@ -11,14 +11,15 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
        {"Reset", Menu::Descriptor::Action::GotoPageReset},          //
        {"USB Flash", Menu::Descriptor::Action::GotoPageBootsel}}}}, //
 
-    {Menu::Page::Led,                                                       //
-     {Menu::Descriptor::Type::Menu,                                         //
-      "Slider LED",                                                         //
-      {{"Brightness", Menu::Descriptor::Action::GotoPageLedBrightness},     //
-       {"Anim Speed", Menu::Descriptor::Action::GotoPageLedAnimationSpeed}, //
-       {"Idle Mode", Menu::Descriptor::Action::GotoPageLedIdleMode},        //
-       {"Touch Mode", Menu::Descriptor::Action::GotoPageLedTouchedMode},    //
-       {"Plyr Color", Menu::Descriptor::Action::GotoPagePlayerColor}}}},    //
+    {Menu::Page::Led,                                                                 //
+     {Menu::Descriptor::Type::Menu,                                                   //
+      "Slider LED",                                                                   //
+      {{"Brightness", Menu::Descriptor::Action::GotoPageLedBrightness},               //
+       {"Anim Speed", Menu::Descriptor::Action::GotoPageLedAnimationSpeed},           //
+       {"Idle Mode", Menu::Descriptor::Action::GotoPageLedIdleMode},                  //
+       {"Touch Mode", Menu::Descriptor::Action::GotoPageLedTouchedMode},              //
+       {"Plyr Color", Menu::Descriptor::Action::GotoPageLedEnablePlayerColor},        //
+       {"PDLdr Ctrl", Menu::Descriptor::Action::GotoPageLedEnablePdloaderSupport}}}}, //
 
     {Menu::Page::DeviceMode,                                 //
      {Menu::Descriptor::Type::Selection,                     //
@@ -62,10 +63,15 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
        {"Tchd Fade", Menu::Descriptor::Action::SetLedTouchedMode},    //
        {"Tchd Idle", Menu::Descriptor::Action::SetLedTouchedMode}}}}, //
 
-    {Menu::Page::LedUsePlayerColor,                             //
-     {Menu::Descriptor::Type::Toggle,                           //
-      "Player Color (PS4)",                                     //
-      {{"", Menu::Descriptor::Action::SetLedUsePlayerColor}}}}, //
+    {Menu::Page::LedEnablePlayerColor,                             //
+     {Menu::Descriptor::Type::Toggle,                              //
+      "Player Color (PS4)",                                        //
+      {{"", Menu::Descriptor::Action::SetLedEnablePlayerColor}}}}, //
+
+    {Menu::Page::LedEnablePdloaderSupport,                             //
+     {Menu::Descriptor::Type::Toggle,                                  //
+      "PDLoader Controlled",                                              //
+      {{"", Menu::Descriptor::Action::SetLedEnablePdloaderSupport}}}}, //
 
     {Menu::Page::Reset,                               //
      {Menu::Descriptor::Type::Menu,                   //
@@ -178,8 +184,11 @@ uint8_t Menu::getCurrentValue(Menu::Page page) {
     case Page::LedTouchedMode:
         return static_cast<uint8_t>(m_store->getLedTouchedMode());
         break;
-    case Page::LedUsePlayerColor:
-        return m_store->getUsePlayerColor();
+    case Page::LedEnablePlayerColor:
+        return m_store->getLedEnablePlayerColor();
+        break;
+    case Page::LedEnablePdloaderSupport:
+        return m_store->getLedEnablePdloaderSupport();
         break;
     case Page::Main:
     case Page::Led:
@@ -206,7 +215,6 @@ void Menu::gotoParent(bool do_restore) {
     }
 
     if (do_restore) {
-
         switch (current_state.page) {
         case Page::DeviceMode:
             m_store->setUsbMode(static_cast<usb_mode_t>(current_state.original_value));
@@ -225,8 +233,11 @@ void Menu::gotoParent(bool do_restore) {
             m_store->setLedTouchedMode(
                 static_cast<Peripherals::TouchSliderLeds::Config::TouchedMode>(current_state.original_value));
             break;
-        case Page::LedUsePlayerColor:
-            m_store->setUsePlayerColor(static_cast<bool>(current_state.original_value));
+        case Page::LedEnablePlayerColor:
+            m_store->setLedEnablePlayerColor(static_cast<bool>(current_state.original_value));
+            break;
+        case Page::LedEnablePdloaderSupport:
+            m_store->setLedEnablePdloaderSupport(static_cast<bool>(current_state.original_value));
             break;
         case Page::Main:
         case Page::Led:
@@ -265,8 +276,11 @@ void Menu::performAction(Descriptor::Action action, uint8_t value) {
     case Descriptor::Action::GotoPageLedTouchedMode:
         gotoPage(Page::LedTouchedMode);
         break;
-    case Descriptor::Action::GotoPagePlayerColor:
-        gotoPage(Page::LedUsePlayerColor);
+    case Descriptor::Action::GotoPageLedEnablePlayerColor:
+        gotoPage(Page::LedEnablePlayerColor);
+        break;
+    case Descriptor::Action::GotoPageLedEnablePdloaderSupport:
+        gotoPage(Page::LedEnablePdloaderSupport);
         break;
     case Descriptor::Action::GotoPageReset:
         gotoPage(Page::Reset);
@@ -289,8 +303,11 @@ void Menu::performAction(Descriptor::Action action, uint8_t value) {
     case Descriptor::Action::SetLedAnimationSpeed:
         m_store->setLedAnimationSpeed(value);
         break;
-    case Descriptor::Action::SetLedUsePlayerColor:
-        m_store->setUsePlayerColor(static_cast<bool>(value));
+    case Descriptor::Action::SetLedEnablePlayerColor:
+        m_store->setLedEnablePlayerColor(static_cast<bool>(value));
+        break;
+    case Descriptor::Action::SetLedEnablePdloaderSupport:
+        m_store->setLedEnablePdloaderSupport(static_cast<bool>(value));
         break;
     case Descriptor::Action::DoReset:
         m_store->reset();

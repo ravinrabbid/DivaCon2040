@@ -4,7 +4,8 @@
 
 namespace Divacon::Peripherals {
 
-ButtonLeds::ButtonLeds(const Config &config) : m_config(config), m_buttons({}), m_raw_mode(false) {
+ButtonLeds::ButtonLeds(const Config &config, bool enable_pdloader_support)
+    : m_config(config), m_enable_pdloader_support(enable_pdloader_support), m_buttons({}), m_raw_mode(false) {
     uint button_mask = 0                          //
                        | 1 << m_config.pins.north //
                        | 1 << m_config.pins.east  //
@@ -15,10 +16,12 @@ ButtonLeds::ButtonLeds(const Config &config) : m_config(config), m_buttons({}), 
     gpio_set_dir_out_masked(button_mask);
 }
 
+void ButtonLeds::setEnablePdloaderSupport(bool do_enable) { m_enable_pdloader_support = do_enable; }
+
 void ButtonLeds::setButtons(const Utils::InputState::Buttons &buttons) { m_buttons = buttons; }
 
 void ButtonLeds::update() {
-    if (m_raw_mode) {
+    if (m_raw_mode && m_enable_pdloader_support) {
         return;
     }
 
@@ -29,6 +32,10 @@ void ButtonLeds::update() {
 }
 
 void ButtonLeds::update(const usb_button_led_t &raw) {
+    if (!m_enable_pdloader_support) {
+        return;
+    }
+
     m_raw_mode = true;
 
     gpio_put(m_config.pins.north, m_config.invert ^ raw.north);

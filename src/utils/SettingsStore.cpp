@@ -17,7 +17,8 @@ SettingsStore::SettingsStore()
                      Config::Default::touch_slider_leds_config.animation_speed,
                      Config::Default::touch_slider_leds_config.idle_mode,
                      Config::Default::touch_slider_leds_config.touched_mode,
-                     Config::Default::touch_slider_leds_config.use_player_color,
+                     Config::Default::touch_slider_leds_config.enable_player_color,
+                     Config::Default::touch_slider_leds_config.enable_pdloader_support,
                      {}}),
       m_dirty(true), m_scheduled_reboot(RebootType::None) {
 
@@ -57,13 +58,6 @@ void SettingsStore::setLedBrightness(uint8_t brightness) {
 }
 uint8_t SettingsStore::getLedBrightness() { return m_store_cache.led_brightness; }
 
-void SettingsStore::setUsePlayerColor(bool do_use) {
-    if (m_store_cache.use_player_color != do_use) {
-        m_store_cache.use_player_color = do_use;
-        m_dirty = true;
-    }
-}
-
 void SettingsStore::setLedAnimationSpeed(uint8_t speed) {
     if (m_store_cache.led_animation_speed != speed) {
         m_store_cache.led_animation_speed = speed;
@@ -90,7 +84,23 @@ Peripherals::TouchSliderLeds::Config::TouchedMode SettingsStore::getLedTouchedMo
     return m_store_cache.led_touched_mode;
 }
 
-bool SettingsStore::getUsePlayerColor() { return m_store_cache.use_player_color; };
+void SettingsStore::setLedEnablePlayerColor(bool do_enable) {
+    if (m_store_cache.led_enable_player_color != do_enable) {
+        m_store_cache.led_enable_player_color = do_enable;
+        m_dirty = true;
+    }
+}
+
+bool SettingsStore::getLedEnablePlayerColor() { return m_store_cache.led_enable_player_color; };
+
+void SettingsStore::setLedEnablePdloaderSupport(bool do_enable) {
+    if (m_store_cache.led_enable_pdloader_support != do_enable) {
+        m_store_cache.led_enable_pdloader_support = do_enable;
+        m_dirty = true;
+    }
+}
+
+bool SettingsStore::getLedEnablePdloaderSupport() { return m_store_cache.led_enable_pdloader_support; };
 
 void SettingsStore::store() {
     if (m_dirty) {

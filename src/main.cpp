@@ -32,7 +32,8 @@ enum class ControlCommand {
     SetLedAnimationSpeed,
     SetLedIdleMode,
     SetLedTouchedMode,
-    SetUsePlayerColor,
+    SetLedEnablePlayerColor,
+    SetLedEnablePdloaderSupport,
     EnterMenu,
     ExitMenu,
 };
@@ -47,7 +48,8 @@ struct ControlMessage {
         uint8_t led_animation_speed;
         Peripherals::TouchSliderLeds::Config::IdleMode led_idle_mode;
         Peripherals::TouchSliderLeds::Config::TouchedMode led_touched_mode;
-        bool use_player_color;
+        bool led_enable_player_color;
+        bool led_enable_pdloader_support;
     } data;
 };
 
@@ -56,7 +58,8 @@ void core1_task() {
 
     Peripherals::Display display(Config::Default::display_config);
     Peripherals::TouchSliderLeds sliderleds(Config::Default::touch_slider_leds_config);
-    Peripherals::ButtonLeds buttonleds(Config::Default::button_leds_config);
+    Peripherals::ButtonLeds buttonleds(Config::Default::button_leds_config,
+                                       Config::Default::touch_slider_leds_config.enable_pdloader_support);
 
     ControlMessage control_msg;
     Utils::Menu::State menu_display_msg;
@@ -92,8 +95,12 @@ void core1_task() {
             case ControlCommand::SetLedTouchedMode:
                 sliderleds.setTouchedMode(control_msg.data.led_touched_mode);
                 break;
-            case ControlCommand::SetUsePlayerColor:
-                sliderleds.setUsePlayerColor(control_msg.data.use_player_color);
+            case ControlCommand::SetLedEnablePlayerColor:
+                sliderleds.setEnablePlayerColor(control_msg.data.led_enable_player_color);
+                break;
+            case ControlCommand::SetLedEnablePdloaderSupport:
+                sliderleds.setEnablePdloaderSupport(control_msg.data.led_enable_pdloader_support);
+                buttonleds.setEnablePdloaderSupport(control_msg.data.led_enable_pdloader_support);
                 break;
             case ControlCommand::EnterMenu:
                 display.showMenu();
@@ -190,7 +197,11 @@ int main() {
         queue_add_blocking(&control_queue, &ctrl_message);
         ctrl_message = {ControlCommand::SetLedTouchedMode, {.led_touched_mode = settings_store->getLedTouchedMode()}};
         queue_add_blocking(&control_queue, &ctrl_message);
-        ctrl_message = {ControlCommand::SetUsePlayerColor, {.use_player_color = settings_store->getUsePlayerColor()}};
+        ctrl_message = {ControlCommand::SetLedEnablePlayerColor,
+                        {.led_enable_player_color = settings_store->getLedEnablePlayerColor()}};
+        queue_add_blocking(&control_queue, &ctrl_message);
+        ctrl_message = {ControlCommand::SetLedEnablePdloaderSupport,
+                        {.led_enable_pdloader_support = settings_store->getLedEnablePdloaderSupport()}};
         queue_add_blocking(&control_queue, &ctrl_message);
     };
 

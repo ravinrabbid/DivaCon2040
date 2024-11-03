@@ -26,7 +26,8 @@ class Menu {
         LedAnimationSpeed,
         LedIdleMode,
         LedTouchedMode,
-        LedUsePlayerColor,
+        LedEnablePlayerColor,
+        LedEnablePdloaderSupport,
 
         BootselMsg,
     };
@@ -56,7 +57,8 @@ class Menu {
             GotoPageLedAnimationSpeed,
             GotoPageLedIdleMode,
             GotoPageLedTouchedMode,
-            GotoPagePlayerColor,
+            GotoPageLedEnablePlayerColor,
+            GotoPageLedEnablePdloaderSupport,
             GotoPageReset,
             GotoPageBootsel,
 
@@ -66,7 +68,8 @@ class Menu {
             SetLedTouchedMode,
             SetLedBrightness,
             SetLedAnimationSpeed,
-            SetLedUsePlayerColor,
+            SetLedEnablePlayerColor,
+            SetLedEnablePdloaderSupport,
 
             DoReset,
             DoRebootToBootsel,

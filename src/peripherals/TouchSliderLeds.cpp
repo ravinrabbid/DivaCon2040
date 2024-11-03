@@ -92,7 +92,8 @@ void TouchSliderLeds::setBrightness(uint8_t brightness) { m_config.brightness = 
 void TouchSliderLeds::setAnimationSpeed(uint8_t speed) { m_config.animation_speed = speed; };
 void TouchSliderLeds::setIdleMode(Config::IdleMode mode) { m_config.idle_mode = mode; };
 void TouchSliderLeds::setTouchedMode(Config::TouchedMode mode) { m_config.touched_mode = mode; };
-void TouchSliderLeds::setUsePlayerColor(bool do_use) { m_config.use_player_color = do_use; };
+void TouchSliderLeds::setEnablePlayerColor(bool do_enable) { m_config.enable_player_color = do_enable; };
+void TouchSliderLeds::setEnablePdloaderSupport(bool do_enable) { m_config.enable_pdloader_support = do_enable; };
 
 void TouchSliderLeds::setTouched(uint32_t touched) { m_touched = touched; }
 void TouchSliderLeds::setPlayerColor(TouchSliderLeds::Config::Color color) { m_player_color = color; }
@@ -113,7 +114,7 @@ void TouchSliderLeds::updateIdle(uint32_t steps) {
 
     // Check for player color
     const auto idle_color =
-        m_config.use_player_color ? m_player_color.value_or(m_config.idle_color) : m_config.idle_color;
+        m_config.enable_player_color ? m_player_color.value_or(m_config.idle_color) : m_config.idle_color;
 
     switch (m_config.idle_mode) {
     case Config::IdleMode::Off:
@@ -199,7 +200,6 @@ void TouchSliderLeds::updateTouched(uint32_t steps) {
         }
     } break;
     }
-
 }
 
 void TouchSliderLeds::render(uint32_t steps) {
@@ -240,7 +240,7 @@ void TouchSliderLeds::update() {
 
     previous_frame_time = now;
 
-    if (m_raw_mode) {
+    if (m_raw_mode && m_config.enable_pdloader_support) {
         return;
     }
 
@@ -252,6 +252,10 @@ void TouchSliderLeds::update() {
 }
 
 void TouchSliderLeds::update(const TouchSliderLeds::RawFrameMessage &frame) {
+    if (!m_config.enable_pdloader_support) {
+        return;
+    }
+
     m_raw_mode = true;
 
     size_t idx = 0;
