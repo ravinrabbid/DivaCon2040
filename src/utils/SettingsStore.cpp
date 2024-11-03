@@ -15,6 +15,9 @@ SettingsStore::SettingsStore()
                      Config::Default::usb_mode,
                      Config::Default::touch_slider_config.mode,
                      Config::Default::touch_slider_leds_config.brightness,
+                     Config::Default::touch_slider_leds_config.animation_speed,
+                     Config::Default::touch_slider_leds_config.idle_mode,
+                     Config::Default::touch_slider_leds_config.touched_mode,
                      Config::Default::touch_slider_leds_config.use_player_color,
                      {}}),
       m_dirty(true), m_scheduled_reboot(RebootType::None) {
@@ -68,6 +71,32 @@ void SettingsStore::setUsePlayerColor(bool do_use) {
         m_store_cache.use_player_color = do_use;
         m_dirty = true;
     }
+}
+
+void SettingsStore::setLedAnimationSpeed(uint8_t speed) {
+    if (m_store_cache.led_animation_speed != speed) {
+        m_store_cache.led_animation_speed = speed;
+        m_dirty = true;
+    }
+}
+uint8_t SettingsStore::getLedAnimationSpeed() { return m_store_cache.led_animation_speed; }
+
+void SettingsStore::setLedIdleMode(Peripherals::TouchSliderLeds::Config::IdleMode mode) {
+    if (m_store_cache.led_idle_mode != mode) {
+        m_store_cache.led_idle_mode = mode;
+        m_dirty = true;
+    }
+}
+Peripherals::TouchSliderLeds::Config::IdleMode SettingsStore::getLedIdleMode() { return m_store_cache.led_idle_mode; }
+
+void SettingsStore::setLedTouchedMode(Peripherals::TouchSliderLeds::Config::TouchedMode mode) {
+    if (m_store_cache.led_touched_mode != mode) {
+        m_store_cache.led_touched_mode = mode;
+        m_dirty = true;
+    }
+}
+Peripherals::TouchSliderLeds::Config::TouchedMode SettingsStore::getLedTouchedMode() {
+    return m_store_cache.led_touched_mode;
 }
 
 bool SettingsStore::getUsePlayerColor() { return m_store_cache.use_player_color; };

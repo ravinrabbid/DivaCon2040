@@ -29,6 +29,9 @@ enum class ControlCommand {
     SetPlayerLed,
     SetButtonLed,
     SetLedBrightness,
+    SetLedAnimationSpeed,
+    SetLedIdleMode,
+    SetLedTouchedMode,
     SetUsePlayerColor,
     EnterMenu,
     ExitMenu,
@@ -40,7 +43,10 @@ struct ControlMessage {
         usb_mode_t usb_mode;
         usb_player_led_t player_led;
         usb_button_led_t button_led;
-        uint8_t brightness;
+        uint8_t led_brightness;
+        uint8_t led_animation_speed;
+        Peripherals::TouchSliderLeds::Config::IdleMode led_idle_mode;
+        Peripherals::TouchSliderLeds::Config::TouchedMode led_touched_mode;
         bool use_player_color;
     } data;
 };
@@ -75,7 +81,16 @@ void core1_task() {
                 buttonleds.update(control_msg.data.button_led);
                 break;
             case ControlCommand::SetLedBrightness:
-                sliderleds.setBrightness(control_msg.data.brightness);
+                sliderleds.setBrightness(control_msg.data.led_brightness);
+                break;
+            case ControlCommand::SetLedAnimationSpeed:
+                sliderleds.setAnimationSpeed(control_msg.data.led_animation_speed);
+                break;
+            case ControlCommand::SetLedIdleMode:
+                sliderleds.setIdleMode(control_msg.data.led_idle_mode);
+                break;
+            case ControlCommand::SetLedTouchedMode:
+                sliderleds.setTouchedMode(control_msg.data.led_touched_mode);
                 break;
             case ControlCommand::SetUsePlayerColor:
                 sliderleds.setUsePlayerColor(control_msg.data.use_player_color);
@@ -165,9 +180,15 @@ int main() {
         ctrl_message = {ControlCommand::SetUsbMode, {.usb_mode = mode}};
         queue_add_blocking(&control_queue, &ctrl_message);
 
-        ctrl_message = {ControlCommand::SetLedBrightness, {.brightness = settings_store->getLedBrightness()}};
+        ctrl_message = {ControlCommand::SetLedBrightness, {.led_brightness = settings_store->getLedBrightness()}};
         queue_add_blocking(&control_queue, &ctrl_message);
-
+        ctrl_message = {ControlCommand::SetLedAnimationSpeed,
+                        {.led_animation_speed = settings_store->getLedAnimationSpeed()}};
+        queue_add_blocking(&control_queue, &ctrl_message);
+        ctrl_message = {ControlCommand::SetLedIdleMode, {.led_idle_mode = settings_store->getLedIdleMode()}};
+        queue_add_blocking(&control_queue, &ctrl_message);
+        ctrl_message = {ControlCommand::SetLedTouchedMode, {.led_touched_mode = settings_store->getLedTouchedMode()}};
+        queue_add_blocking(&control_queue, &ctrl_message);
         ctrl_message = {ControlCommand::SetUsePlayerColor, {.use_player_color = settings_store->getUsePlayerColor()}};
         queue_add_blocking(&control_queue, &ctrl_message);
 

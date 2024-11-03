@@ -18,7 +18,11 @@ class Menu {
     enum class Page {
         Main,
         DeviceMode,
+        Led,
         LedBrightness,
+        LedAnimationSpeed,
+        LedIdleMode,
+        LedTouchedMode,
         UsePlayerColor,
         Reset,
         Bootsel,
@@ -44,7 +48,11 @@ class Menu {
             GotoParent,
 
             GotoPageDeviceMode,
+            GotoPageLed,
             GotoPageLedBrightness,
+            GotoPageLedAnimationSpeed,
+            GotoPageLedIdleMode,
+            GotoPageLedTouchedMode,
             GotoPagePlayerColor,
             GotoPageReset,
             GotoPageBootsel,
@@ -60,8 +68,20 @@ class Menu {
             ChangeUsbModeMidi,
             ChangeUsbModeDebug,
 
-            SetLedBrightness,
+            ChangeLedIdleModeOff,
+            ChangeLedIdleModeStatic,
+            ChangeLedIdleModePulse,
+            ChangeLedIdleModeRainbowStatic,
+            ChangeLedIdleModeRainbowCycle,
 
+            ChangeLedTouchedModeOff,
+            ChangeLedTouchedModeIdle,
+            ChangeLedTouchedModeTouched,
+            ChangeLedTouchedModeTouchedFade,
+            ChangeLedTouchedModeTouchedIdle,
+
+            SetLedBrightness,
+            SetLedAnimationSpeed,
             SetUsePlayerColor,
 
             DoReset,

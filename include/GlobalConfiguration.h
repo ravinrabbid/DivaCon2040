@@ -74,12 +74,13 @@ const Peripherals::TouchSliderLeds::Config touch_slider_leds_config = {
     true,  // Reverse LED order
     2,     // LEDs per segment
 
-    128,             // Brightness
-    96,              // Fade speed
-    {235, 85, 120},  // Background color
-    {140, 255, 220}, // Touched color
-
-    true, // Use Player Color (PS4 only)
+    128,                                                            // Brightness
+    128,                                                            // Animation speed
+    Peripherals::TouchSliderLeds::Config::IdleMode::Pulse,          // Idle Mode
+    Peripherals::TouchSliderLeds::Config::TouchedMode::TouchedFade, // Touched Mode
+    {64, 64, 64},                                                   // Background color
+    {138, 254, 171},                                                // Touched color
+    true,                                                           // Use Player Color as Idle Color (DS4 only)
 };
 
 const Peripherals::Display::Config display_config = {

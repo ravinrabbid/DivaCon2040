@@ -3,14 +3,22 @@
 namespace Divacon::Utils {
 
 const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
-    {Menu::Page::Main,                                                  //
-     {Menu::Descriptor::Type::Root,                                     //
-      "Settings",                                                       //
-      {{"Mode", Menu::Descriptor::Action::GotoPageDeviceMode},          //
-       {"Brightness", Menu::Descriptor::Action::GotoPageLedBrightness}, //
-       {"Plyr Color", Menu::Descriptor::Action::GotoPagePlayerColor},   //
-       {"Reset", Menu::Descriptor::Action::GotoPageReset},              //
-       {"USB Flash", Menu::Descriptor::Action::GotoPageBootsel}}}},     //
+    {Menu::Page::Main,                                              //
+     {Menu::Descriptor::Type::Root,                                 //
+      "Settings",                                                   //
+      {{"Mode", Menu::Descriptor::Action::GotoPageDeviceMode},      //
+       {"Slider LED", Menu::Descriptor::Action::GotoPageLed},       //
+       {"Reset", Menu::Descriptor::Action::GotoPageReset},          //
+       {"USB Flash", Menu::Descriptor::Action::GotoPageBootsel}}}}, //
+
+    {Menu::Page::Led,                                                       //
+     {Menu::Descriptor::Type::Selection,                                    //
+      "Slider LED",                                                         //
+      {{"Brightness", Menu::Descriptor::Action::GotoPageLedBrightness},     //
+       {"Anim Speed", Menu::Descriptor::Action::GotoPageLedAnimationSpeed}, //
+       {"Idle Mode", Menu::Descriptor::Action::GotoPageLedIdleMode},        //
+       {"Touch Mode", Menu::Descriptor::Action::GotoPageLedTouchedMode},    //
+       {"Plyr Color", Menu::Descriptor::Action::GotoPagePlayerColor}}}},    //
 
     {Menu::Page::DeviceMode,                                                 //
      {Menu::Descriptor::Type::Selection,                                     //
@@ -31,6 +39,28 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
       "LED Brightness",                                     //
       {{"", Menu::Descriptor::Action::SetLedBrightness}}}}, //
 
+    {Menu::Page::LedAnimationSpeed,                             //
+     {Menu::Descriptor::Type::Value,                            //
+      "LED Anim Speed",                                         //
+      {{"", Menu::Descriptor::Action::SetLedAnimationSpeed}}}}, //
+
+    {Menu::Page::LedIdleMode,                                                      //
+     {Menu::Descriptor::Type::Selection,                                           //
+      "LED Idle Mode",                                                             //
+      {{"Off", Menu::Descriptor::Action::ChangeLedIdleModeOff},                    //
+       {"Static", Menu::Descriptor::Action::ChangeLedIdleModeStatic},              //
+       {"Pulse", Menu::Descriptor::Action::ChangeLedIdleModePulse},                //
+       {"Statc Rnbw", Menu::Descriptor::Action::ChangeLedIdleModeRainbowStatic},   //
+       {"Cycle Rnbw", Menu::Descriptor::Action::ChangeLedIdleModeRainbowCycle}}}}, //
+
+    {Menu::Page::LedTouchedMode,                                                    //
+     {Menu::Descriptor::Type::Selection,                                            //
+      "LED Touched Mode",                                                           //
+      {{"Off", Menu::Descriptor::Action::ChangeLedTouchedModeOff},                  //
+       {"Idle", Menu::Descriptor::Action::ChangeLedTouchedModeIdle},                //
+       {"Tchd Statc", Menu::Descriptor::Action::ChangeLedTouchedModeTouched},       //
+       {"Tchd Fade", Menu::Descriptor::Action::ChangeLedTouchedModeTouchedFade},    //
+       {"Tchd Idle", Menu::Descriptor::Action::ChangeLedTouchedModeTouchedIdle}}}}, //
     {Menu::Page::UsePlayerColor,                             //
      {Menu::Descriptor::Type::Toggle,                        //
       "Player Color (PS4)",                                  //
@@ -138,10 +168,20 @@ uint8_t Menu::getCurrentSelection(Menu::Page page) {
     case Page::LedBrightness:
         return m_store->getLedBrightness();
         break;
+    case Page::LedAnimationSpeed:
+        return m_store->getLedAnimationSpeed();
+        break;
+    case Page::LedIdleMode:
+        return static_cast<uint8_t>(m_store->getLedIdleMode());
+        break;
+    case Page::LedTouchedMode:
+        return static_cast<uint8_t>(m_store->getLedTouchedMode());
+        break;
     case Page::UsePlayerColor:
         return m_store->getUsePlayerColor();
         break;
     case Page::Main:
+    case Page::Led:
     case Page::Reset:
     case Page::Bootsel:
     case Page::BootselMsg:
@@ -166,8 +206,20 @@ void Menu::performSelectionAction(Menu::Descriptor::Action action) {
     case Descriptor::Action::GotoPageDeviceMode:
         gotoPage(Page::DeviceMode);
         break;
+    case Descriptor::Action::GotoPageLed:
+        gotoPage(Page::Led);
+        break;
     case Descriptor::Action::GotoPageLedBrightness:
         gotoPage(Page::LedBrightness);
+        break;
+    case Descriptor::Action::GotoPageLedAnimationSpeed:
+        gotoPage(Page::LedAnimationSpeed);
+        break;
+    case Descriptor::Action::GotoPageLedIdleMode:
+        gotoPage(Page::LedIdleMode);
+        break;
+    case Descriptor::Action::GotoPageLedTouchedMode:
+        gotoPage(Page::LedTouchedMode);
         break;
     case Descriptor::Action::GotoPagePlayerColor:
         gotoPage(Page::UsePlayerColor);
@@ -228,7 +280,50 @@ void Menu::performSelectionAction(Menu::Descriptor::Action action) {
         m_store->setSliderMode(Peripherals::TouchSlider::Config::Mode::ARCADE);
         gotoParent();
         break;
+    case Descriptor::Action::ChangeLedIdleModeOff:
+        m_store->setLedIdleMode(Peripherals::TouchSliderLeds::Config::IdleMode::Off);
+        gotoParent();
+        break;
+    case Descriptor::Action::ChangeLedIdleModeStatic:
+        m_store->setLedIdleMode(Peripherals::TouchSliderLeds::Config::IdleMode::Static);
+        gotoParent();
+        break;
+    case Descriptor::Action::ChangeLedIdleModePulse:
+        m_store->setLedIdleMode(Peripherals::TouchSliderLeds::Config::IdleMode::Pulse);
+        gotoParent();
+        break;
+    case Descriptor::Action::ChangeLedIdleModeRainbowStatic:
+        m_store->setLedIdleMode(Peripherals::TouchSliderLeds::Config::IdleMode::RainbowStatic);
+        gotoParent();
+        break;
+    case Descriptor::Action::ChangeLedIdleModeRainbowCycle:
+        m_store->setLedIdleMode(Peripherals::TouchSliderLeds::Config::IdleMode::RainbowCycle);
+        gotoParent();
+        break;
+    case Descriptor::Action::ChangeLedTouchedModeOff:
+        m_store->setLedTouchedMode(Peripherals::TouchSliderLeds::Config::TouchedMode::Off);
+        gotoParent();
+        break;
+    case Descriptor::Action::ChangeLedTouchedModeIdle:
+        m_store->setLedTouchedMode(Peripherals::TouchSliderLeds::Config::TouchedMode::Idle);
+        gotoParent();
+        break;
+    case Descriptor::Action::ChangeLedTouchedModeTouched:
+        m_store->setLedTouchedMode(Peripherals::TouchSliderLeds::Config::TouchedMode::Touched);
+        gotoParent();
+        break;
+    case Descriptor::Action::ChangeLedTouchedModeTouchedFade:
+        m_store->setLedTouchedMode(Peripherals::TouchSliderLeds::Config::TouchedMode::TouchedFade);
+        gotoParent();
+        break;
+    case Descriptor::Action::ChangeLedTouchedModeTouchedIdle:
+        m_store->setLedTouchedMode(Peripherals::TouchSliderLeds::Config::TouchedMode::TouchedIdle);
+        gotoParent();
+        break;
     case Descriptor::Action::SetLedBrightness:
+        gotoParent();
+        break;
+    case Descriptor::Action::SetLedAnimationSpeed:
         gotoParent();
         break;
     case Descriptor::Action::SetUsePlayerColor:
@@ -259,6 +354,9 @@ void Menu::performValueAction(Menu::Descriptor::Action action, uint8_t value) {
     switch (action) {
     case Descriptor::Action::SetLedBrightness:
         m_store->setLedBrightness(value);
+        break;
+    case Descriptor::Action::SetLedAnimationSpeed:
+        m_store->setLedAnimationSpeed(value);
         break;
     default:
         break;

@@ -1,15 +1,14 @@
 cmake_minimum_required(VERSION 3.13)
 
-if ((NOT DEFINED ENV{PICO_SDK_PATH}) AND (NOT PICO_SDK_PATH))
+if((NOT DEFINED ENV{PICO_SDK_PATH}) AND (NOT PICO_SDK_PATH))
   set(PICO_SDK_FETCH_FROM_GIT_TAG "2.0.0")
   set(PICO_SDK_FETCH_FROM_GIT ON)
 endif()
 
-if ((NOT DEFINED ENV{PICO_BOARD}) AND (NOT PICO_BOARD))
+if((NOT DEFINED ENV{PICO_BOARD}) AND (NOT PICO_BOARD))
   set(PICO_BOARD "pico")
 endif()
 
-# include(libs/pico-sdk/pico_sdk_init.cmake)
 include(pico_sdk_import.cmake)
 
 project(DivaCon2040 VERSION 0.39.0)
@@ -45,6 +44,7 @@ target_link_libraries(
          tinyusb_board
          pico_stdlib
          pico_multicore
+         pico_rand
          mpr121
          pico_ssd1306
          pio_ws2812)
