@@ -11,18 +11,6 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
        {"Reset", Menu::Descriptor::Action::GotoPageReset},          //
        {"USB Flash", Menu::Descriptor::Action::GotoPageBootsel}}}}, //
 
-    {Menu::Page::Led,                                                                 //
-     {Menu::Descriptor::Type::Menu,                                                   //
-      "Slider LED",                                                                   //
-      {{"Brightness", Menu::Descriptor::Action::GotoPageLedBrightness},               //
-       {"Anim Speed", Menu::Descriptor::Action::GotoPageLedAnimationSpeed},           //
-       {"Idle Mode", Menu::Descriptor::Action::GotoPageLedIdleMode},                  //
-       {"Idle Color", Menu::Descriptor::Action::GotoPageLedIdleColor},                //
-       {"Tchd Mode", Menu::Descriptor::Action::GotoPageLedTouchedMode},               //
-       {"Tchd Color", Menu::Descriptor::Action::GotoPageLedTouchedColor},             //
-       {"Plyr Color", Menu::Descriptor::Action::GotoPageLedEnablePlayerColor},        //
-       {"PDLdr Ctrl", Menu::Descriptor::Action::GotoPageLedEnablePdloaderSupport}}}}, //
-
     {Menu::Page::DeviceMode,                                 //
      {Menu::Descriptor::Type::Selection,                     //
       "Mode",                                                //
@@ -36,6 +24,18 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
        {"Keyboard", Menu::Descriptor::Action::SetUsbMode},   //
        {"MIDI", Menu::Descriptor::Action::SetUsbMode},       //
        {"Debug", Menu::Descriptor::Action::SetUsbMode}}}},   //
+
+    {Menu::Page::Led,                                                                 //
+     {Menu::Descriptor::Type::Menu,                                                   //
+      "Slider LED",                                                                   //
+      {{"Brightness", Menu::Descriptor::Action::GotoPageLedBrightness},               //
+       {"Anim Speed", Menu::Descriptor::Action::GotoPageLedAnimationSpeed},           //
+       {"Idle Mode", Menu::Descriptor::Action::GotoPageLedIdleMode},                  //
+       {"Idle Color", Menu::Descriptor::Action::GotoPageLedIdleColor},                //
+       {"Tchd Mode", Menu::Descriptor::Action::GotoPageLedTouchedMode},               //
+       {"Tchd Color", Menu::Descriptor::Action::GotoPageLedTouchedColor},             //
+       {"Plyr Color", Menu::Descriptor::Action::GotoPageLedEnablePlayerColor},        //
+       {"PDLdr Ctrl", Menu::Descriptor::Action::GotoPageLedEnablePdloaderSupport}}}}, //
 
     {Menu::Page::LedBrightness,                             //
      {Menu::Descriptor::Type::Value,                        //

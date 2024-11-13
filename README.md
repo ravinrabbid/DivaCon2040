@@ -20,7 +20,7 @@ If you have any questions about the project in general or need hints how to buil
   - XInput
   - Keyboard
   - MIDI
-  - Debug mode (will output current state via USB serial and direct flashing)
+  - Debug mode (will output current state via USB serial and allow direct flashing)
 - Arcade Style Touch Slider for arcade controller emulation modes (In Project Diva Games enter the 'Customize' menu from song selection and enable arcade controller support under 'Game/Control Config' -> 'Arcade Controller Settings' for the slider to work properly.)
 - Slider to analog stick mapping for standard controller modes
 - 1000Hz Polling Rate, ~2.4ms average latency, <0.7ms Jitter (Tested with [Gamepadla](https://github.com/cakama3a/Gamepadla)/[GPDL](https://github.com/cakama3a/GPDL/))
@@ -28,7 +28,7 @@ If you have any questions about the project in general or need hints how to buil
 - Button illumination (can be controlled by PD-Loader)
 - Basic configuration via on-screen menu on attached OLED screen
 - Player LEDs are visualized on OLED screen for DS3 and XInput, player color on the slider LEDs for DS4 (can be disabled)
-- BPM counter (because why not?)
+- BPM counter
 
 ## Building
 

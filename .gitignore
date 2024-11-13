@@ -1,4 +1,5 @@
 .vscode/
 build/
+research/
 
 *.pio.h

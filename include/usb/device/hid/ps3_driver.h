@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#define USBD_PS3_NAME "Dualshock3 Emulation"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

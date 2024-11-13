@@ -77,9 +77,11 @@ void core1_task() {
                 display.setUsbMode(control_msg.data.usb_mode);
                 break;
             case ControlCommand::SetPlayerLed:
-                if (control_msg.data.player_led.type == USB_PLAYER_LED_ID) {
+                switch (control_msg.data.player_led.type) {
+                case USB_PLAYER_LED_ID:
                     display.setPlayerId(control_msg.data.player_led.id);
-                } else if (control_msg.data.player_led.type == USB_PLAYER_LED_COLOR) {
+                    break;
+                case USB_PLAYER_LED_COLOR:
                     sliderleds.setPlayerColor({control_msg.data.player_led.red, control_msg.data.player_led.green,
                                                control_msg.data.player_led.blue});
                 }
@@ -153,7 +155,7 @@ int main() {
     auto settings_store = std::make_shared<Utils::SettingsStore>();
     Utils::Menu menu(settings_store);
 
-    auto mode = settings_store->getUsbMode();
+    const auto mode = settings_store->getUsbMode();
 
     Peripherals::TouchSlider touch_slider(Config::Default::touch_slider_config, mode);
     Peripherals::Buttons buttons(Config::Default::buttons_config);
@@ -162,11 +164,11 @@ int main() {
 
     usbd_driver_init(mode);
     usbd_driver_set_player_led_cb([](usb_player_led_t player_led) {
-        auto ctrl_message = ControlMessage{ControlCommand::SetPlayerLed, {.player_led = player_led}};
+        const auto ctrl_message = ControlMessage{ControlCommand::SetPlayerLed, {.player_led = player_led}};
         queue_add_blocking(&control_queue, &ctrl_message);
     });
     usbd_driver_set_button_led_cb([](usb_button_led_t button_led) {
-        auto ctrl_message = ControlMessage{ControlCommand::SetButtonLed, {.button_led = button_led}};
+        const auto ctrl_message = ControlMessage{ControlCommand::SetButtonLed, {.button_led = button_led}};
         queue_add_blocking(&control_queue, &ctrl_message);
     });
     usbd_driver_set_slider_led_cb([](const uint8_t *frame, size_t len) {
@@ -192,7 +194,7 @@ int main() {
 
     stdio_init_all();
 
-    auto readSettings = [&]() {
+    const auto readSettings = [&]() {
         ControlMessage ctrl_message;
 
         ctrl_message = {ControlCommand::SetUsbMode, {.usb_mode = mode}};
@@ -226,12 +228,12 @@ int main() {
         buttons.updateInputState(input_state);
         touch_slider.updateInputState(input_state);
 
-        auto input_message = input_state.getInputMessage();
+        const auto input_message = input_state.getInputMessage();
 
         if (menu.active()) {
             menu.update(input_state);
             if (menu.active()) {
-                auto display_msg = menu.getState();
+                const auto display_msg = menu.getState();
                 queue_add_blocking(&menu_display_queue, &display_msg);
             } else {
                 settings_store->store();
