@@ -41,7 +41,8 @@ const Peripherals::Buttons::Config buttons_config = {
             10, // Home
         },
     },
-    3, // Debounce delay in milliseconds
+    false, // Mirror face buttons to DPad
+    3,     // Debounce delay in milliseconds
 };
 
 const Peripherals::ButtonLeds::Config button_leds_config = {

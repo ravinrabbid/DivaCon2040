@@ -19,6 +19,7 @@ class Menu {
 
         DeviceMode,
         Led,
+        InputMirrorToDpad,
         Reset,
         Bootsel,
 
@@ -71,6 +72,7 @@ class Menu {
             GotoPageLedTouchedColor,
             GotoPageLedEnablePlayerColor,
             GotoPageLedEnablePdloaderSupport,
+            GotoPageInputMirrorToDpad,
             GotoPageReset,
             GotoPageBootsel,
 
@@ -98,6 +100,8 @@ class Menu {
             SetLedTouchedColorRed,
             SetLedTouchedColorGreen,
             SetLedTouchedColorBlue,
+
+            SetInputMirrorToDpad,
 
             DoReset,
             DoRebootToBootsel,

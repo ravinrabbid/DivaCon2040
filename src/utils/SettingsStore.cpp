@@ -21,6 +21,7 @@ SettingsStore::SettingsStore()
                      Config::Default::touch_slider_leds_config.touched_color,
                      Config::Default::touch_slider_leds_config.enable_player_color,
                      Config::Default::touch_slider_leds_config.enable_pdloader_support,
+                     Config::Default::buttons_config.mirror_to_dpad,
                      {}}),
       m_dirty(true), m_scheduled_reboot(RebootType::None) {
 
@@ -116,6 +117,14 @@ bool SettingsStore::getLedEnablePlayerColor() { return m_store_cache.led_enable_
 void SettingsStore::setLedEnablePdloaderSupport(bool do_enable) {
     if (m_store_cache.led_enable_pdloader_support != do_enable) {
         m_store_cache.led_enable_pdloader_support = do_enable;
+        m_dirty = true;
+    }
+}
+
+bool SettingsStore::getInputMirrorToDpad() { return m_store_cache.buttons_mirror_to_dpad; };
+void SettingsStore::setInputMirrorToDpad(bool do_mirror) {
+    if (m_store_cache.buttons_mirror_to_dpad != do_mirror) {
+        m_store_cache.buttons_mirror_to_dpad = do_mirror;
         m_dirty = true;
     }
 }

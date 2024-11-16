@@ -74,6 +74,8 @@ Buttons::Buttons(const Config &config) : m_config(config), m_socd_state{Id::DOWN
     }
 }
 
+void Buttons::setMirrorToDpad(bool mirror_to_dpad) { m_config.mirror_to_dpad = mirror_to_dpad; }
+
 void Buttons::updateInputState(Utils::InputState &input_state) {
     uint32_t gpio_state = ~gpio_get_all();
 
@@ -98,6 +100,13 @@ void Buttons::updateInputState(Utils::InputState &input_state) {
     input_state.buttons.start = m_buttons.at(Id::START).getState();
     input_state.buttons.select = m_buttons.at(Id::SELECT).getState();
     input_state.buttons.home = m_buttons.at(Id::HOME).getState();
+
+    if (m_config.mirror_to_dpad) {
+        input_state.dpad.up |= m_buttons.at(Id::NORTH).getState();
+        input_state.dpad.down |= m_buttons.at(Id::SOUTH).getState();
+        input_state.dpad.left |= m_buttons.at(Id::WEST).getState();
+        input_state.dpad.right |= m_buttons.at(Id::EAST).getState();
+    }
 
     socdClean(input_state);
 }

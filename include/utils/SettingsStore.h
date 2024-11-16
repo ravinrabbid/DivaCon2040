@@ -27,12 +27,14 @@ class SettingsStore {
         Peripherals::TouchSliderLeds::Config::Color led_touched_color;
         bool led_enable_player_color;
         bool led_enable_pdloader_support;
+        bool buttons_mirror_to_dpad;
 
         uint8_t _padding[m_store_size - sizeof(uint8_t) - sizeof(usb_mode_t) - sizeof(uint8_t) - sizeof(uint8_t) -
                          sizeof(Peripherals::TouchSliderLeds::Config::IdleMode) -
                          sizeof(Peripherals::TouchSliderLeds::Config::TouchedMode) -
                          sizeof(Peripherals::TouchSliderLeds::Config::Color) -
-                         sizeof(Peripherals::TouchSliderLeds::Config::Color) - sizeof(bool) - sizeof(bool)];
+                         sizeof(Peripherals::TouchSliderLeds::Config::Color) - sizeof(bool) - sizeof(bool) -
+                         sizeof(bool)];
     };
     static_assert(sizeof(Storecache) == m_store_size);
 
@@ -79,6 +81,9 @@ class SettingsStore {
 
     void setLedEnablePdloaderSupport(bool do_enable);
     bool getLedEnablePdloaderSupport();
+
+    void setInputMirrorToDpad(bool do_mirror);
+    bool getInputMirrorToDpad();
 
     void scheduleReboot(bool bootsel = false);
 

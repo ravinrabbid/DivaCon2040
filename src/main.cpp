@@ -195,6 +195,8 @@ int main() {
     stdio_init_all();
 
     const auto readSettings = [&]() {
+        buttons.setMirrorToDpad(settings_store->getInputMirrorToDpad());
+
         ControlMessage ctrl_message;
 
         ctrl_message = {ControlCommand::SetUsbMode, {.usb_mode = mode}};

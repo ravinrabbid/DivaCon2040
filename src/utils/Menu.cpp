@@ -3,13 +3,14 @@
 namespace Divacon::Utils {
 
 const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
-    {Menu::Page::Main,                                              //
-     {Menu::Descriptor::Type::Menu,                                 //
-      "Settings",                                                   //
-      {{"Mode", Menu::Descriptor::Action::GotoPageDeviceMode},      //
-       {"Slider LED", Menu::Descriptor::Action::GotoPageLed},       //
-       {"Reset", Menu::Descriptor::Action::GotoPageReset},          //
-       {"USB Flash", Menu::Descriptor::Action::GotoPageBootsel}}}}, //
+    {Menu::Page::Main,                                                      //
+     {Menu::Descriptor::Type::Menu,                                         //
+      "Settings",                                                           //
+      {{"Mode", Menu::Descriptor::Action::GotoPageDeviceMode},              //
+       {"Slider LED", Menu::Descriptor::Action::GotoPageLed},               //
+       {"Double Btn", Menu::Descriptor::Action::GotoPageInputMirrorToDpad}, //
+       {"Reset", Menu::Descriptor::Action::GotoPageReset},                  //
+       {"USB Flash", Menu::Descriptor::Action::GotoPageBootsel}}}},         //
 
     {Menu::Page::DeviceMode,                                 //
      {Menu::Descriptor::Type::Selection,                     //
@@ -18,7 +19,7 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
        {"Swtch Pro", Menu::Descriptor::Action::SetUsbMode},  //
        {"Dualshock3", Menu::Descriptor::Action::SetUsbMode}, //
        {"PS4 Diva", Menu::Descriptor::Action::SetUsbMode},   //
-       {"PS4 Compat", Menu::Descriptor::Action::SetUsbMode},   //
+       {"PS4 Compat", Menu::Descriptor::Action::SetUsbMode}, //
        {"Dualshock4", Menu::Descriptor::Action::SetUsbMode}, //
        {"Xbox 360", Menu::Descriptor::Action::SetUsbMode},   //
        {"PDL Arcade", Menu::Descriptor::Action::SetUsbMode}, //
@@ -115,6 +116,11 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
      {Menu::Descriptor::Type::Toggle,                                  //
       "PDLoader Controlled",                                           //
       {{"", Menu::Descriptor::Action::SetLedEnablePdloaderSupport}}}}, //
+
+    {Menu::Page::InputMirrorToDpad,                             //
+     {Menu::Descriptor::Type::Toggle,                           //
+      "Mirror to DPad",                                         //
+      {{"", Menu::Descriptor::Action::SetInputMirrorToDpad}}}}, //
 
     {Menu::Page::Reset,                               //
      {Menu::Descriptor::Type::Menu,                   //
@@ -238,6 +244,8 @@ uint8_t Menu::getCurrentValue(Menu::Page page) {
         return m_store->getLedEnablePlayerColor();
     case Page::LedEnablePdloaderSupport:
         return m_store->getLedEnablePdloaderSupport();
+    case Page::InputMirrorToDpad:
+        return m_store->getInputMirrorToDpad();
     case Page::Main:
     case Page::Led:
     case Page::LedIdleColor:
@@ -325,6 +333,9 @@ void Menu::gotoParent(bool do_restore) {
         case Page::LedEnablePdloaderSupport:
             m_store->setLedEnablePdloaderSupport(static_cast<bool>(current_state.original_value));
             break;
+        case Page::InputMirrorToDpad:
+            m_store->setInputMirrorToDpad(static_cast<bool>(current_state.original_value));
+            break;
         case Page::Main:
         case Page::Led:
         case Page::LedIdleColor:
@@ -394,6 +405,9 @@ void Menu::performAction(Descriptor::Action action, uint8_t value) {
     case Descriptor::Action::GotoPageLedEnablePdloaderSupport:
         gotoPage(Page::LedEnablePdloaderSupport);
         break;
+    case Descriptor::Action::GotoPageInputMirrorToDpad:
+        gotoPage(Page::InputMirrorToDpad);
+        break;
     case Descriptor::Action::GotoPageReset:
         gotoPage(Page::Reset);
         break;
@@ -456,6 +470,9 @@ void Menu::performAction(Descriptor::Action action, uint8_t value) {
         break;
     case Descriptor::Action::SetLedEnablePdloaderSupport:
         m_store->setLedEnablePdloaderSupport(static_cast<bool>(value));
+        break;
+    case Descriptor::Action::SetInputMirrorToDpad:
+        m_store->setInputMirrorToDpad(static_cast<bool>(value));
         break;
     case Descriptor::Action::DoReset:
         m_store->reset();

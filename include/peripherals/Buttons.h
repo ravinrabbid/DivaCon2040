@@ -39,6 +39,7 @@ class Buttons {
             } buttons;
         } pins;
 
+        bool mirror_to_dpad;
         uint8_t debounce_delay_ms;
     };
 
@@ -94,6 +95,8 @@ class Buttons {
 
   public:
     Buttons(const Config &config);
+
+    void setMirrorToDpad(bool mirror_to_dpad);
 
     void updateInputState(Utils::InputState &input_state);
 };
