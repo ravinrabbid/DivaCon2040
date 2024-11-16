@@ -125,13 +125,41 @@ bool send_hid_ps3_report(usb_report_t report) {
     return result;
 }
 
-static uint8_t ps3_report_0xf2[] = {
-    0xff, 0xff, 0x00,                        // Unknown
-    0x00, 0x07, 0x04,                        // MAC address OUI (ALPS Co.)
-    0x39, 0x39, 0x39,                        // MAC manufacturer specific
-    0x00, 0x03, 0x50, 0x81, 0xd8, 0x01, 0x8a // Unknown
+static const uint8_t ps3_report_0x01[] = {
+    0x01, 0x04, 0x00, 0x0b, 0x0c, 0x01, 0x02, 0x18, 0x18, 0x18, 0x18, 0x09, 0x0a, 0x10, 0x11, 0x12,
+    0x13, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x02, 0x02, 0x02, 0x02, 0x00, 0x00, 0x00, 0x04, 0x04,
+    0x04, 0x04, 0x00, 0x00, 0x04, 0x00, 0x01, 0x02, 0x07, 0x00, 0x17, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
-static const uint8_t ps3_report_0xf5[] = {0x00, 0xf0, 0xf0, 0x02, 0x5e, 0x16, 0x26}; // Unknown
+
+static int8_t ps3_report_0xef[] = {
+    0xef, 0x04, 0x00, 0x0b, 0x03, 0x01, 0xa0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x01, 0xff, 0x01, 0xff, 0x01, 0xff, 0x01, 0xff, 0x01, 0xff, 0x01, 0xff, 0x01, 0xff, 0x01, 0xff,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06,
+};
+
+static uint8_t ps3_report_0xf2[] = {
+    0xff, 0xff, 0x00,                   // Unknown
+    0x00, 0x07, 0x04, 0x39, 0x39, 0x39, // Device MAC address
+    0x00,                               // Unknown
+    0x39, 0x39, 0x39, 0x39, 0x39, 0x39, // Host MAC address (must match 0xf5)
+    0x00,                               // Unkown
+};
+
+static const uint8_t ps3_report_0xf5[] = {
+    0x00,                               //
+    0x39, 0x39, 0x39, 0x39, 0x39, 0x39, // Host MAC address (must match 0xf2)
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static uint8_t ps3_report_0xf8[] = {
+    0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
 
 uint16_t hid_ps3_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t *buffer,
                                uint16_t reqlen) {
@@ -145,6 +173,12 @@ uint16_t hid_ps3_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
         return sizeof(hid_ps3_report_t);
     } else if (report_type == HID_REPORT_TYPE_FEATURE) {
         switch (report_id) {
+        case 0x01:
+            memcpy(buffer, ps3_report_0x01, sizeof(ps3_report_0x01));
+            return sizeof(ps3_report_0x01);
+        case 0xef:
+            memcpy(buffer, ps3_report_0xef, sizeof(ps3_report_0xef));
+            return sizeof(ps3_report_0xef);
         case 0xf2:
             if (do_init_mac) {
                 pico_unique_board_id_t uid;
@@ -163,6 +197,9 @@ uint16_t hid_ps3_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
         case 0xf5:
             memcpy(buffer, ps3_report_0xf5, sizeof(ps3_report_0xf5));
             return sizeof(ps3_report_0xf5);
+        case 0xf8:
+            memcpy(buffer, ps3_report_0xf8, sizeof(ps3_report_0xf8));
+            return sizeof(ps3_report_0xf8);
         default:
         }
     }
@@ -170,7 +207,7 @@ uint16_t hid_ps3_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
 }
 
 typedef struct __attribute((packed, aligned(1))) {
-    uint8_t rumble[4];
+    uint8_t rumble[4]; // Should be length 5, but for some reason we don't get the first byte on linux.
     uint8_t padding[4];
     uint8_t leds_bitmap;
     uint8_t leds[5][5];
@@ -180,30 +217,47 @@ void hid_ps3_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
                            uint16_t bufsize) {
     (void)itf;
 
-    if (report_type != HID_REPORT_TYPE_OUTPUT) {
-        return;
-    }
-
-    if (report_id == 0 && bufsize > 0) {
-        report_id = buffer[0];
-        buffer = &buffer[1];
-        bufsize--;
-    }
-
-    switch (report_id) {
-    case 0x01:
-        if (bufsize == sizeof(hid_ps3_ouput_report_t)) {
-            hid_ps3_ouput_report_t *report = (hid_ps3_ouput_report_t *)buffer;
-
-            usb_player_led_t player_led = {.type = USB_PLAYER_LED_ID, .id = 0};
-            player_led.id = 0 | ((report->leds_bitmap & 0x02) ? (1 << 0) : 0) //
-                            | ((report->leds_bitmap & 0x04) ? (1 << 1) : 0)   //
-                            | ((report->leds_bitmap & 0x08) ? (1 << 2) : 0)   //
-                            | ((report->leds_bitmap & 0x10) ? (1 << 3) : 0);
-
-            usbd_driver_get_player_led_cb()(player_led);
+    switch (report_type) {
+    case HID_REPORT_TYPE_FEATURE: {
+        switch (report_id) {
+        case 0xef:
+            ps3_report_0xef[6] = buffer[6];
+            ps3_report_0xf8[6] = buffer[6];
+            break;
         }
-        break;
+    } break;
+    case HID_REPORT_TYPE_OUTPUT: {
+        if (report_id == 0 && bufsize > 0) {
+            report_id = buffer[0];
+            buffer = &buffer[1];
+            bufsize--;
+        }
+
+        switch (report_id) {
+        case 0x01: {
+            // For some reason we don't see the first byte on linux. Since it is a padding
+            // byte and should always be 0x00, and linux always sets the following byte
+            // to 0xff, we skip it accordingly.
+            if (buffer[0] == 0x00 && bufsize > 0) {
+                buffer = &buffer[1];
+                bufsize--;
+            }
+
+            if (bufsize >= sizeof(hid_ps3_ouput_report_t)) {
+                hid_ps3_ouput_report_t *report = (hid_ps3_ouput_report_t *)buffer;
+
+                usb_player_led_t player_led = {.type = USB_PLAYER_LED_ID, .id = 0};
+                player_led.id = 0 | ((report->leds_bitmap & 0x02) ? (1 << 0) : 0) //
+                                | ((report->leds_bitmap & 0x04) ? (1 << 1) : 0)   //
+                                | ((report->leds_bitmap & 0x08) ? (1 << 2) : 0)   //
+                                | ((report->leds_bitmap & 0x10) ? (1 << 3) : 0);
+
+                usbd_driver_get_player_led_cb()(player_led);
+            }
+        } break;
+        default:
+        }
+    } break;
     default:
     }
 }
