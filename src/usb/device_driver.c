@@ -49,6 +49,9 @@ void usbd_driver_init(usb_mode_t mode) {
     case USB_MODE_PS4_DIVACON:
         usbd_driver = hid_ps4_divacon_device_driver;
         break;
+    case USB_MODE_PS4_COMPAT:
+        usbd_driver = hid_ps4_compat_device_driver;
+        break;
     case USB_MODE_DUALSHOCK4:
         usbd_driver = hid_ds4_device_driver;
         break;

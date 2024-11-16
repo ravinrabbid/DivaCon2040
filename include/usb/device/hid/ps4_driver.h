@@ -44,6 +44,7 @@ typedef struct __attribute((packed, aligned(1))) {
 
 extern const usbd_driver_t hid_ds4_device_driver;
 extern const usbd_driver_t hid_ps4_divacon_device_driver;
+extern const usbd_driver_t hid_ps4_compat_device_driver;
 
 extern const uint8_t ps4_desc_hid_report[];
 

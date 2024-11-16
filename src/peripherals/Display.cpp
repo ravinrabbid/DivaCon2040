@@ -171,6 +171,8 @@ static std::string modeToString(usb_mode_t mode) {
         return "Dualshock 3";
     case USB_MODE_PS4_DIVACON:
         return "PS4 Diva";
+    case USB_MODE_PS4_COMPAT:
+        return "PS4 Compat";
     case USB_MODE_DUALSHOCK4:
         return "Dualshock 4";
     case USB_MODE_XBOX360:

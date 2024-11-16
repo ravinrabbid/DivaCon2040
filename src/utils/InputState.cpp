@@ -22,6 +22,7 @@ usb_report_t InputState::getReport(usb_mode_t mode) {
     case USB_MODE_DUALSHOCK3:
         return getPS3InputReport();
     case USB_MODE_PS4_DIVACON:
+    case USB_MODE_PS4_COMPAT:
     case USB_MODE_DUALSHOCK4:
         return getPS4InputReport();
     case USB_MODE_XBOX360:

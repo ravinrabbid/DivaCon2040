@@ -107,6 +107,7 @@ void TouchSlider::updateInputState(Utils::InputState &input_state) {
     case USB_MODE_SWITCH_HORIPAD:
     case USB_MODE_DUALSHOCK3:
     case USB_MODE_DUALSHOCK4:
+    case USB_MODE_PS4_COMPAT:
     case USB_MODE_XBOX360:
     case USB_MODE_KEYBOARD:
         updateInputStateStick(input_state);

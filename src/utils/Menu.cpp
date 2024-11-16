@@ -18,6 +18,7 @@ const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
        {"Swtch Pro", Menu::Descriptor::Action::SetUsbMode},  //
        {"Dualshock3", Menu::Descriptor::Action::SetUsbMode}, //
        {"PS4 Diva", Menu::Descriptor::Action::SetUsbMode},   //
+       {"PS4 Compat", Menu::Descriptor::Action::SetUsbMode},   //
        {"Dualshock4", Menu::Descriptor::Action::SetUsbMode}, //
        {"Xbox 360", Menu::Descriptor::Action::SetUsbMode},   //
        {"PDL Arcade", Menu::Descriptor::Action::SetUsbMode}, //

@@ -14,7 +14,8 @@ If you have any questions about the project in general or need hints how to buil
   - HORI PS4-161 Project Diva Arcade Controller for PS4* (compatible with Project Diva Mega Mix on Steam/PC. Project DIVA Future Tone DX on PS4 untested!)
   - HORI NSW-230 Project Diva Arcade Controller for Switch (compatible with Project Diva Mega Mix on Switch/Steam/PC)
   - PD-Loader Arcade Controller (Compatible with [PD-Loader](https://github.com/PDModdingCommunity/PD-Loader/)'s Divaller driver)
-  - Dualshock 4 (does not work on an actual PS4!)
+  - PS4 Compatibility (will work on PS4, but will timeout after ~8 minutes)
+  - Dualshock 4 (Only for PC/Steam, does not work on an actual PS4!)
   - Dualshock 3
   - Switch Pro Controller
   - XInput
