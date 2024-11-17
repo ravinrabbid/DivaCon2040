@@ -11,8 +11,8 @@ If you have any questions about the project in general or need hints how to buil
 ## Features
 
 - Various controller emulation modes
-  - HORI PS4-161 Project Diva Arcade Controller for PS4* (compatible with Project Diva Mega Mix on Steam/PC. Project DIVA Future Tone DX on PS4 untested!)
-  - HORI NSW-230 Project Diva Arcade Controller for Switch (compatible with Project Diva Mega Mix on Switch/Steam/PC)
+  - HORI PS4-161 Project Diva Arcade Controller
+  - HORI NSW-230 Project Diva Arcade Controller
   - PD-Loader Arcade Controller (Compatible with [PD-Loader](https://github.com/PDModdingCommunity/PD-Loader/)'s Divaller driver)
   - PS4 Compatibility (will work on PS4, but will timeout after ~8 minutes)
   - Dualshock 4 (Only for PC/Steam, does not work on an actual PS4!)
@@ -22,14 +22,31 @@ If you have any questions about the project in general or need hints how to buil
   - Keyboard
   - MIDI
   - Debug mode (will output current state via USB serial and allow direct flashing)
-- Arcade Style Touch Slider for arcade controller emulation modes (In Project Diva Games enter the 'Customize' menu from song selection and enable arcade controller support under 'Game/Control Config' -> 'Arcade Controller Settings' for the slider to work properly.)
+- Arcade Style Touch Slider for arcade controller emulation modes (In Project Diva Games with arcade controller support: Enter the 'Customize' menu from song selection and enable arcade controller support under 'Game/Control Config' -> 'Arcade Controller Settings' for the slider to work properly.)
 - Slider to analog stick mapping for standard controller modes
+- Option to mirror face buttons to directional pad for games with 'W'-arrows
 - 1000Hz Polling Rate, ~2.4ms average latency, <0.7ms Jitter (Tested with [Gamepadla](https://github.com/cakama3a/Gamepadla)/[GPDL](https://github.com/cakama3a/GPDL/))
 - Slider illumination using WS2812 LED strip (can be controlled by PD-Loader)
 - Button illumination (can be controlled by PD-Loader)
 - Basic configuration via on-screen menu on attached OLED screen
-- Player LEDs are visualized on OLED screen for DS3 and XInput, player color on the slider LEDs for DS4 (can be disabled)
 - BPM counter
+
+## Game Compatibility
+
+| Title                                                                       | Platform | Official Arcade Slider Support |      Recommended Mode      | Notes                                                                                                                                                                                                                                                                                                                                                |
+| --------------------------------------------------------------------------- | :------: | :----------------------------: | :------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Hatsune Miku -Project DIVA- Dreamy Theater                                  |   PS3    |               No               | Dualshock 3 + 'Double Btn' | - **Untested** but will likely work.<br>- Slider can be used for Star notes.<br>- Enable 'Double Btn' to make hitting 'W'-arrows easier.                                                                                                                                                                                                             |
+| Hatsune Miku -Project DIVA- Dreamy Theater 2nd                              |   PS3    |               No               | Dualshock 3 + 'Double Btn' | - Slider can be used for Star notes.<br>- Enable 'Double Btn' to make hitting 'W'-arrows easier.                                                                                                                                                                                                                                                     |
+| Hatsune Miku -Project DIVA- Dreamy Theater extend                           |   PS3    |               No               | Dualshock 3 + 'Double Btn' | - **Untested** but will likely work.<br>- Slider can be used for Star notes.<br>- Enable 'Double Btn' to make hitting 'W'-arrows easier.                                                                                                                                                                                                             |
+| Hatsune Miku -Project DIVA- F                                               |   PS3    |               No               | Dualshock 3 + 'Double Btn' | - Slider can be used for Star notes.<br>- Enable 'Double Btn' to make hitting 'W'-arrows easier.                                                                                                                                                                                                                                                     |
+| Hatsune Miku -Project DIVA- F2nd                                            |   PS3    |               No               | Dualshock 3 + 'Double Btn' | - Slider can be used for Star notes.<br>- Enable 'Double Btn' to make hitting 'W'-arrows easier.                                                                                                                                                                                                                                                     |
+| Hatsune Miku -Project DIVA- Future Tone                                     |   PS4    |               No               |         PS4 Compat         | - Controller will time timeout after ~8 minutes. Replug before each song.<br>- Game does not support arcade style slider, stick emulation will be used.                                                                                                                                                                                              |
+| Hatsune Miku -Project DIVA- Future Tone DX                                  |   PS4    |              Yes               |          PS4 Diva          | - Controller will time timeout after ~8 minutes. Replug before each song.<br>- From song selection enter the 'Customize' menu and enable arcade controller support under 'Game/Control Config' -> 'Arcade Controller Settings'.                                                                                                                      |
+| Hatsune Miku -Project DIVA- X                                               |   PS4    |               No               | PS4 Compat + 'Double Btn'  | - Controller will time timeout after ~8 minutes. Replug before each song.<br>- Slider can be used for Star notes.<br>- Enable 'Double Btn' to make hitting 'W'-arrows easier.                                                                                                                                                                        |
+| Hatsune Miku: Project DIVA Mega Mix / Hatsune Miku -Project DIVA- MEGA39’s  |  Switch  |              Yes               |        Switch Diva         | - When starting the game, choose 'Arcade Mode'.<br> - From song selection enter the 'Customize' menu and enable arcade controller support under 'Game/Control Config' -> 'Arcade Controller Settings'.                                                                                                                                               |
+| Hatsune Miku -Project DIVA- Arcade Future Tone (PDLoader)                   |    PC    |              Yes               |         PDL Arcade         | - Should work out-of-the-box. (You might need to enable `slider_in_menus` in `keyconfig.ini` and `Hardware_Slider` in `config.ini`).<br>- 'PS4 Diva' also works, see [here](https://github.com/PDModdingCommunity/PD-Loader/wiki/3%29-Usage,-Modules-%28Costumes%29,-Troubleshooting#official-hori-ps4-ft-controller-with-slider) for configuration. |
+| Hatsune Miku: Project DIVA Mega 39s+ / Hatsune Miku: Project DIVA Mega Mix+ |    PC    |              Yes               |  PS4 Diva or Switch Diva   | - From song selection enter the 'Customize' menu and enable arcade controller support under 'Game/Control Config' -> 'Arcade Controller Settings'.                                                                                                                                                                                                   |
+
 
 ## Building
 
@@ -55,11 +72,12 @@ make
 
 ## Configuration
 
-Few things which you probably want to change more regularly can be changed using the on-screen menu on the attached OLED display, hold both Start and Select for 2 seconds to enter it:
+Options which you probably want to change more regularly can be changed using the on-screen menu on the attached OLED display, hold both Start and Select for 2 seconds to enter it:
 
 - Controller emulation mode
-- Touch Slider LED brightness
-- Enable/Disable setting the slider background color to the Dualshock4 lightbar color.
+- Touch Slider LED mode, color and brightness
+- Face button to directional pad mirroring
+- Reset settings to defaults
 - Enter BOOTSEL mode for firmware flashing
 
 Those settings are persisted to flash memory if you choose 'Save' when exiting the Menu and will survive power cycles.
@@ -127,7 +145,7 @@ Edges and the cradles the touch slider sits in are also 3D printed. The Artwork 
 
 - Adafruit for the figuring out some working [MPR121 settings](https://github.com/adafruit/Adafruit_MPR121)
 - [daschr](https://github.com/daschr) for the [SSD1306 OLED driver](https://github.com/daschr/pico-ssd1306)
-- [FeralAI](https://github.com/FeralAI) for the inspiration and XInput driver from the [GP2040 Project](https://github.com/FeralAI/GP2040)
+- [FeralAI](https://github.com/FeralAI) for the inspiration and Dualshock3/XInput driver from the [GP2040 Project](https://github.com/FeralAI/GP2040)
 - [dogtopus](https://github.com/dogtopus) for his research on the arcade slider and various contributions to many controller related projects
 - [steelpuxnastik](https://github.com/steelpuxnastik) for the excellent [SHINSANWASWITCH](https://github.com/steelpuxnastik/SHINSANWASWITCH)
 - The linux kernel contributors for documenting the game controllers in their drivers
