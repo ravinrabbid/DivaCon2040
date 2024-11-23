@@ -1,5 +1,13 @@
 # DivaCon2040 - Firmware for RP2040 based Project Diva controllers
 
+---
+
+## WARNING
+
+You are on the `pcb` development branch. Things in here are still under development and untested. Use `main` for now.
+
+---
+
 DivaCon2040 is a firmware for DIY Project Diva Arcade controllers based on the RP2040 microcontroller as found on the Raspberry Pi Pico.
 
 It is pretty much tailored to this specific use case, if you are looking for something universal, ready-to-flash and on-the-fly configurable I'd recommend to have a look at more generic approaches like [GP2040-CE](https://github.com/OpenStickCommunity/GP2040-CE). If you however want build something more specialized or custom, feel free to use this project as a base, it is designed to be somewhat modular and should be easy remodel. See [DonCon2040](https://github.com/ravinrabbid/DonCon2040) for an example on how this could look like.
