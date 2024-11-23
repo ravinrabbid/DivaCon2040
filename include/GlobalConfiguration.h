@@ -62,10 +62,18 @@ const Peripherals::TouchSlider::Config touch_slider_config = {
     i2c0,   // I2C Block
     800000, // I2C Speed
 
-    Peripherals::TouchSlider::Mpr121Config{
-        {0x5A, 0x5D, 0x5C}, // MPR121 Addresses
-        12,                 // Touch threshold
-        6,                  // Release threshold
+    // Touch controller config, either Mpr121 or Cap1188
+    //
+    // Peripherals::TouchSlider::Mpr121Config{
+    //     {0x5A, 0x5D, 0x5C}, // MPR121 Addresses
+    //     12,                 // Touch threshold
+    //     6,                  // Release threshold
+    // },
+
+    Peripherals::TouchSlider::Cap1188Config{
+        {0x2C, 0x2B, 0x2A, 0x29},  // CAP1188 Addresses
+        64,                        // Touch threshold
+        Cap1188::Sensitivity::S32, // Sensitivity
     },
 };
 

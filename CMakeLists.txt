@@ -46,6 +46,7 @@ target_link_libraries(
          pico_multicore
          pico_rand
          mpr121
+         cap1188
          pico_ssd1306
          pio_ws2812)
 

@@ -5,6 +5,7 @@
 
 #include "usb/device_driver.h"
 
+#include <cap1188/Cap1188.h>
 #include <mpr121/Mpr121.h>
 
 #include "hardware/i2c.h"
@@ -25,13 +26,20 @@ class TouchSlider {
         uint8_t release_threshold;
     };
 
+    struct Cap1188Config {
+        uint8_t i2c_addresses[4];
+
+        uint8_t threshold;
+        Cap1188::Sensitivity sensitivity;
+    };
+
     struct Config {
         uint8_t sda_pin;
         uint8_t scl_pin;
         i2c_inst_t *i2c_block;
         uint i2c_speed_hz;
 
-        std::variant<Mpr121Config> touch_config;
+        std::variant<Mpr121Config, Cap1188Config> touch_config;
     };
 
   private:
@@ -46,6 +54,16 @@ class TouchSlider {
 
       public:
         TouchControllerMpr121(const Mpr121Config &config, i2c_inst *i2c);
+
+        virtual uint32_t read() final;
+    };
+
+    class TouchControllerCap1188 : public TouchControllerInterface {
+      private:
+        std::array<std::unique_ptr<Cap1188>, 4> m_cap1188;
+
+      public:
+        TouchControllerCap1188(const Cap1188Config &config, i2c_inst *i2c);
 
         virtual uint32_t read() final;
     };

@@ -38,6 +38,27 @@ uint32_t TouchSlider::TouchControllerMpr121::read() {
            (reverseBits(m_mpr121[2]->getTouched()) >> 4);
 }
 
+TouchSlider::TouchControllerCap1188::TouchControllerCap1188(const TouchSlider::Cap1188Config &config, i2c_inst *i2c) {
+    size_t idx = 0;
+    for (auto &cap1188 : m_cap1188) {
+        cap1188 = std::make_unique<Cap1188>(config.i2c_addresses[idx], i2c, config.threshold, config.sensitivity,
+                                            Cap1188::Gain::G1);
+        idx++;
+    }
+}
+
+uint32_t TouchSlider::TouchControllerCap1188::read() {
+    // Electrodes are mapped according to below table.
+    //
+    //         | m_cap1188[3] | m_cap1188[2] | m_cap1188[1] | m_cap1188[0] |
+    // --------+--------------+--------------+--------------+--------------+
+    // Pin     |     7..0     |     7..0     |     7..0     |     7..0     |
+    // Touched |    31..24    |    23..16    |    15..8     |     7..0     |
+
+    return (m_cap1188[3]->getTouched() << 24) | (m_cap1188[2]->getTouched() << 16) | (m_cap1188[1]->getTouched() << 8) |
+           (m_cap1188[0]->getTouched());
+}
+
 TouchSlider::TouchSlider(const Config &config, usb_mode_t mode) : m_config(config), m_mode(mode), m_touched(0) {
     gpio_set_function(m_config.sda_pin, GPIO_FUNC_I2C);
     gpio_set_function(m_config.scl_pin, GPIO_FUNC_I2C);
@@ -52,6 +73,8 @@ TouchSlider::TouchSlider(const Config &config, usb_mode_t mode) : m_config(confi
 
             if constexpr (std::is_same_v<T, Mpr121Config>) {
                 m_touch_controller = std::make_unique<TouchControllerMpr121>(config, m_config.i2c_block);
+            } else if constexpr (std::is_same_v<T, Cap1188Config>) {
+                m_touch_controller = std::make_unique<TouchControllerCap1188>(config, m_config.i2c_block);
             } else {
                 static_assert(false, "Unknown touch controller!");
             }
