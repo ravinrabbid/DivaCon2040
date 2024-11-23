@@ -4,26 +4,26 @@
 
 ```text
                                -------------
-GND -- Triangle Button -- GP0 -|1    R   40|- VBUS
-GND ---- Square Button -- GP1 -|2    P   39|- VSYS
+GND -------- L1 Button -- GP0 -|1    R   40|- VBUS
+GND -------- L2 Button -- GP1 -|2    P   39|- VSYS
                           GND -|3    i   38|- GND
-GND ----- Cross Button -- GP2 -|4        37|- 3V3_EN -- Not connected
-GND ---- Circle Button -- GP3 -|5    P   36|- 3V3
-... -------- Cross LED -- GP4 -|6    i   35|- ADC_VREF -- Not connected
-... ------- Circle LED -- GP5 -|7    c   34|- GP28 -- Slider LEDs DIN -- ...
+GND -------- L3 Button -- GP2 -|4        37|- 3V3_EN -- Not connected
+GND -------- R1 Button -- GP3 -|5    P   36|- 3V3
+GND -------- R2 Button -- GP4 -|6    i   35|- ADC_VREF -- Not connected
+GND -------- R3 Button -- GP5 -|7    c   34|- GP28 -- Slider LEDs DIN -- ...
                           GND -|8    o   33|- GND
-GND -------- L1 Button -- GP6 -|9        32|- GP27/I2C1 SCL -- Display - ...
-GND -------- L2 Button -- GP7 -|10       31|- GP26/I2C1 SDA -- Display - ...
-GND -------- L3 Button -- GP8 -|11       30|- RUN  -- Not connected
-GND ---- Select Button -- GP9 -|12       29|- GP22 -- Triangle LED ----- ...
+GND -- Triangle Button -- GP6 -|9        32|- GP27 -- Select Button ---- GND
+GND ---- Square Button -- GP7 -|10       31|- GP26 -- Start Button ----- GND
+GND ----- Cross Button -- GP8 -|11       30|- RUN  -- Not connected
+GND ---- Circle Button -- GP9 -|12       29|- GP22 -- Home Button ------ GND
                           GND -|13       28|- GND
-GND ----- Home Button -- GP10 -|14       27|- GP21 -- Up Button -------- GND
-GND ---- Start Button -- GP11 -|15       26|- GP20 -- Down Button ------ GND
-... ------ Square LED -- GP12 -|16       25|- GP19 -- Left Button ------ GND
-GND -------- R1 Button --GP13 -|17       24|- GP18 -- Right Button ----- GND
+... ---- Triangle LED -- GP10 -|14       27|- GP21 -- Right Button ----- GND
+... ------ Square LED -- GP11 -|15       26|- GP20 -- Left Button ------ GND
+... ------- Cross LED -- GP12 -|16       25|- GP19 -- Down Button ------ GND
+... ------ Circle LED -- GP13 -|17       24|- GP18 -- Up Button -------- GND
                           GND -|18       23|- GND
-GND -------- R2 Button --GP14 -|19       22|- GP17/I2C0 SCL -- Touch Slider
-GND -------- R3 Button --GP15 -|20       21|- GP16/I2C0 SDA -- Touch Slider
+... - Display - I2C1 SDA/GP14 -|19       22|- GP17/I2C0 SCL -- Touch Slider
+... - Display - I2C1 SCL/GP15 -|20       21|- GP16/I2C0 SDA -- Touch Slider
                                -------------
 ```
 
@@ -32,6 +32,7 @@ GND -------- R3 Button --GP15 -|20       21|- GP16/I2C0 SDA -- Touch Slider
 If you lower the brightness of the LED strip, the 500mA of the USB bus should be sufficient to power everything.
 
 For better reliability you can additionally add an external power supply connected to VSYS. In this case connect all 5V peripherals to VSYS also.
+See [Pico Datasheet Capter 3.5](https://datasheets.raspberrypi.com/picow/pico-w-datasheet.pdf) for more details.
 
 ## Touch Slider
 
