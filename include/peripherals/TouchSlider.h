@@ -12,30 +12,50 @@
 #include <array>
 #include <memory>
 #include <stdint.h>
+#include <variant>
 
 namespace Divacon::Peripherals {
 
 class TouchSlider {
-  private:
-    const static size_t mpr121_count = 3;
-
   public:
-    struct Config {
+    struct Mpr121Config {
+        uint8_t i2c_addresses[3];
+
         uint8_t touch_threshold;
         uint8_t release_threshold;
+    };
 
+    struct Config {
         uint8_t sda_pin;
         uint8_t scl_pin;
         i2c_inst_t *i2c_block;
         uint i2c_speed_hz;
-        uint8_t mpr121_address[mpr121_count];
+
+        std::variant<Mpr121Config> touch_config;
+    };
+
+  private:
+    class TouchControllerInterface {
+      public:
+        virtual uint32_t read() = 0;
+    };
+
+    class TouchControllerMpr121 : public TouchControllerInterface {
+      private:
+        std::array<std::unique_ptr<Mpr121>, 3> m_mpr121;
+
+      public:
+        TouchControllerMpr121(const Mpr121Config &config, i2c_inst *i2c);
+
+        virtual uint32_t read() final;
     };
 
   private:
     Config m_config;
     usb_mode_t m_mode;
     uint32_t m_touched;
-    std::array<std::unique_ptr<Mpr121>, mpr121_count> m_mpr121;
+
+    std::unique_ptr<TouchControllerInterface> m_touch_controller;
 
     void read();
 

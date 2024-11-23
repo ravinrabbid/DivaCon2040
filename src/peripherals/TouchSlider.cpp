@@ -4,19 +4,59 @@
 
 namespace Divacon::Peripherals {
 
+TouchSlider::TouchControllerMpr121::TouchControllerMpr121(const TouchSlider::Mpr121Config &config, i2c_inst *i2c) {
+    size_t idx = 0;
+    for (auto &mpr121 : m_mpr121) {
+        mpr121 = std::make_unique<Mpr121>(config.i2c_addresses[idx], i2c, config.touch_threshold,
+                                          config.release_threshold, true);
+        idx++;
+    }
+}
+
+uint32_t TouchSlider::TouchControllerMpr121::read() {
+    auto reverseBits = [](uint16_t input) {
+        uint16_t result = 0;
+        uint8_t bit = 0;
+        while (input > 0) {
+            result += (input % 2) << (15 - bit);
+            input >>= 1;
+            bit++;
+        }
+        return result;
+    };
+
+    // Electrodes are mapped according to below table.
+    // If you had more success hooking up your slider,
+    // change this accordingly.
+    //
+    //         | m_mpr121[0] | m_mpr121[1] | m_mpr121[2] |
+    // --------+-------------+-------------+-------------+
+    // Pin     |    0..11    |    2..9     |    0..11    |
+    // Touched |   31..20    |   19..12    |    11..0    |
+
+    return (reverseBits(m_mpr121[0]->getTouched()) << 16) | (reverseBits(m_mpr121[1]->getTouched() & 0x03FC) << 6) |
+           (reverseBits(m_mpr121[2]->getTouched()) >> 4);
+}
+
 TouchSlider::TouchSlider(const Config &config, usb_mode_t mode) : m_config(config), m_mode(mode), m_touched(0) {
-    i2c_init(m_config.i2c_block, m_config.i2c_speed_hz);
     gpio_set_function(m_config.sda_pin, GPIO_FUNC_I2C);
     gpio_set_function(m_config.scl_pin, GPIO_FUNC_I2C);
     gpio_pull_up(m_config.sda_pin);
     gpio_pull_up(m_config.scl_pin);
 
-    size_t idx = 0;
-    for (auto &mpr121 : m_mpr121) {
-        mpr121 = std::make_unique<Mpr121>(m_config.mpr121_address[idx], m_config.i2c_block, m_config.touch_threshold,
-                                          m_config.release_threshold, true);
-        idx++;
-    }
+    i2c_init(m_config.i2c_block, m_config.i2c_speed_hz);
+
+    std::visit(
+        [this](auto &&config) {
+            using T = std::decay_t<decltype(config)>;
+
+            if constexpr (std::is_same_v<T, Mpr121Config>) {
+                m_touch_controller = std::make_unique<TouchControllerMpr121>(config, m_config.i2c_block);
+            } else {
+                static_assert(false, "Unknown touch controller!");
+            }
+        },
+        m_config.touch_config);
 }
 
 void TouchSlider::updateInputStateArcade(Utils::InputState &input_state) {
@@ -120,32 +160,9 @@ void TouchSlider::updateInputState(Utils::InputState &input_state) {
 void TouchSlider::read() {
     static uint32_t last_read = 0;
 
-    auto reverseBits = [](uint16_t input) {
-        uint16_t result = 0;
-        uint8_t bit = 0;
-        while (input > 0) {
-            result += (input % 2) << (15 - bit);
-            input >>= 1;
-            bit++;
-        }
-        return result;
-    };
-
-    // Electrodes are mapped according to below table.
-    // If you had more success hooking up your slider,
-    // change this accordingly.
-    //
-    //         | m_mpr121[0] | m_mpr121[1] | m_mpr121[2] |
-    // --------+-------------+-------------+-------------+
-    // Pin     |    0..11    |    2..9     |    0..11    |
-    // Touched |   31..20    |   19..12    |    11..0    |
-
     uint32_t now = to_ms_since_boot(get_absolute_time());
     if ((last_read + 1) <= now) {
-        m_touched = (reverseBits(m_mpr121[0]->getTouched()) << 16) |
-                    (reverseBits(m_mpr121[1]->getTouched() & 0x03FC) << 6) |
-                    (reverseBits(m_mpr121[2]->getTouched()) >> 4);
-        last_read = now;
+        m_touched = m_touch_controller->read();
     }
 }
 

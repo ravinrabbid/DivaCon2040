@@ -57,14 +57,16 @@ const Peripherals::ButtonLeds::Config button_leds_config = {
 };
 
 const Peripherals::TouchSlider::Config touch_slider_config = {
-    12, // Touch threshold
-    6,  // Release threshold
+    16,     // SDA Pin
+    17,     // SCL Pin
+    i2c0,   // I2C Block
+    800000, // I2C Speed
 
-    16,                 // SDA Pin
-    17,                 // SCL Pin
-    i2c0,               // I2C Block
-    800000,             // I2C Speed
-    {0x5A, 0x5D, 0x5C}, // MPR121 Addresses
+    Peripherals::TouchSlider::Mpr121Config{
+        {0x5A, 0x5D, 0x5C}, // MPR121 Addresses
+        12,                 // Touch threshold
+        6,                  // Release threshold
+    },
 };
 
 const Peripherals::TouchSliderLeds::Config touch_slider_leds_config = {
