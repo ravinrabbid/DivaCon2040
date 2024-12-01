@@ -70,10 +70,16 @@ const Peripherals::TouchSlider::Config touch_slider_config = {
     //     6,                  // Release threshold
     // },
 
-    Peripherals::TouchSlider::Cap1188Config{
-        {0x2C, 0x2B, 0x2A, 0x29},  // CAP1188 Addresses
-        64,                        // Touch threshold
-        Cap1188::Sensitivity::S32, // Sensitivity
+    // Peripherals::TouchSlider::Cap1188Config{
+    //     {0x2C, 0x2B, 0x2A, 0x29},  // CAP1188 Addresses
+    //     64,                        // Touch threshold
+    //     Cap1188::Sensitivity::S32, // Sensitivity
+    // },
+
+    Peripherals::TouchSlider::Is31se5117aConfig{
+        {0x50, 0x51}, // IS31SE5117A Addresses
+        40,           // Touch threshold
+        20,           // Touch Hysteresis
     },
 };
 

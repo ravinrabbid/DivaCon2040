@@ -47,6 +47,7 @@ target_link_libraries(
          pico_rand
          mpr121
          cap1188
+         is31se5117a
          pico_ssd1306
          pio_ws2812)
 
