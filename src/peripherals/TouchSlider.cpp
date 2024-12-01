@@ -17,7 +17,7 @@ auto reverseBits = [](uint16_t input) {
 };
 } // namespace
 
-TouchSlider::TouchControllerMpr121::TouchControllerMpr121(const TouchSlider::Mpr121Config &config, i2c_inst *i2c) {
+TouchSlider::TouchControllerMpr121::TouchControllerMpr121(const TouchSlider::Config::Mpr121 &config, i2c_inst *i2c) {
     size_t idx = 0;
     for (auto &mpr121 : m_mpr121) {
         mpr121 = std::make_unique<Mpr121>(config.i2c_addresses[idx], i2c, config.touch_threshold,
@@ -40,7 +40,7 @@ uint32_t TouchSlider::TouchControllerMpr121::read() {
            (reverseBits(m_mpr121[2]->getTouched()) >> 4);
 }
 
-TouchSlider::TouchControllerCap1188::TouchControllerCap1188(const TouchSlider::Cap1188Config &config, i2c_inst *i2c) {
+TouchSlider::TouchControllerCap1188::TouchControllerCap1188(const TouchSlider::Config::Cap1188 &config, i2c_inst *i2c) {
     size_t idx = 0;
     for (auto &cap1188 : m_cap1188) {
         cap1188 = std::make_unique<Cap1188>(config.i2c_addresses[idx], i2c, config.threshold, config.sensitivity,
@@ -61,7 +61,7 @@ uint32_t TouchSlider::TouchControllerCap1188::read() {
            (m_cap1188[0]->getTouched());
 }
 
-TouchSlider::TouchControllerIs31se5117a::TouchControllerIs31se5117a(const TouchSlider::Is31se5117aConfig &config,
+TouchSlider::TouchControllerIs31se5117a::TouchControllerIs31se5117a(const TouchSlider::Config::Is31se5117a &config,
                                                                     i2c_inst *i2c) {
     size_t idx = 0;
     for (auto &is31se5117a : m_is31se5117a) {
@@ -94,11 +94,11 @@ TouchSlider::TouchSlider(const Config &config, usb_mode_t mode) : m_config(confi
         [this](auto &&config) {
             using T = std::decay_t<decltype(config)>;
 
-            if constexpr (std::is_same_v<T, Mpr121Config>) {
+            if constexpr (std::is_same_v<T, Config::Mpr121>) {
                 m_touch_controller = std::make_unique<TouchControllerMpr121>(config, m_config.i2c_block);
-            } else if constexpr (std::is_same_v<T, Cap1188Config>) {
+            } else if constexpr (std::is_same_v<T, Config::Cap1188>) {
                 m_touch_controller = std::make_unique<TouchControllerCap1188>(config, m_config.i2c_block);
-            } else if constexpr (std::is_same_v<T, Is31se5117aConfig>) {
+            } else if constexpr (std::is_same_v<T, Config::Is31se5117a>) {
                 m_touch_controller = std::make_unique<TouchControllerIs31se5117a>(config, m_config.i2c_block);
             } else {
                 static_assert(false, "Unknown touch controller!");

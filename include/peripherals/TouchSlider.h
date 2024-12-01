@@ -20,34 +20,34 @@ namespace Divacon::Peripherals {
 
 class TouchSlider {
   public:
-    struct Mpr121Config {
-        uint8_t i2c_addresses[3];
-
-        uint8_t touch_threshold;
-        uint8_t release_threshold;
-    };
-
-    struct Cap1188Config {
-        uint8_t i2c_addresses[4];
-
-        uint8_t threshold;
-        Cap1188::Sensitivity sensitivity;
-    };
-
-    struct Is31se5117aConfig {
-        uint8_t i2c_addresses[2];
-
-        uint8_t threshold;
-        uint8_t hysteresis;
-    };
-
     struct Config {
+        struct Mpr121 {
+            uint8_t i2c_addresses[3];
+
+            uint8_t touch_threshold;
+            uint8_t release_threshold;
+        };
+
+        struct Cap1188 {
+            uint8_t i2c_addresses[4];
+
+            uint8_t threshold;
+            ::Cap1188::Sensitivity sensitivity;
+        };
+
+        struct Is31se5117a {
+            uint8_t i2c_addresses[2];
+
+            uint8_t threshold;
+            uint8_t hysteresis;
+        };
+
         uint8_t sda_pin;
         uint8_t scl_pin;
         i2c_inst_t *i2c_block;
         uint i2c_speed_hz;
 
-        std::variant<Mpr121Config, Cap1188Config, Is31se5117aConfig> touch_config;
+        std::variant<Mpr121, Cap1188, Is31se5117a> touch_config;
     };
 
   private:
@@ -61,7 +61,7 @@ class TouchSlider {
         std::array<std::unique_ptr<Mpr121>, 3> m_mpr121;
 
       public:
-        TouchControllerMpr121(const Mpr121Config &config, i2c_inst *i2c);
+        TouchControllerMpr121(const Config::Mpr121 &config, i2c_inst *i2c);
 
         virtual uint32_t read() final;
     };
@@ -71,7 +71,7 @@ class TouchSlider {
         std::array<std::unique_ptr<Cap1188>, 4> m_cap1188;
 
       public:
-        TouchControllerCap1188(const Cap1188Config &config, i2c_inst *i2c);
+        TouchControllerCap1188(const Config::Cap1188 &config, i2c_inst *i2c);
 
         virtual uint32_t read() final;
     };
@@ -81,7 +81,7 @@ class TouchSlider {
         std::array<std::unique_ptr<Is31se5117a>, 2> m_is31se5117a;
 
       public:
-        TouchControllerIs31se5117a(const Is31se5117aConfig &config, i2c_inst *i2c);
+        TouchControllerIs31se5117a(const Config::Is31se5117a &config, i2c_inst *i2c);
 
         virtual uint32_t read() final;
     };
