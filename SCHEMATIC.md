@@ -44,21 +44,25 @@ See [Pico Datasheet Capter 3.5](https://datasheets.raspberrypi.com/picow/pico-w-
 ----------------------------
     ||       ||       ||
  -------- -------- --------
- | MPR  | | MPR  | | MPR  |
+ | MPR  |-| MPR  |-| MPR  |-- 3V3
  | 121  | | 121  | | 121  |
- | 0x5A | | 0x5D | | 0x5C |
+ | 0x5A |-| 0x5D |-| 0x5C |-- GND
  -------- -------- --------
    |  |     |  |     |  |
-   +--|-----+--|-----+--|-- SDA
+   +--|-----+--|-----+--|---- SDA
       |        |        |
-      +--------+--------+-- SCL
+      +--------+--------+---- SCL
 
 ```
 
 All MPR121s are connected to the same i2c bus in parallel, set the addresses as shown above.
 Power them with 3V3.
 
+## Touch Slider LEDs
+
 For the LEDs use a WS2812 compatible strip. Connect DIN as shown above, power with VBUS (or VSYS if you power your controller externally).
+
+Mind that directly connecting the 3.3V data line to the 5V powered leds is slightly out of spec. If your leds won't work properly, you might need a level-shifter or a [sacrificial led](https://hackaday.com/2017/01/20/cheating-at-5v-ws2812-control-to-use-a-3-3v-data-line/).
 
 ## Button LEDs
 
