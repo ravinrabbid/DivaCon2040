@@ -42256,6 +42256,45 @@
 			(justify left bottom mirror)
 		)
 	)
+	(gr_text "0x2A"
+		(at 359 154 0)
+		(layer "F.SilkS")
+		(uuid "40bc12cf-35db-477a-8f3a-07fa0039d199")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.3)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+	)
+	(gr_text "0x2C"
+		(at 87 154 0)
+		(layer "F.SilkS")
+		(uuid "4e8fe42b-bf36-4570-8075-3c0f3b58caca")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.3)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+	)
+	(gr_text "0x29"
+		(at 495 154 0)
+		(layer "F.SilkS")
+		(uuid "713803d9-98e3-4015-a381-ce8bc5201b43")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.3)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+	)
 	(gr_text "https://github.com/ravinrabbid/DivaCon2040\n${ISSUE_DATE}"
 		(at 339.75 145 0)
 		(layer "F.SilkS")
@@ -42268,9 +42307,22 @@
 			(justify left bottom)
 		)
 	)
+	(gr_text "0x2B"
+		(at 223 154 0)
+		(layer "F.SilkS")
+		(uuid "9af4defc-07ab-45eb-b677-ab79a7431635")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.3)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+	)
 	(gr_text "${TITLE} Rev. ${REVISION}"
 		(at 339.5 141.75 0)
-		(layer "F.SilkS")
+		(layer "F.SilkS" knockout)
 		(uuid "afad0109-4a85-4582-9c5a-18e057c65f2c")
 		(effects
 			(font
@@ -42282,7 +42334,7 @@
 		)
 	)
 	(gr_text "JLCJLCJLCJLC"
-		(at 146.75 162.5 90)
+		(at 66 141 0)
 		(layer "F.SilkS")
 		(uuid "b73259ca-90ca-49f0-a7fc-df8e31579c1b")
 		(effects
