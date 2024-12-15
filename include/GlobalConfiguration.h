@@ -16,29 +16,29 @@ const Peripherals::Buttons::Config buttons_config = {
         // Pin config
         {
             // Dpad
-            21, // Up
-            20, // Down
-            19, // Left
-            18, // Right
+            18, // Up
+            19, // Down
+            20, // Left
+            21, // Right
         },
         {
             // Buttons
-            0, // North
-            3, // East
-            2, // South
-            1, // West
+            6, // North
+            9, // East
+            8, // South
+            7, // West
 
-            6, // L1
-            7, // L2
-            8, // L3
+            0, // L1
+            1, // L2
+            2, // L3
 
-            13, // R1
-            14, // R2
-            15, // R3
+            3, // R1
+            4, // R2
+            5, // R3
 
-            11, // Start
-            9,  // Select
-            10, // Home
+            26, // Start
+            27, // Select
+            22, // Home
         },
     },
     false, // Mirror face buttons to DPad
@@ -48,23 +48,41 @@ const Peripherals::Buttons::Config buttons_config = {
 const Peripherals::ButtonLeds::Config button_leds_config = {
     // Pin config
     {
-        22, // North
-        5,  // East
-        4,  // South
-        12, // West
+        10, // North
+        13, // East
+        12, // South
+        11, // West
     },
     false, // Invert
 };
 
 const Peripherals::TouchSlider::Config touch_slider_config = {
-    12, // Touch threshold
-    6,  // Release threshold
+    16,     // SDA Pin
+    17,     // SCL Pin
+    i2c0,   // I2C Block
+    800000, // I2C Speed
 
-    16,                 // SDA Pin
-    17,                 // SCL Pin
-    i2c0,               // I2C Block
-    800000,             // I2C Speed
-    {0x5A, 0x5D, 0x5C}, // MPR121 Addresses
+    //
+    // Touch controller config, either Mpr121x3, Mpr121x4 or Cap1188
+    //
+
+    // Peripherals::TouchSlider::Config::Mpr121x3 {
+    //     {0x5A, 0x5D, 0x5C}, // MPR121 Addresses
+    //     12,                 // Touch threshold
+    //     6,                  // Release threshold
+    // },
+
+    Peripherals::TouchSlider::Config::Mpr121x4{
+        {0x5A, 0x5B, 0x5C, 0x5D}, // MPR121 Addresses
+        12,                       // Touch threshold
+        6,                        // Release threshold
+    },
+
+    // Peripherals::TouchSlider::Config::Cap1188{
+    //     {0x2C, 0x2B, 0x2A, 0x29},  // CAP1188 Addresses
+    //     64,                        // Touch threshold
+    //     Cap1188::Sensitivity::S32, // Sensitivity
+    // },
 };
 
 const Peripherals::TouchSliderLeds::Config touch_slider_leds_config = {
@@ -84,8 +102,8 @@ const Peripherals::TouchSliderLeds::Config touch_slider_leds_config = {
 };
 
 const Peripherals::Display::Config display_config = {
-    26,      // SDA Pin
-    27,      // SCL Pin
+    14,      // SDA Pin
+    15,      // SCL Pin
     i2c1,    // I2C Block
     1000000, // I2C Speed
     0x3C,    // I2C Address

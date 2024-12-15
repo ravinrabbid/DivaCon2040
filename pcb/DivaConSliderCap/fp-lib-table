@@ -1,0 +1,5 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "DivaConSlider")(type "KiCad")(uri "${KIPRJMOD}/DivaConSlider.pretty")(options "")(descr ""))
+  (lib (name "CustomLogos")(type "KiCad")(uri "${KIPRJMOD}/CustomLogos.pretty")(options "")(descr ""))
+)
