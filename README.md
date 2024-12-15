@@ -103,7 +103,7 @@ For other controller emulation modes, swipes on the left half of the slider will
 
 The current Touch Slider is based on the MPR121 Capacitive Touch Sensor Controller. While the MPR121 seems to have a somewhat bad reputation to be hard to work with, I've had no issues with it so far and it works near flawlessly. That main downside is that is is out-of-production, there is however still sufficient supply on the usual marketplaces.
 
-Current alternatives like the CAP1188 are almost universally to slow. During a quick slide, a finger spends roughly 10ms on a single touch pad while most controllers have scan cycles of at least 16-35ms. The MPR121 on the contrary can be configured down to around 1ms. The Lumissil IS31SE5117A looks promising, but I couldn't get it to work yet. Other than that microcontrollers with integrated touch controllers are an option, but I don't want to go down that route since there already is the [LKP](https://github.com/Project-Alpaca/LKP) which does this. The LKP seems to have an i2c slave mode, so if you have access to one feel free to get in touch. I'd be happy to work on supporting the LKP.
+Current alternatives like the CAP1188 are almost universally to slow. During a quick slide, a finger spends roughly 10ms on a single touch pad while most controllers need scan cycles of at least 16-35ms. The MPR121 on the contrary can be configured down to around 1ms. The Lumissil IS31SE5117A looks promising, but I couldn't get it to work yet. Other than that microcontrollers with integrated touch controllers are an option, but I don't want to go down that route since there already is the [LKP](https://github.com/Project-Alpaca/LKP) which does this. The LKP seems to have an i2c slave mode, so if you have access to one feel free to get in touch. I'd be happy to work on supporting the LKP but need someone to test.
 
 All MPR121 controllers are attached to the same i2c bus, so make sure to have them use different i2c addresses accordingly. There is a slider variant with three and one with four controllers which can be configured in `include/GlobalConfiguration.h` (The four controller variant is the default). See below tables for the electrode mapping:
 
@@ -125,7 +125,7 @@ The MPR121s are setup for auto configuration with parameters taken from the [Ada
 
 #### Construction
 
-There two variants which both work equivalently well in my experience: You can use the [DivaConSlider board](pcb/DivaConSliderMpr) from the *pcb* subfolder which hosts the MPR121s, electrodes and LEDs or build it by hand without a pcb.
+There are two variants which both work equivalently well in my experience: You can use the [DivaConSlider board](pcb/DivaConSliderMpr) from the *pcb* subfolder which hosts the MPR121s, electrodes and LEDs or you can build it by hand without a pcb.
 
 For the latter I had success using 15mm wide copper tape strips with 2mm spacing in-between, aligning them properly using a 3D printed jig. Those are attached to off-the-shelf MPR121 breakout boards using the thinnest wire possible to reduce parasitic capacitance.
 
