@@ -21,8 +21,15 @@ namespace Divacon::Peripherals {
 class TouchSlider {
   public:
     struct Config {
-        struct Mpr121 {
+        struct Mpr121x3 {
             uint8_t i2c_addresses[3];
+
+            uint8_t touch_threshold;
+            uint8_t release_threshold;
+        };
+
+        struct Mpr121x4 {
+            uint8_t i2c_addresses[4];
 
             uint8_t touch_threshold;
             uint8_t release_threshold;
@@ -47,7 +54,7 @@ class TouchSlider {
         i2c_inst_t *i2c_block;
         uint i2c_speed_hz;
 
-        std::variant<Mpr121, Cap1188, Is31se5117a> touch_config;
+        std::variant<Mpr121x3, Mpr121x4, Cap1188, Is31se5117a> touch_config;
     };
 
   private:
@@ -56,12 +63,22 @@ class TouchSlider {
         virtual uint32_t read() = 0;
     };
 
-    class TouchControllerMpr121 : public TouchControllerInterface {
+    class TouchControllerMpr121x3 : public TouchControllerInterface {
       private:
         std::array<std::unique_ptr<Mpr121>, 3> m_mpr121;
 
       public:
-        TouchControllerMpr121(const Config::Mpr121 &config, i2c_inst *i2c);
+        TouchControllerMpr121x3(const Config::Mpr121x3 &config, i2c_inst *i2c);
+
+        virtual uint32_t read() final;
+    };
+
+    class TouchControllerMpr121x4 : public TouchControllerInterface {
+      private:
+        std::array<std::unique_ptr<Mpr121>, 4> m_mpr121;
+
+      public:
+        TouchControllerMpr121x4(const Config::Mpr121x4 &config, i2c_inst *i2c);
 
         virtual uint32_t read() final;
     };

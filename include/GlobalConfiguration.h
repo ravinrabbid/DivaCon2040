@@ -62,25 +62,27 @@ const Peripherals::TouchSlider::Config touch_slider_config = {
     i2c0,   // I2C Block
     800000, // I2C Speed
 
-    // Touch controller config, either Mpr121 or Cap1188
     //
-    // Peripherals::TouchSlider::Config::Mpr121{
+    // Touch controller config, either Mpr121x3, Mpr121x4 or Cap1188
+    //
+
+    // Peripherals::TouchSlider::Config::Mpr121x3 {
     //     {0x5A, 0x5D, 0x5C}, // MPR121 Addresses
     //     12,                 // Touch threshold
     //     6,                  // Release threshold
     // },
+
+    Peripherals::TouchSlider::Config::Mpr121x4{
+        {0x5A, 0x5B, 0x5C, 0x5D}, // MPR121 Addresses
+        12,                       // Touch threshold
+        6,                        // Release threshold
+    },
 
     // Peripherals::TouchSlider::Config::Cap1188{
     //     {0x2C, 0x2B, 0x2A, 0x29},  // CAP1188 Addresses
     //     64,                        // Touch threshold
     //     Cap1188::Sensitivity::S32, // Sensitivity
     // },
-
-    Peripherals::TouchSlider::Config::Is31se5117a{
-        {0x50, 0x51}, // IS31SE5117A Addresses
-        40,           // Touch threshold
-        20,           // Touch Hysteresis
-    },
 };
 
 const Peripherals::TouchSliderLeds::Config touch_slider_leds_config = {
