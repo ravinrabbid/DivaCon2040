@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.13)
 
 if((NOT DEFINED ENV{PICO_SDK_PATH}) AND (NOT PICO_SDK_PATH))
-  set(PICO_SDK_FETCH_FROM_GIT_TAG "2.0.0")
-  set(PICO_SDK_FETCH_FROM_GIT ON)
+    set(PICO_SDK_FETCH_FROM_GIT_TAG "2.0.0")
+    set(PICO_SDK_FETCH_FROM_GIT ON)
 endif()
 
 if((NOT DEFINED ENV{PICO_BOARD}) AND (NOT PICO_BOARD))
-  set(PICO_BOARD "pico")
+    set(PICO_BOARD "pico")
 endif()
 
 include(pico_sdk_import.cmake)
@@ -45,6 +45,7 @@ target_link_libraries(
          pico_stdlib
          pico_multicore
          pico_rand
+         pico_mbedtls
          mpr121
          cap1188
          is31se5117a

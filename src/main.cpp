@@ -3,12 +3,15 @@
 #include "peripherals/Display.h"
 #include "peripherals/TouchSlider.h"
 #include "peripherals/TouchSliderLeds.h"
+#include "usb/device/hid/ps4_auth.h"
 #include "usb/device_driver.h"
 #include "utils/InputState.h"
 #include "utils/Menu.h"
+#include "utils/PS4AuthProvider.h"
 #include "utils/SettingsStore.h"
 
 #include "GlobalConfiguration.h"
+#include "PS4AuthConfiguration.h"
 
 #include "pico/multicore.h"
 #include "pico/stdlib.h"
@@ -23,6 +26,9 @@ queue_t control_queue;
 queue_t menu_display_queue;
 queue_t input_queue;
 queue_t led_queue;
+
+queue_t auth_challenge_queue;
+queue_t auth_signed_challenge_queue;
 
 enum class ControlCommand {
     SetUsbMode,
@@ -64,6 +70,9 @@ void core1_task() {
     Peripherals::TouchSliderLeds sliderleds(Config::Default::touch_slider_leds_config);
     Peripherals::ButtonLeds buttonleds(Config::Default::button_leds_config,
                                        Config::Default::touch_slider_leds_config.enable_pdloader_support);
+
+    Utils::PS4AuthProvider ps4authprovider;
+    std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH> auth_challenge;
 
     ControlMessage control_msg;
     Utils::Menu::State menu_display_msg;
@@ -136,6 +145,11 @@ void core1_task() {
         if (queue_try_remove(&menu_display_queue, &menu_display_msg)) {
             display.setMenuState(menu_display_msg);
         }
+        if (queue_try_remove(&auth_challenge_queue, auth_challenge.data())) {
+            const auto signed_challenge = ps4authprovider.sign(auth_challenge);
+            queue_try_remove(&auth_signed_challenge_queue, nullptr); // clear queue first
+            queue_try_add(&auth_signed_challenge_queue, &signed_challenge);
+        }
 
         buttonleds.update();
         display.update();
@@ -149,8 +163,11 @@ int main() {
     queue_init(&menu_display_queue, sizeof(Utils::Menu::State), 1);
     queue_init(&input_queue, sizeof(Utils::InputState::InputMessage), 1);
     queue_init(&led_queue, sizeof(Peripherals::TouchSliderLeds::RawFrameMessage), 1);
+    queue_init(&auth_challenge_queue, sizeof(std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH>), 1);
+    queue_init(&auth_signed_challenge_queue, sizeof(std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH>), 1);
 
     Utils::InputState input_state;
+    std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH> auth_challenge_response;
 
     auto settings_store = std::make_shared<Utils::SettingsStore>();
     Utils::Menu menu(settings_store);
@@ -165,11 +182,11 @@ int main() {
     usbd_driver_init(mode);
     usbd_driver_set_player_led_cb([](usb_player_led_t player_led) {
         const auto ctrl_message = ControlMessage{ControlCommand::SetPlayerLed, {.player_led = player_led}};
-        queue_add_blocking(&control_queue, &ctrl_message);
+        queue_try_add(&control_queue, &ctrl_message);
     });
     usbd_driver_set_button_led_cb([](usb_button_led_t button_led) {
         const auto ctrl_message = ControlMessage{ControlCommand::SetButtonLed, {.button_led = button_led}};
-        queue_add_blocking(&control_queue, &ctrl_message);
+        queue_try_add(&control_queue, &ctrl_message);
     });
     usbd_driver_set_slider_led_cb([](const uint8_t *frame, size_t len) {
         auto led_message = Peripherals::TouchSliderLeds::RawFrameMessage();
@@ -191,6 +208,12 @@ int main() {
 
         queue_try_add(&led_queue, &led_message);
     });
+
+    if (Config::PS4Auth::config.enabled) {
+        ps4_auth_init(Config::PS4Auth::config.key_pem.c_str(), Config::PS4Auth::config.key_pem.size() + 1,
+                      Config::PS4Auth::config.serial.data(), Config::PS4Auth::config.signature.data(),
+                      [](const uint8_t *challenge) { queue_try_add(&auth_challenge_queue, challenge); });
+    }
 
     stdio_init_all();
 
@@ -258,6 +281,10 @@ int main() {
         usbd_driver_task();
 
         queue_try_add(&input_queue, &input_message);
+
+        if (queue_try_remove(&auth_signed_challenge_queue, auth_challenge_response.data())) {
+            ps4_auth_set_signed_challenge(auth_challenge_response.data());
+        }
     }
 
     return 0;

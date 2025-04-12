@@ -1,6 +1,7 @@
 #include "usb/device/hid/ps4_driver.h"
 
 #include "usb/device/hid/common.h"
+#include "usb/device/hid/ps4_auth.h"
 
 #include "pico/unique_id.h"
 
@@ -375,7 +376,7 @@ uint16_t hid_ps4_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
     }
 
     if (report_type == HID_REPORT_TYPE_INPUT) {
-        memcpy(&buffer, &last_report, sizeof(hid_ps4_report_t));
+        memcpy(buffer, &last_report, sizeof(hid_ps4_report_t));
         return sizeof(hid_ps4_report_t);
     } else if (report_type == HID_REPORT_TYPE_FEATURE) {
         switch (report_id) {
@@ -394,6 +395,14 @@ uint16_t hid_ps4_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
         case 0x03:
             memcpy(buffer, ps4_0x03_report, sizeof(ps4_0x03_report));
             return sizeof(ps4_0x03_report);
+        case 0xF1: { // Signature nonce
+            return ps4_auth_get_challenge_report(report_id, buffer);
+        }
+        case 0xF2: { // Signing state
+            return ps4_auth_get_challenge_state_report(report_id, buffer);
+        }
+        case 0xF3: // Reset auth
+            return ps4_auth_get_reset_report(report_id, buffer);
         default:
         }
     }
@@ -418,29 +427,38 @@ void hid_ps4_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
                            uint16_t bufsize) {
     (void)itf;
 
-    if (report_type != HID_REPORT_TYPE_OUTPUT) {
-        return;
-    }
-
-    if (report_id == 0 && bufsize > 0) {
-        report_id = buffer[0];
-        buffer = &buffer[1];
-        bufsize--;
-    }
-
-    switch (report_id) {
-    case 0x05:
-        if (bufsize == sizeof(hid_ps4_ouput_report_t)) {
-            hid_ps4_ouput_report_t *report = (hid_ps4_ouput_report_t *)buffer;
-            if (report->content_flags & 0x02) {
-                usb_player_led_t player_led = {.type = USB_PLAYER_LED_COLOR,
-                                               .red = report->led_red,
-                                               .green = report->led_green,
-                                               .blue = report->led_blue};
-                usbd_driver_get_player_led_cb()(player_led);
-            }
+    switch (report_type) {
+    case HID_REPORT_TYPE_FEATURE: {
+        switch (report_id) {
+        case 0xF0: // Auth payload
+            ps4_auth_set_challenge_report(report_id, buffer, bufsize);
+            break;
+        default:
         }
-        break;
+    } break;
+    case HID_REPORT_TYPE_OUTPUT: {
+        if (report_id == 0 && bufsize > 0) {
+            report_id = buffer[0];
+            buffer = &buffer[1];
+            bufsize--;
+        }
+
+        switch (report_id) {
+        case 0x05: // LEDs and Rumble
+            if (bufsize == sizeof(hid_ps4_ouput_report_t)) {
+                hid_ps4_ouput_report_t *report = (hid_ps4_ouput_report_t *)buffer;
+                if (report->content_flags & 0x02) {
+                    usb_player_led_t player_led = {.type = USB_PLAYER_LED_COLOR,
+                                                   .red = report->led_red,
+                                                   .green = report->led_green,
+                                                   .blue = report->led_blue};
+                    usbd_driver_get_player_led_cb()(player_led);
+                }
+            }
+            break;
+        default:
+        }
+    } break;
     default:
     }
 }
