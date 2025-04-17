@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 if((NOT DEFINED ENV{PICO_SDK_PATH}) AND (NOT PICO_SDK_PATH))
-    set(PICO_SDK_FETCH_FROM_GIT_TAG "2.0.0")
+    set(PICO_SDK_FETCH_FROM_GIT_TAG "2.1.1")
     set(PICO_SDK_FETCH_FROM_GIT ON)
 endif()
 
@@ -12,6 +12,8 @@ endif()
 include(pico_sdk_import.cmake)
 
 project(DivaCon2040 VERSION 0.39.0)
+
+set(PICO_USE_FASTEST_SUPPORTED_CLOCK 1)
 
 pico_sdk_init()
 
