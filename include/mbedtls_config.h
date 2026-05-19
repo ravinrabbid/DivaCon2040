@@ -4,9 +4,8 @@
 #if LIB_PICO_SHA256
 // Enable hardware acceleration
 #define MBEDTLS_SHA256_ALT
-#else
-#define MBEDTLS_SHA256_C
 #endif
+#define MBEDTLS_SHA256_C
 
 #define MBEDTLS_ASN1_PARSE_C
 #define MBEDTLS_BASE64_C

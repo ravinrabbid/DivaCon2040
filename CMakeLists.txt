@@ -46,13 +46,18 @@ target_link_libraries(
          tinyusb_board
          pico_stdlib
          pico_multicore
-         pico_rand
          pico_mbedtls
          mpr121
          cap1188
          is31se5117a
          pico_ssd1306
          pio_ws2812)
+
+set_source_files_properties(
+    ${CMAKE_BINARY_DIR}/_deps/pico_sdk-src/src/rp2_common/pico_mbedtls/pico_mbedtls.c
+    PROPERTIES
+    COMPILE_OPTIONS "-Wno-error=array-parameter"
+)
 
 pico_enable_stdio_usb(${PROJECT_NAME} 1)
 pico_enable_stdio_uart(${PROJECT_NAME} 0)

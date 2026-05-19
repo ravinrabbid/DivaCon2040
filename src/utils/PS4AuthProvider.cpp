@@ -4,7 +4,6 @@
 
 #include "mbedtls/rsa.h"
 #include "mbedtls/sha256.h"
-#include "pico/rand.h"
 
 #include "usb/device_driver.h"
 
