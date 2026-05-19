@@ -71,6 +71,8 @@ class Display {
     uint32_t m_touched{0};
     usb_mode_t m_usb_mode{USB_MODE_DEBUG};
     uint8_t m_player_id{0};
+    bool m_auth_busy{false};
+
     Utils::Menu::State m_menu_state{};
 
     ssd1306_t m_display{};
@@ -88,12 +90,14 @@ class Display {
     void setButtons(const Utils::InputState::Buttons &buttons);
     void setUsbMode(usb_mode_t mode);
     void setPlayerId(uint8_t player_id);
+    void setAuthBusyState(bool busy);
+
     void setMenuState(const Utils::Menu::State &menu_state);
 
     void showIdle();
     void showMenu();
 
-    void update();
+    void update(bool force = false);
 };
 
 } // namespace Divacon::Peripherals

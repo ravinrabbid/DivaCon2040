@@ -231,6 +231,7 @@ void Display::setTouched(uint32_t touched) { m_touched = touched; }
 void Display::setButtons(const Utils::InputState::Buttons &buttons) { m_bpm_counter.update(buttons); }
 void Display::setUsbMode(usb_mode_t mode) { m_usb_mode = mode; };
 void Display::setPlayerId(uint8_t player_id) { m_player_id = player_id; };
+void Display::setAuthBusyState(bool busy) { m_auth_busy = busy; };
 
 void Display::setMenuState(const Utils::Menu::State &menu_state) { m_menu_state = menu_state; }
 
@@ -268,7 +269,11 @@ void Display::drawIdleScreen() {
 
     // Menu hint
     ssd1306_draw_line(&m_display, 0, 54, 128, 54);
-    ssd1306_draw_string(&m_display, 0, 56, 1, "Hold STA+SEL for Menu");
+    if (m_auth_busy) {
+        ssd1306_draw_string(&m_display, 0, 56, 1, "PS4 Auth busy...  ");
+    } else {
+        ssd1306_draw_string(&m_display, 0, 56, 1, "Hold STA+SEL for Menu");
+    }
 }
 
 void Display::drawMenuScreen() {
@@ -335,10 +340,10 @@ void Display::drawMenuScreen() {
     }
 }
 
-void Display::update() {
+void Display::update(bool force) {
     static const uint32_t interval_ms = 17; // Limit to ~60fps
 
-    if (to_ms_since_boot(get_absolute_time()) - m_next_frame_time < interval_ms) {
+    if (!force && (to_ms_since_boot(get_absolute_time()) - m_next_frame_time < interval_ms)) {
         return;
     }
     m_next_frame_time += interval_ms;

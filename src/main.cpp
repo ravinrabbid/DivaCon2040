@@ -150,9 +150,14 @@ void core1_task() {
             display.setMenuState(menu_display_msg);
         }
         if (queue_try_remove(&auth_challenge_queue, auth_challenge.data())) {
+            display.setAuthBusyState(true);
+            display.update(true);
+
             const auto signed_challenge = ps4authprovider.sign(auth_challenge);
             queue_try_remove(&auth_signed_challenge_queue, nullptr); // clear queue first
             queue_try_add(&auth_signed_challenge_queue, &signed_challenge);
+
+            display.setAuthBusyState(false);
         }
 
         buttonleds.update();
