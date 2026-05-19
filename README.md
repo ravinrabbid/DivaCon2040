@@ -1,6 +1,6 @@
-# DivaCon2040 - Firmware for RP2040 based Project Diva controllers
+# DivaCon2040 - Firmware for RP2040/RP2350 based Project Diva controllers
 
-DivaCon2040 is a firmware for DIY Project Diva Arcade controllers based on the RP2040 microcontroller as found on the Raspberry Pi Pico.
+DivaCon2040 is a firmware for DIY Project Diva Arcade controllers based on the RP2040/RP2350 microcontroller as found on the Raspberry Pi Pico.
 
 It is pretty much tailored to this specific use case, if you are looking for something universal, ready-to-flash and on-the-fly configurable I'd recommend to have a look at more generic approaches like [GP2040-CE](https://github.com/OpenStickCommunity/GP2040-CE). If you however want build something more specialized or custom, feel free to use this project as a base, it is designed to be somewhat modular and should be easy remodel. See [DonCon2040](https://github.com/ravinrabbid/DonCon2040) for an example on how this could look like.
 
@@ -63,10 +63,18 @@ See [pico-sdk readme](https://github.com/raspberrypi/pico-sdk/blob/master/README
 Use the environment variables `PICO_SDK_PATH` to use a local pico-sdk, and `PICO_BOARD` to select another target board.
 By default the pico-sdk will be fetched from Github and the target board will be "pico".
 
+For Rasberry Pi Pico:
+
 ```sh
-mkdir build && cd build
-cmake ..
-make
+cmake -B build -DPICO_BOARD="pico"
+cmake --build build
+```
+
+For Rasberry Pi Pico 2:
+
+```sh
+cmake -B build -DPICO_BOARD="pico2"
+cmake --build build
 ```
 
 ## Configuration
@@ -91,13 +99,14 @@ DivaCon2040 can sign those challenges, but you will need to obtain some data fro
 
 To build the firmware run `scripts/generateAuthConfig.py` in the folder where you placed the required files. Copy the resulting `PS4AuthConfiguration.h` to the `include` directory, replacing the existing header. Then build the firmware as described in [Building](#building).
 
-Signing the challenge will block the second core of the rp2040 for 2-3 seconds, so LED animations and the display will appear stuck from time to time. Input handling is unaffected.
+Signing the challenge will block the second core of the RP2040 for 2-3 seconds, so LED animations and the display will appear stuck from time to time. Input handling is unaffected.
+On the RP2350 SHA256 is hardware accelerated, so signing time is reduced to about 1 second.
 
 ## Hardware
 
 ### Main IO Board
 
-This project was designed and tested on the Raspberry Pi Pico. Other RP2040 boards should also work if they expose enough GPIOs.
+This project was designed and tested on the Raspberry Pi Pico. Other RP2040/RP2350 boards should also work if they expose enough GPIOs.
 
 You can find the [DivaConIO board](pcb/DivaConIO) in the *pcb* subfolder. This conveniently breaks out the GPIO pins into connectors and already comes with drivers for the button LEDs and level shifting for the slider LEDs.
 
