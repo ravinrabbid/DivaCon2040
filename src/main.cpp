@@ -175,8 +175,6 @@ int main() {
     queue_init(&auth_challenge_queue, sizeof(std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH>), 1);
     queue_init(&auth_signed_challenge_queue, sizeof(std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH>), 1);
 
-    stdio_init_all();
-
     Peripherals::Buttons buttons(Config::Default::buttons_config);
 
     Utils::InputReport input_report;
@@ -240,6 +238,8 @@ int main() {
     multicore_launch_core1(core1_task);
 
     usbd_driver_init(mode);
+    stdio_init_all();
+
     usbd_driver_set_player_led_cb([](usb_player_led_t player_led) {
         const auto ctrl_message =
             ControlMessage{.command = ControlCommand::SetPlayerLed, .data = {.player_led = player_led}};
