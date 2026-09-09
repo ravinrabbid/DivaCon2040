@@ -5,6 +5,7 @@
 #include "hardware/watchdog.h"
 #include "pico/bootrom.h"
 #include "pico/multicore.h"
+#include "pico/usb_reset_config.h"
 
 namespace Divacon::Utils {
 
@@ -173,7 +174,7 @@ void SettingsStore::store() {
         break;
     case RebootType::Bootsel:
         sleep_ms(100);
-        reset_usb_boot(0, PICO_STDIO_USB_RESET_BOOTSEL_INTERFACE_DISABLE_MASK);
+        reset_usb_boot(0, PICO_USB_RESET_BOOTSEL_INTERFACE_DISABLE_MASK);
         break;
     case RebootType::None:
         break;

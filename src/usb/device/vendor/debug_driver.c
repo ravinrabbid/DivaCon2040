@@ -4,6 +4,7 @@
 #include "hardware/watchdog.h"
 #include "pico/bootrom.h"
 #include "pico/stdio_usb.h"
+#include "pico/usb_reset_config.h"
 #include "pico/usb_reset_interface.h"
 #include "tusb.h"
 
@@ -132,12 +133,12 @@ bool debug_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t
 
     if (request->wIndex == itf_num) {
         if (request->bRequest == RESET_REQUEST_BOOTSEL) {
-            reset_usb_boot(0, (request->wValue & 0x7f) | PICO_STDIO_USB_RESET_BOOTSEL_INTERFACE_DISABLE_MASK);
+            reset_usb_boot(0, (request->wValue & 0x7f) | PICO_USB_RESET_BOOTSEL_INTERFACE_DISABLE_MASK);
             // does not return, otherwise we'd return true
         }
 
         if (request->bRequest == RESET_REQUEST_FLASH) {
-            watchdog_reboot(0, 0, PICO_STDIO_USB_RESET_RESET_TO_FLASH_DELAY_MS);
+            watchdog_reboot(0, 0, PICO_USB_RESET_RESET_TO_FLASH_DELAY_MS);
             return true;
         }
     }
@@ -181,7 +182,7 @@ const usbd_driver_t *get_debug_device_driver() {
 void tud_cdc_line_coding_cb(uint8_t itf, cdc_line_coding_t const *p_line_coding) {
     (void)itf;
 
-    if (p_line_coding->bit_rate == PICO_STDIO_USB_RESET_MAGIC_BAUD_RATE) {
-        reset_usb_boot(0, PICO_STDIO_USB_RESET_BOOTSEL_INTERFACE_DISABLE_MASK);
+    if (p_line_coding->bit_rate == PICO_USB_RESET_MAGIC_BAUD_RATE) {
+        reset_usb_boot(0, PICO_USB_RESET_BOOTSEL_INTERFACE_DISABLE_MASK);
     }
 }
